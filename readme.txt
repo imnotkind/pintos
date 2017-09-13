@@ -8,8 +8,8 @@ git add <file>
 git rm <file>
 
 ##after you made changes :
-#make sure to use git add <file> if you have new ones
-git commit -m "message about change" (you can add -a if you didn't rm your deleted file)
+#make sure to use git add <file> that you have newly added
+git commit -a -m "message about change" (you can add -a if you didn't rm your deleted file)
 
 #if you want to apply your change to server :
 git push origin master
