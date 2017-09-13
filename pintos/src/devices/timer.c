@@ -97,7 +97,7 @@ timer_sleep (int64_t ticks)
   while (timer_elapsed (start) < ticks) 
     thread_yield ();
     /* Yields the CPU.  The current thread is not put to sleep and
-   may be scheduled again immediately at the scheduler's whim. */
+   may be scheduled again immediately at the scheduler's whim. */  
 }
 
 /* Sleeps for approximately MS milliseconds.  Interrupts must be
