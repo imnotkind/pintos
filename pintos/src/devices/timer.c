@@ -89,11 +89,15 @@ timer_elapsed (int64_t then)
 void
 timer_sleep (int64_t ticks) 
 {
-  int64_t start = timer_ticks ();
+  int64_t start = timer_ticks (); /* Returns the number of timer ticks since the OS booted. */
 
-  ASSERT (intr_get_level () == INTR_ON);
+  ASSERT (intr_get_level () == INTR_ON); /* Returns the current interrupt status. */
+  /* Returns the number of timer ticks elapsed since THEN, which
+   should be a value once returned by timer_ticks(). */
   while (timer_elapsed (start) < ticks) 
     thread_yield ();
+    /* Yields the CPU.  The current thread is not put to sleep and
+   may be scheduled again immediately at the scheduler's whim. */
 }
 
 /* Sleeps for approximately MS milliseconds.  Interrupts must be
