@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "debug.h": "c",
-        "inttypes.h": "c",
-        "round.h": "c"
-    }
-}
