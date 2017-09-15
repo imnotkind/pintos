@@ -19,7 +19,7 @@ git fetch --all
 git reset --hard origin/master
 git pull origin master
 
-
+#if you want to ignore some file or folder, go to .git/info/exclude and add the name of it.
 
 
 #ctags help
