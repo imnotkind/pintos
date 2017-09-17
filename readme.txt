@@ -1,4 +1,4 @@
-이 프로젝트는 포스텍 OS 수업의 PintOS 프로젝트를 위한 것입니다.
+It's PINTOS TIME
 
 ####very kind guide by imnotkind
 
