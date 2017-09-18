@@ -556,7 +556,7 @@ static void
 schedule (void) 
 {
   struct thread *cur = running_thread ();
-  struct thread *next = next_thread_to_run ();
+  struct thread *next = next_thread_to_run (); //ready_list pop front
   struct thread *prev = NULL;
 
   ASSERT (intr_get_level () == INTR_OFF);
