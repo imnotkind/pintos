@@ -329,12 +329,14 @@ thread_yield (void)
 void
 thread_sleep (void)
 {
+  printf("QQQ");
   struct thread *cur = thread_current();
   enum intr_level old_level;
 
   ASSERT (!intr_context ());
 
   old_level = intr_disable ();
+  printf("EEE");
   if(cur != idle_thread)
   {
     list_push_back (&sleep_list, &cur->elem); // -> precedes &
