@@ -95,9 +95,9 @@ timer_sleep (int64_t ticks)
   /* Returns the number of timer ticks elapsed since THEN, which
    should be a value once returned by timer_ticks(). */
   while (timer_elapsed (start) < ticks) 
-    thread_sleep ();
+    thread_yield ();
   printf("TTT");
-  thread_wake();
+  //thread_wake();
 }
 
 /* Sleeps for approximately MS milliseconds.  Interrupts must be
