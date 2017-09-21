@@ -79,7 +79,7 @@ typedef int tid_t;
    semaphore wait list (synch.c).  It can be used these two ways
    only because they are mutually exclusive: only a thread in the
    ready state is on the run queue, whereas only a thread in the
-   blocked state is on a semaphore wait list. */
+   blocked state is on a semaphore wait list. +++ sleep list ! */
 struct thread      //pintos manual 67
   {
     /* Owned by thread.c. */

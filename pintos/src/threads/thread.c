@@ -229,7 +229,7 @@ thread_block (void)
   ASSERT (intr_get_level () == INTR_OFF);
 
   thread_current ()->status = THREAD_BLOCKED;
-  schedule ();
+  schedule ();    //makes ready list first thread running
 }
 
 /* Transitions a blocked thread T to the ready-to-run state.
@@ -336,15 +336,26 @@ thread_sleep (void)
 
   old_level = intr_disable ();
   if(cur != idle_thread)
-    list_push_back (&sleep_list, &cur->elem); //-> precedes &
-  thread_block();
+  {
+    list_push_back (&sleep_list, &cur->elem); // -> precedes &
+    thread_block();
+  }
   intr_set_level(old_level);
 }
 
 void
 thread_wake (void)
 {
+  struct list_elem *e;
   
+  ASSERT (!intr_context ());
+
+  for (e = list_begin (&sleep_list); e != list_end (&sleep_list); 
+       e = list_next(e))
+  {
+    struct thread *t = list_entry(e, struct thread, elem);
+    thread_unblock(t);
+  }
 }
 
 /* Invoke function 'func' on all threads, passing along 'aux'.
