@@ -34,7 +34,7 @@ vim tags #if you don't want to open tags, set ~/.vimrc
 :po  # go backwards                             #Ctrl+t
 
 
-#TESTING COMMAND EX)
+#run single test (see pass, fail) 
 pintos -v -k -T 60 --qemu  -- -q  run alarm-single < /dev/null 2> tests/threads/alarm-single.errors > tests/threads/alarm-single.output
 perl -I../.. ../../tests/threads/alarm-single.ck tests/threads/alarm-single tests/threads/alarm-single.result
 
@@ -49,6 +49,17 @@ perl -I../.. ../../tests/threads/alarm-simultaneous.ck tests/threads/alarm-simul
 
 pintos -v -k -T 60 --qemu  -- -q  run alarm-priority < /dev/null 2> tests/threads/alarm-priority.errors > tests/threads/alarm-priority.output
 perl -I../.. ../../tests/threads/alarm-priority.ck tests/threads/alarm-priority tests/threads/alarm-priority.result
+
+#or you could do...
+make tests/threads/alarm-multiple.result
+
+#reference solution's fixed code files:
+devices/timer.c | 42 +++++-
+threads/fixed-point.h | 120 ++++++++++++++++++
+threads/synch.c | 88 ++++++++++++-
+threads/thread.c | 196 ++++++++++++++++++++++++++----
+threads/thread.h | 23 +++
+fixed-point.h is a new file added.
 
 
 
