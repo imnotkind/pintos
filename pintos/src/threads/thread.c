@@ -94,6 +94,7 @@ thread_init (void)
 
   lock_init (&tid_lock);
   list_init (&ready_list);
+  list_init (&sleep_list);
   list_init (&all_list);
 
   /* Set up a thread structure for the running thread. */
@@ -323,6 +324,27 @@ thread_yield (void)
   cur->status = THREAD_READY;
   schedule (); 
   intr_set_level (old_level);
+}
+
+void
+thread_sleep (void)
+{
+  struct thread *cur = thread_current();
+  enum intr_level old_level;
+
+  ASSERT (!intr_context ());
+
+  old_level = intr_disable ();
+  if(cur != idle_thread)
+    list_push_back (&sleep_list, &cur->elem); //-> precedes &
+  thread_block();
+  intr_set_level(old_level);
+}
+
+void
+thread_wake (void)
+{
+  
 }
 
 /* Invoke function 'func' on all threads, passing along 'aux'.
