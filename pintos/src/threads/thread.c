@@ -341,6 +341,7 @@ thread_sleep (void)
     thread_block();
   }
   intr_set_level(old_level);
+  printf("WWW");
 }
 
 void
