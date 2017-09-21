@@ -356,6 +356,7 @@ thread_wake (void)
     struct thread *t = list_entry(e, struct thread, elem);
     thread_unblock(t);
   }
+  schedule();
 }
 
 /* Invoke function 'func' on all threads, passing along 'aux'.
