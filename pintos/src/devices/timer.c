@@ -96,6 +96,7 @@ timer_sleep (int64_t ticks)
    should be a value once returned by timer_ticks(). */
   while (timer_elapsed (start) < ticks) 
     thread_sleep ();
+  printf("TTT");
   thread_wake();
 }
 
