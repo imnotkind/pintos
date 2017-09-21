@@ -95,7 +95,6 @@ timer_sleep (int64_t ticks)
   /* Returns the number of timer ticks elapsed since THEN, which
    should be a value once returned by timer_ticks(). */
   while (timer_elapsed (start) < ticks) 
-    printf("FUCK");
     thread_yield ();
     /* Yields the CPU.  The current thread is not put to sleep and
    may be scheduled again immediately at the scheduler's whim. */ 
