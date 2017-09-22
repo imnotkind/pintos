@@ -336,7 +336,6 @@ bool thread_wake_ticks_less(struct list_elem* first, struct list_elem* second, v
 void
 thread_sleep (int64_t wake_ticks)
 {
-  printf("QQQ");
   struct thread *cur = thread_current();
   enum intr_level old_level;
 
@@ -357,14 +356,17 @@ thread_sleep (int64_t wake_ticks)
 void
 thread_wake (int64_t current_ticks) 
 {
+  printf("YYY");
   struct list_elem *e;
 
   for (e = list_begin (&sleep_list); e != list_end (&sleep_list); e = list_remove (e)){
       struct thread *t = list_entry(e, struct thread, allelem);
       if((*t).wake_ticks > current_ticks){
+        printf("XXX");
         next_wake_ticks = list_entry(list_begin(&sleep_list), struct thread, elem)->wake_ticks;
         break;
       }
+      printf("ZZZ");
       thread_unblock(t);
   }
   
