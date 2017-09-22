@@ -358,7 +358,7 @@ thread_wake (int64_t current_ticks)
 {
   struct list_elem *e;
   printf("X");
-  for (e = list_begin (&sleep_list); e != list_end (&sleep_list); e = list_next (e)){
+  for (e = list_begin (&sleep_list); e != list_end (&sleep_list); e = list_next(e)){
       struct thread *t = list_entry(e, struct thread, elem);
       if((*t).wake_ticks > current_ticks){
         if(list_empty(&sleep_list)){
@@ -367,6 +367,7 @@ thread_wake (int64_t current_ticks)
         else{
           next_wake_ticks = list_entry(list_begin(&sleep_list), struct thread, elem)->wake_ticks;
         }
+        break;
       }
       else{
         printf("Z");
