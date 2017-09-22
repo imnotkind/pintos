@@ -41,7 +41,7 @@ static struct thread *initial_thread;
 static struct lock tid_lock;
 
 /* Save next wake ticks */
-static int64_t next_wake_ticks;
+int64_t next_wake_ticks;
 
 /* Stack frame for kernel_thread(). */
 struct kernel_thread_frame 

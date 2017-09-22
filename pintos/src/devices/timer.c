@@ -20,6 +20,8 @@
 /* Number of timer ticks since OS booted. */
 static int64_t ticks;
 
+extern int64_t next_wake_ticks;
+
 /* Number of loops per timer tick.
    Initialized by timer_calibrate(). */
 static unsigned loops_per_tick;
