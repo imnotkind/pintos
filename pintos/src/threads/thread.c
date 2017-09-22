@@ -357,23 +357,25 @@ void
 thread_wake (int64_t current_ticks) 
 {
   struct list_elem *e;
-
-  for (e = list_begin (&sleep_list); e != list_end (&sleep_list); e = list_remove (e)){
+  printf("X");
+  for (e = list_begin (&sleep_list); e != list_end (&sleep_list); e = list_next (e)){
       struct thread *t = list_entry(e, struct thread, allelem);
       if((*t).wake_ticks > current_ticks){
-        printf("X");
+        printf("T");
         if(list_empty(&sleep_list)){
-          printf("Y");
           next_wake_ticks = INT64_MAX;
         }
         else{
-          printf("Z");
           next_wake_ticks = list_entry(list_begin(&sleep_list), struct thread, elem)->wake_ticks;
         }
         break;
       }
-      printf("O");
-      thread_unblock(t);
+      else{
+        printf("Z");
+        list_remove(e);
+        thread_unblock(t);
+      }
+      
   }
   
 }
