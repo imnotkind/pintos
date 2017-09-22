@@ -346,6 +346,7 @@ thread_sleep (void)
 void
 thread_wake (void)
 {
+  printf("uuu");
   struct list_elem *e;
   
   ASSERT (!intr_context ());
@@ -354,6 +355,7 @@ thread_wake (void)
        e = list_next(e))
   {
     struct thread *t = list_entry(e, struct thread, elem);
+    printf("sibal");
     thread_unblock(t);
   }
 }
