@@ -347,8 +347,6 @@ void
 thread_wake (void) 
 {
   struct list_elem *e;
-  
-  ASSERT (!intr_context ());
 
   for (e = list_begin (&sleep_list); e != list_end (&sleep_list); 
        e = list_next(e))
