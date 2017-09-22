@@ -363,7 +363,7 @@ thread_wake (int64_t current_ticks)
   for (e = list_begin (&sleep_list); e != list_end (&sleep_list); e = list_remove (e)){
       struct thread *t = list_entry(e, struct thread, allelem);
       if((*t).wake_ticks > current_ticks){
-        if(list_empty(sleep_list)){
+        if(list_empty(&sleep_list)){
           next_wake_ticks = INT64_MAX;
         }
         else{
