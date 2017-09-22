@@ -360,7 +360,7 @@ thread_wake (int64_t current_ticks)
   struct list_elem *e;
 
   for (e = list_begin (&sleep_list); e != list_end (&sleep_list); e = list_remove (e)){
-      struct thread *t = list_entry(e, struct thread, elem);
+      struct thread *t = list_entry(e, struct thread, allelem);
       if((*t).wake_ticks > current_ticks){
         next_wake_ticks = list_entry(list_begin(&sleep_list), struct thread, elem)->wake_ticks;
         break;
