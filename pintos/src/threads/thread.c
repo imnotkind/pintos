@@ -348,14 +348,10 @@ thread_wake (void)
 {
   struct list_elem *e;
 
-  for (e = list_begin (&sleep_list); e != list_end (&sleep_list); 
-       e = list_next(e))
-  {
-    struct thread *t = list_entry(e, struct thread, elem);
-    list_remove(&t->elem);
-    //printf("sibal");
-    thread_unblock(t);
-  }
+  struct thread *t = list_entry(e, struct thread, elem);
+  //printf("sibal");
+  thread_unblock(t);
+
 }
 
 /* Invoke function 'func' on all threads, passing along 'aux'.
