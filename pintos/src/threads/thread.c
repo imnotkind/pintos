@@ -352,6 +352,7 @@ thread_wake (void)
        e = list_next(e))
   {
     struct thread *t = list_entry(e, struct thread, elem);
+    list_remove(&t->elem);
     //printf("sibal");
     thread_unblock(t);
   }
