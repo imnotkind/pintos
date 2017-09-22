@@ -227,7 +227,6 @@ thread_block (void)
 {
   ASSERT (!intr_context ());
   ASSERT (intr_get_level () == INTR_OFF);
-
   thread_current ()->status = THREAD_BLOCKED;
   schedule ();    //makes ready list first thread running
 }
@@ -334,13 +333,10 @@ thread_sleep (void)
   enum intr_level old_level;
 
   ASSERT (!intr_context ());
-
   old_level = intr_disable ();
-  printf("EEE");
   ASSERT(cur != idle_thread);
-  printf("RRR");
+
   list_push_back (&sleep_list, &cur->elem); // -> precedes &
-  printf("HHH");
   thread_block();
   printf("LLL");
   intr_set_level(old_level);
