@@ -70,7 +70,6 @@ timer_calibrate (void)
 int64_t
 timer_ticks (void) 
 {
-  printf("KKK");
   enum intr_level old_level = intr_disable ();
   int64_t t = ticks;
   thread_wake();
