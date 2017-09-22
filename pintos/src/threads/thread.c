@@ -340,8 +340,9 @@ thread_sleep (void)
   ASSERT(cur != idle_thread);
   printf("RRR");
   list_push_back (&sleep_list, &cur->elem); // -> precedes &
+  printf("HHH");
   thread_block();
-
+  printf("LLL");
   intr_set_level(old_level);
   printf("WWW");
 }
