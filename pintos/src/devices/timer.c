@@ -94,10 +94,10 @@ timer_sleep (int64_t ticks)
   ASSERT (intr_get_level () == INTR_ON); /* Returns the current interrupt status. */
   /* Returns the number of timer ticks elapsed since THEN, which
    should be a value once returned by timer_ticks(). */
-  while (timer_elapsed (start) < ticks) 
-    thread_sleep ();
+  //while (timer_elapsed (start) < ticks) 
+  thread_sleep ();
   printf("TTT");
-  //thread_wake();
+  thread_wake();
 }
 
 /* Sleeps for approximately MS milliseconds.  Interrupts must be
