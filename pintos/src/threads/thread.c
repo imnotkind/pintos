@@ -335,7 +335,7 @@ thread_sleep (void)
   ASSERT (!intr_context ());
   old_level = intr_disable ();
   ASSERT(cur != idle_thread);
-
+  printf("EEE");
   list_push_back (&sleep_list, &cur->elem); // -> precedes &
   thread_block();
   printf("LLL");
@@ -344,7 +344,7 @@ thread_sleep (void)
 }
 
 void
-thread_wake (void)
+thread_wake (void) 
 {
   struct list_elem *e;
   
