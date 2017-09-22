@@ -330,7 +330,6 @@ thread_yield (void)
 
 bool thread_wake_ticks_less(struct list_elem* first, struct list_elem* second, void* aux)
 {
-  printf("OOO");
   return (*list_entry(first, struct thread, elem)).wake_ticks < (*list_entry(second, struct thread, elem)).wake_ticks;
 }
 
@@ -357,21 +356,23 @@ thread_sleep (int64_t wake_ticks)
 void
 thread_wake (int64_t current_ticks) 
 {
-  printf("YYY");
   struct list_elem *e;
 
   for (e = list_begin (&sleep_list); e != list_end (&sleep_list); e = list_remove (e)){
       struct thread *t = list_entry(e, struct thread, allelem);
       if((*t).wake_ticks > current_ticks){
+        printf("X");
         if(list_empty(&sleep_list)){
+          printf("Y");
           next_wake_ticks = INT64_MAX;
         }
         else{
+          printf("Z");
           next_wake_ticks = list_entry(list_begin(&sleep_list), struct thread, elem)->wake_ticks;
         }
         break;
       }
-      printf("ZZZ");
+      printf("O");
       thread_unblock(t);
   }
   
