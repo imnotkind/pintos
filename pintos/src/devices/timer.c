@@ -72,9 +72,7 @@ timer_ticks (void)
 {
   enum intr_level old_level = intr_disable ();
   int64_t t = ticks;
-  //thread_wake(); //if you call this when interrupt is on, kernel panic
   intr_set_level (old_level);
- 
   return t;
 }
 
@@ -178,6 +176,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
 {
   ticks++;
   thread_tick ();
+  thread_wake();
 }
 
 /* Returns true if LOOPS iterations waits for more than one timer
