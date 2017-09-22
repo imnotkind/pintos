@@ -328,9 +328,9 @@ thread_yield (void)
   intr_set_level (old_level);
 }
 
-bool thread_wake_ticks_less(struct list_elem first, struct list_elem second, void* aux)
+bool thread_wake_ticks_less(struct list_elem* first, struct list_elem* second, void* aux)
 {
-  return list_entry(first, struct thread, elem)->wake_ticks < list_entry(second, struct thread, elem)->wake_ticks;
+  return (*list_entry(first, struct thread, elem)).wake_ticks < (*list_entry(second, struct thread, elem)).wake_ticks;
 }
 
 void
@@ -344,7 +344,7 @@ thread_sleep (int64_t wake_ticks)
   old_level = intr_disable ();
   ASSERT(cur != idle_thread);
   printf("EEE");
-  cur->wake_ticks = ticks + wake_ticks;
+  (*cur).wake_ticks = wake_ticks;
   list_insert_ordered (&sleep_list, &cur->elem, &thread_wake_ticks_less, NULL); // -> precedes &
   next_wake_ticks = list_entry(list_begin(&sleep_list), struct thread, elem)->wake_ticks;
 
@@ -355,13 +355,13 @@ thread_sleep (int64_t wake_ticks)
 }
 
 void
-thread_wake (void) 
+thread_wake (int64_t current_ticks) 
 {
   struct list_elem *e;
 
   for (e = list_begin (&sleep_list); e != list_end (&sleep_list); e = list_remove (e)){
       struct thread *t = list_entry(e, struct thread, elem);
-      if(t->wake_ticks > ticks){
+      if(t->wake_ticks > current_ticks){
         next_wake_ticks = list_entry(list_begin(&sleep_list), struct thread, elem)->wake_ticks;
         break;
       }
