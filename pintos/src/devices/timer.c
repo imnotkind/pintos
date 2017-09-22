@@ -95,7 +95,7 @@ timer_sleep (int64_t ticks)
   /* Returns the number of timer ticks elapsed since THEN, which
    should be a value once returned by timer_ticks(). */
   //while (timer_elapsed (start) < ticks) 
-  thread_sleep ();
+  thread_sleep (ticks);
   printf("TTT");
 
 }
@@ -176,7 +176,8 @@ timer_interrupt (struct intr_frame *args UNUSED)
 {
   ticks++;
   thread_tick ();
-  thread_wake();
+  if(ticks > next_wake_ticks)
+    thread_wake();
 }
 
 /* Returns true if LOOPS iterations waits for more than one timer

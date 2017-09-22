@@ -40,6 +40,9 @@ static struct thread *initial_thread;
 /* Lock used by allocate_tid(). */
 static struct lock tid_lock;
 
+/* Save next wake ticks */
+static int64_t next_wake_ticks;
+
 /* Stack frame for kernel_thread(). */
 struct kernel_thread_frame 
   {
@@ -325,8 +328,13 @@ thread_yield (void)
   intr_set_level (old_level);
 }
 
+bool thread_wake_ticks_less(struct list_elem first, struct list_elem second, void* aux)
+{
+  return list_entry(first, struct thread, elem)->wake_ticks < list_entry(second, struct thread, elem)->wake_ticks;
+}
+
 void
-thread_sleep (void)
+thread_sleep (int64_t wake_ticks)
 {
   printf("QQQ");
   struct thread *cur = thread_current();
@@ -336,7 +344,10 @@ thread_sleep (void)
   old_level = intr_disable ();
   ASSERT(cur != idle_thread);
   printf("EEE");
-  list_push_back (&sleep_list, &cur->elem); // -> precedes &
+  cur->wake_ticks = ticks + wake_ticks;
+  list_insert_ordered (&sleep_list, &cur->elem, &thread_wake_ticks_less, NULL); // -> precedes &
+  next_wake_ticks = list_entry(list_begin(&sleep_list), struct thread, elem)->wake_ticks;
+
   thread_block();
   printf("LLL");
   intr_set_level(old_level);
@@ -348,13 +359,15 @@ thread_wake (void)
 {
   struct list_elem *e;
 
-  if(list_begin(&sleep_list) != list_end(&sleep_list)){
-    e = list_begin(&sleep_list);
-    struct thread *t = list_entry(e, struct thread, elem);
-    //printf("sibal");
-    thread_unblock(t);
+  for (e = list_begin (&sleep_list); e != list_end (&sleep_list); e = list_remove (e)){
+      struct thread *t = list_entry(e, struct thread, elem);
+      if(t->wake_ticks > ticks){
+        next_wake_ticks = list_entry(list_begin(&sleep_list), struct thread, elem)->wake_ticks;
+        break;
+      }
+      thread_unblock(t);
   }
-
+  
 }
 
 /* Invoke function 'func' on all threads, passing along 'aux'.
