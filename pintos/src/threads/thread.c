@@ -41,7 +41,7 @@ static struct thread *initial_thread;
 static struct lock tid_lock;
 
 /* Save next wake ticks */
-int64_t next_wake_ticks;
+int64_t next_wake_ticks = INT64_MAX;
 
 /* Stack frame for kernel_thread(). */
 struct kernel_thread_frame 
@@ -330,6 +330,7 @@ thread_yield (void)
 
 bool thread_wake_ticks_less(struct list_elem* first, struct list_elem* second, void* aux)
 {
+  printf("OOO");
   return (*list_entry(first, struct thread, elem)).wake_ticks < (*list_entry(second, struct thread, elem)).wake_ticks;
 }
 
@@ -338,7 +339,7 @@ thread_sleep (int64_t wake_ticks)
 {
   struct thread *cur = thread_current();
   enum intr_level old_level;
-
+  printf("QQQ");
   ASSERT (!intr_context ());
   old_level = intr_disable ();
   ASSERT(cur != idle_thread);
@@ -362,8 +363,12 @@ thread_wake (int64_t current_ticks)
   for (e = list_begin (&sleep_list); e != list_end (&sleep_list); e = list_remove (e)){
       struct thread *t = list_entry(e, struct thread, allelem);
       if((*t).wake_ticks > current_ticks){
-        printf("XXX");
-        next_wake_ticks = list_entry(list_begin(&sleep_list), struct thread, elem)->wake_ticks;
+        if(list_empty(sleep_list)){
+          next_wake_ticks = INT64_MAX;
+        }
+        else{
+          next_wake_ticks = list_entry(list_begin(&sleep_list), struct thread, elem)->wake_ticks;
+        }
         break;
       }
       printf("ZZZ");
