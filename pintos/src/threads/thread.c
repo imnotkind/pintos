@@ -337,11 +337,11 @@ thread_sleep (void)
 
   old_level = intr_disable ();
   printf("EEE");
-  if(cur != idle_thread)
-  {
-    list_push_back (&sleep_list, &cur->elem); // -> precedes &
-    thread_block();
-  }
+  ASSERT(cur != idle_thread);
+  printf("RRR");
+  list_push_back (&sleep_list, &cur->elem); // -> precedes &
+  thread_block();
+
   intr_set_level(old_level);
   printf("WWW");
 }
