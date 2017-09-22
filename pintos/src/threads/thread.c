@@ -348,9 +348,11 @@ thread_wake (void)
 {
   struct list_elem *e;
 
-  struct thread *t = list_entry(e, struct thread, elem);
-  //printf("sibal");
-  thread_unblock(t);
+  if(list_bigin(&sleep_list) != list_end(&sleep_list)){
+    struct thread *t = list_entry(e, struct thread, elem);
+    //printf("sibal");
+    thread_unblock(t);
+  }
 
 }
 
