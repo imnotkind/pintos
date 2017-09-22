@@ -354,7 +354,7 @@ thread_wake (void)
        e = list_next(e))
   {
     struct thread *t = list_entry(e, struct thread, elem);
-    printf("sibal");
+    //printf("sibal");
     thread_unblock(t);
   }
 }
