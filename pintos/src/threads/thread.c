@@ -346,7 +346,6 @@ thread_sleep (void)
 void
 thread_wake (void)
 {
-  printf("uuu");
   struct list_elem *e;
   
   ASSERT (!intr_context ());
