@@ -209,6 +209,7 @@ void lock_donation(struct lock* lock)
     if(lock->holder->priority < thread_current()->priority){
       lock->holder->priority_orig = lock->holder->priority;
       lock->holder->priority = thread_current()->priority;
+    }
   }
 }
 
