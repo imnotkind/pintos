@@ -176,11 +176,12 @@ timer_print_stats (void)
 static void
 timer_interrupt (struct intr_frame *args UNUSED)
 {
-  ticks++;
-  thread_tick ();
   if(ticks > next_wake_ticks){
     thread_wake(ticks);
   }
+  ticks++;
+  thread_tick ();
+  
     
 }
 
