@@ -333,6 +333,17 @@ void thread_name_print(struct thread *t, void *aux)
   printf("%s : TID %d\n",t->name, t->tid);
 }
 
+void thread_list_stat(void)
+{
+  int aux = 1;
+  printf("ALL LIST SHOWING\n");
+  thread_foreach(&thread_name_print,NULL);
+  printf("READY LIST SHOWING\n");
+  thread_foreach(&thread_name_print,&aux);
+  aux=2;
+  printf("SLEEP LIST SHOWING\n");
+  thread_foreach(&thread_name_print,&aux);
+}
 
 bool thread_wake_ticks_less(struct list_elem* first, struct list_elem* second, void* aux)
 {
@@ -344,7 +355,6 @@ thread_sleep (int64_t wake_ticks)
 {
   struct thread *cur = thread_current();
   enum intr_level old_level;
-  int aux = 1;
 
   ASSERT (!intr_context ());
   old_level = intr_disable ();
@@ -355,13 +365,7 @@ thread_sleep (int64_t wake_ticks)
   next_wake_ticks = list_entry(list_begin(&sleep_list), struct thread, elem)->wake_ticks;
 
   printf("<%s> FELL ASLEEP JUST NOW\n",cur->name);
-  printf("ALL LIST SHOWING\n");
-  thread_foreach(&thread_name_print,NULL);
-  printf("READY LIST SHOWING\n");
-  thread_foreach(&thread_name_print,&aux);
-  aux=2;
-  printf("SLEEP LIST SHOWING\n");
-  thread_foreach(&thread_name_print,&aux);
+  thread_list_stat();
 
   thread_block();
   printf("LLL");

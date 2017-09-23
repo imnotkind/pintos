@@ -126,9 +126,13 @@ const char *thread_name (void);
 void thread_exit (void) NO_RETURN;
 void thread_yield (void);
 
+/* my addition*/
+void thread_name_print(struct thread *t, void *aux);
+void thread_list_stat(void);
 bool thread_wake_ticks_less(struct list_elem* first, struct list_elem* second, void* aux);
 void thread_sleep (int64_t wake_ticks);
 void thread_wake (int64_t current_ticks);
+
 /* Performs some operation on thread t, given auxiliary data AUX. */
 typedef void thread_action_func (struct thread *t, void *aux);
 void thread_foreach (thread_action_func *, void *);
