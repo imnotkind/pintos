@@ -344,7 +344,7 @@ void thread_list_stat(void)
   printf("SLEEP LIST SHOWING\n");
   thread_foreach(&thread_name_print,&aux);
   printf("RUNNING THREAD\n");
-  printf("%s : %d",thread_current()->name,thread_current()->tid);
+  printf("%s : TID %d\n",thread_current()->name,thread_current()->tid);
 }
 
 bool thread_wake_ticks_less(struct list_elem* first, struct list_elem* second, void* aux)
