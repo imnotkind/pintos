@@ -382,6 +382,8 @@ thread_wake (int64_t current_ticks)
 {
   struct list_elem *e;
   //printf("THREAD WAKE BEGINS\n");
+
+  ASSERT(intr_context());
   for (e = list_begin (&sleep_list); e != list_end (&sleep_list); ){
       struct thread *t = list_entry(e, struct thread, elem);
       //printf("CHECKING <%s> : TID %d\n",t->name,t->tid);
