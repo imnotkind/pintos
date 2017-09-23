@@ -251,7 +251,7 @@ thread_unblock (struct thread *t)
 
   old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
-  list_insert_ordered ((const struct *)&ready_list,(const struct *)&t->elem, &thread_priority_bigger, NULL);
+  list_insert_ordered (&ready_list,&t->elem, &thread_priority_bigger, NULL);
   t->status = THREAD_READY;
   intr_set_level (old_level);
   check_current_thread_priority();
