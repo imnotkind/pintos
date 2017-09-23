@@ -372,7 +372,7 @@ void
 thread_wake (int64_t current_ticks) 
 {
   struct list_elem *e;
-  printf("X");
+  printf("THREAD WAKE BEGINS\n");
   for (e = list_begin (&sleep_list); e != list_end (&sleep_list); e = list_remove(e)){
       struct thread *t = list_entry(e, struct thread, elem);
       if( t->wake_ticks > current_ticks){
@@ -385,7 +385,7 @@ thread_wake (int64_t current_ticks)
         break;
       }
       else{
-        printf("hey%s",t->name);
+        printf("I WILL NOW TRY TO UNBLOCK <%s>\n",t->name);
         thread_unblock(t);
       }
       
