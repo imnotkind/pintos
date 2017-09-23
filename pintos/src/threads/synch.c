@@ -193,13 +193,23 @@ lock_init (struct lock *lock)
 void
 lock_acquire (struct lock *lock)
 {
+  enum intr_level old_level;
+
   ASSERT (lock != NULL);
   ASSERT (!intr_context ());
   ASSERT (!lock_held_by_current_thread (lock));
-  lock_donation(lock);
-  sema_down (&lock->semaphore);
 
+  old_level = intr_disable();
+  
+  if(lock->holder != NULL){
+    thread_current()->
+    lock_donation(lock);
+    
+  }
+  
+  sema_down (&lock->semaphore);
   lock->holder = thread_current ();
+  intr_set_level(old_level);
 }
 
 
@@ -244,8 +254,8 @@ lock_release (struct lock *lock)
   struct thread* cur = thread_current();
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
-  //if(cur->priority_orig != cur->priority)
-  //  thread_set_priority(cur->priority_orig);
+  if(cur->priority_orig != cur->priority)
+    thread_set_priority(cur->priority_orig);
   lock->holder = NULL;
   sema_up (&lock->semaphore);
 }
