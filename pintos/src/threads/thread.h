@@ -133,7 +133,7 @@ void thread_list_stat(void);
 void check_current_thread_priority (void);
 
 bool thread_wake_ticks_less(struct list_elem* first, struct list_elem* second, void* aux);
-bool thread_priority_less(struct list_elem* first, struct list_elem* second, void* aux);
+bool thread_priority_bigger(struct list_elem* first, struct list_elem* second, void* aux);
 
 void thread_sleep (int64_t wake_ticks);
 void thread_wake (int64_t current_ticks);

@@ -216,7 +216,7 @@ thread_create (const char *name, int priority,
   /* Add to run queue. */
   thread_unblock (t);
   check_current_thread_priority();
-  
+
   return tid;
 }
 
@@ -252,7 +252,7 @@ thread_unblock (struct thread *t)
 
   old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
-  list_insert_ordered (&ready_list, &t->elem, &thread_priority_less, NULL);
+  list_insert_ordered (&ready_list, &t->elem, &thread_priority_bigger, NULL);
   t->status = THREAD_READY;
   intr_set_level (old_level);
   //check_current_thread_priority();
@@ -324,7 +324,7 @@ thread_yield (void)
 
   old_level = intr_disable ();
   if (cur != idle_thread) 
-    list_insert_ordered (&ready_list, &cur->elem, &thread_priority_less, NULL);
+    list_insert_ordered (&ready_list, &cur->elem, &thread_priority_bigger, NULL);
   cur->status = THREAD_READY;
   schedule (); 
   intr_set_level (old_level);
@@ -365,9 +365,9 @@ bool thread_wake_ticks_less(struct list_elem* first, struct list_elem* second, v
   return list_entry(first, struct thread, elem)->wake_ticks < list_entry(second, struct thread, elem)->wake_ticks;
 }
 
-bool thread_priority_less(struct list_elem* first, struct list_elem* second, void* aux)
+bool thread_priority_bigger(struct list_elem* first, struct list_elem* second, void* aux)
 {
-  return list_entry(first, struct thread, elem)->priority < list_entry(second, struct thread, elem)->priority;
+  return list_entry(first, struct thread, elem)->priority > list_entry(second, struct thread, elem)->priority;
 }
 
 void
