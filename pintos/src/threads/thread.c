@@ -215,7 +215,6 @@ thread_create (const char *name, int priority,
 
   /* Add to run queue. */
   thread_unblock (t);
-  //check_current_thread_priority();
 
   return tid;
 }
