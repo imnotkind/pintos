@@ -215,6 +215,7 @@ thread_create (const char *name, int priority,
 
   /* Add to run queue. */
   thread_unblock (t);
+  check_current_thread_priority();
 
   return tid;
 }
@@ -254,7 +255,6 @@ thread_unblock (struct thread *t)
   list_insert_ordered (&ready_list,&t->elem, &thread_priority_bigger, NULL);
   t->status = THREAD_READY;
   intr_set_level (old_level);
-  check_current_thread_priority();
 }
 
 /* Returns the name of the running thread. */
@@ -415,6 +415,7 @@ thread_wake (int64_t current_ticks)
         //printf("REMOVE <%s> : TID %d from SLEEP LIST\n",t->name,t->tid);
         //thread_list_stat();
         thread_unblock(t);
+        check_current_thread_priority();
         //printf("UNBLOCK SUCCESS!\n");
         //thread_list_stat();
 
