@@ -254,7 +254,7 @@ thread_unblock (struct thread *t)
   list_insert_ordered (&ready_list, &t->elem, &thread_priority_less, NULL);
   t->status = THREAD_READY;
   intr_set_level (old_level);
-  check_current_thread_priority();
+  //check_current_thread_priority();
 }
 
 /* Returns the name of the running thread. */
