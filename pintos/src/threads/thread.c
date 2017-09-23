@@ -375,8 +375,9 @@ thread_wake (int64_t current_ticks)
   printf("THREAD WAKE BEGINS\n");
   for (e = list_begin (&sleep_list); e != list_end (&sleep_list); e = list_next(e)){
       if(e==NULL)
-        printf("SEX");
+        printf("SEXNULL");
       struct thread *t = list_entry(e, struct thread, elem);
+      printf("CHECKING <%s>\n",t->name);
       if( t->wake_ticks > current_ticks){
         if(list_empty(&sleep_list)){
           next_wake_ticks = INT64_MAX;
@@ -389,7 +390,7 @@ thread_wake (int64_t current_ticks)
       else{
         printf("I WILL NOW TRY TO UNBLOCK <%s>\n",t->name);
         thread_unblock(t);
-        printf("UNBLOCK SUCCESS!");
+        printf("UNBLOCK SUCCESS!\n");
       }
       
   }
