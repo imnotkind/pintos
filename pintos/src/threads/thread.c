@@ -356,7 +356,7 @@ thread_sleep (int64_t wake_ticks)
 
   printf("SLEEPING %s\n",cur->name);
   printf("ALL LIST SHOWING\n");
-  thread_foreach(&thread_name_print,NULL)
+  thread_foreach(&thread_name_print,NULL);
   printf("READY LIST SHOWING\n");
   thread_foreach(&thread_name_print,&aux);
   aux=2;
