@@ -88,17 +88,16 @@ timer_elapsed (int64_t then)
 
 /* Sleeps for approximately TICKS timer ticks.  Interrupts must
    be turned on. */
+// ticks in this func is NOT the global ticks variable, but an argument
 void
 timer_sleep (int64_t ticks) 
 {
   int64_t start = timer_ticks (); /* Returns the number of timer ticks since the OS booted. */
 
   ASSERT (intr_get_level () == INTR_ON); /* Returns the current interrupt status. */
-  /* Returns the number of timer ticks elapsed since THEN, which
-   should be a value once returned by timer_ticks(). */
-  while (timer_elapsed (start) < ticks) 
-    thread_yield();
-  //thread_sleep (start + ticks);
+  //while (timer_elapsed (start) < ticks) 
+  //  thread_yield();
+  thread_sleep (start + ticks); //start+ticks == target timer_ticks() return value
   printf("TTT");
 
 }
