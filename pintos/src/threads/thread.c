@@ -141,7 +141,7 @@ thread_tick (void)
   else
     kernel_ticks++;
 
-  /* Enforce preemption. */
+  /* Enforce preemption. */ // This is ROUND-ROBIN
   if (++thread_ticks >= TIME_SLICE)
     intr_yield_on_return ();
 }
