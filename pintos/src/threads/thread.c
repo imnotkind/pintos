@@ -319,7 +319,7 @@ thread_yield (void)
   enum intr_level old_level;
   
   ASSERT (!intr_context ());
-  
+
   old_level = intr_disable ();
   if (cur != idle_thread) 
     list_push_back (&ready_list, &cur->elem);
@@ -369,7 +369,7 @@ thread_wake (int64_t current_ticks)
         break;
       }
       else{
-        printf("Z");
+        printf("hey%s",t->name);
         thread_unblock(t);
       }
       
