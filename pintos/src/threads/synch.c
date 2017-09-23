@@ -196,7 +196,7 @@ lock_acquire (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (!intr_context ());
   ASSERT (!lock_held_by_current_thread (lock));
-  if(lck->holder != NULL){
+  if(lock->holder != NULL){
     if(lock->holder->priority < thread_current()->priority){
       lock->holder->priority = thread_current()->priority;
     }
