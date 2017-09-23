@@ -344,7 +344,7 @@ void thread_list_stat(void)
   printf("SLEEP LIST SHOWING\n");
   thread_foreach(&thread_name_print,&aux);
   printf("RUNNING THREAD\n");
-  printf("%s : TID %d\n",thread_current()->name,thread_current()->tid);
+  printf("%s : TID %d\n\n",thread_current()->name,thread_current()->tid);
 }
 
 bool thread_wake_ticks_less(struct list_elem* first, struct list_elem* second, void* aux)
@@ -378,7 +378,7 @@ void
 thread_wake (int64_t current_ticks) 
 {
   struct list_elem *e;
-  printf("THREAD WAKE BEGINS\n");
+  printf("THREAD WAKE BEGINS\n\n");
   thread_list_stat();
   for (e = list_begin (&sleep_list); e != list_end (&sleep_list); e = list_next(e)){
       struct thread *t = list_entry(e, struct thread, elem);
