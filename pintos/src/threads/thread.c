@@ -354,7 +354,7 @@ thread_sleep (int64_t wake_ticks)
   list_insert_ordered (&sleep_list, &cur->elem, &thread_wake_ticks_less, NULL); // -> precedes &
   next_wake_ticks = list_entry(list_begin(&sleep_list), struct thread, elem)->wake_ticks;
 
-  printf("SLEEPING %s\n",cur->name);
+  printf("%s FELL ASLEEP JUST NOW\n",cur->name);
   printf("ALL LIST SHOWING\n");
   thread_foreach(&thread_name_print,NULL);
   printf("READY LIST SHOWING\n");
