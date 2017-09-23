@@ -359,12 +359,12 @@ void check_current_thread_priority(void){
 }
 
 
-bool thread_wake_ticks_less(struct list_elem* first, struct list_elem* second, void* aux UNUSED)
+bool thread_wake_ticks_less(const struct list_elem* first,const struct list_elem* second, void* aux UNUSED)
 {
   return list_entry(first, struct thread, elem)->wake_ticks < list_entry(second, struct thread, elem)->wake_ticks;
 }
 
-bool thread_priority_bigger(struct list_elem* first, struct list_elem* second, void* aux UNUSED)
+bool thread_priority_bigger(const struct list_elem* first,const struct list_elem* second, void* aux UNUSED)
 {
   return list_entry(first, struct thread, elem)->priority > list_entry(second, struct thread, elem)->priority;
 }
