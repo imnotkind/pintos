@@ -377,7 +377,7 @@ thread_wake (int64_t current_ticks)
       if(e==NULL)
         printf("SEXNULL");
       struct thread *t = list_entry(e, struct thread, elem);
-      printf("CHECKING <%s>\n",t->name);
+      printf("CHECKING <%s> : TID %d\n",t->name,t->tid);
       if( t->wake_ticks > current_ticks){
         if(list_empty(&sleep_list)){
           next_wake_ticks = INT64_MAX;
