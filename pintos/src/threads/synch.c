@@ -215,7 +215,7 @@ lock_acquire (struct lock *lock)
 }
 
 
-void lock_donation(struct lock* lock, struct thread* t)
+void lock_donation(struct thread* t)
 {
   if(lock->holder != NULL){
     if(lock->holder->priority < thread_current()->priority){
