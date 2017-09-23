@@ -205,24 +205,33 @@ lock_acquire (struct lock *lock)
 
   if(lock->holder != NULL){
     cur->need_lock = lock;
-    lock_donation(lock->holder);
-    
+    lock_donation(lock);
   }
   
   sema_down (&lock->semaphore);
+  cur->need_lock = NULL;
   lock->holder = thread_current ();
   intr_set_level(old_level);
 }
 
 
-void lock_donation(struct thread* t)
+void lock_donation(struct lock* lock)
 {
-  if(lock->holder != NULL){
-    if(lock->holder->priority < thread_current()->priority){
-      lock->holder->priority_orig = lock->holder->priority;
-      lock->holder->priority = thread_current()->priority;
-    }
-  }
+	struct thread* cur = thread_current();
+	struct thread* lock_holder = lock->holder;
+
+	if(lock_holder->priority < cur->priority){
+		if(!(lock_holder->donated)){
+      lock_holder->priority_orig = lock_holder->priority;
+      lock_holder->donated = true;
+		}
+			 
+		lock_holder->priority = cur->priority;
+
+		if (lock_holder->need_lock != NULL){
+			lock_donation (lock_holder->need_lock);
+		}
+	}
 }
 
 /* Tries to acquires LOCK and returns true if successful or false
@@ -257,8 +266,10 @@ lock_release (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
   
-  if(cur->priority_orig != cur->priority)
+  if(cur->donated){
     thread_set_priority(cur->priority_orig);
+    cur->donated = false;
+  }
 
   lock->holder = NULL;
   sema_up (&lock->semaphore);
