@@ -401,11 +401,10 @@ thread_wake (int64_t current_ticks)
         thread_list_stat();
 
       }
-      
   }
-  
+
   if(list_empty(&sleep_list)){
-    printf("list is empty\n");
+    printf("SLEEP LIST IS EMPTY\n");
     next_wake_ticks = INT64_MAX;
   }
   
