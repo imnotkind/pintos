@@ -179,8 +179,6 @@ timer_interrupt (struct intr_frame *args UNUSED)
   ticks++;
   thread_tick ();
   if(ticks > next_wake_ticks){
-    printf("It's time to call thread wake\n");
-    thread_list_stat();
     thread_wake(ticks);
   }
     
