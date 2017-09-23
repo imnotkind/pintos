@@ -215,7 +215,7 @@ thread_create (const char *name, int priority,
 
   /* Add to run queue. */
   thread_unblock (t);
-  check_current_thread_priority();
+  //check_current_thread_priority();
 
   return tid;
 }
@@ -255,7 +255,7 @@ thread_unblock (struct thread *t)
   list_insert_ordered (&ready_list, &t->elem, &thread_priority_bigger, NULL);
   t->status = THREAD_READY;
   intr_set_level (old_level);
-  //check_current_thread_priority();
+  check_current_thread_priority();
 }
 
 /* Returns the name of the running thread. */
@@ -352,7 +352,7 @@ void thread_list_stat(void)
 }
 
 void check_current_thread_priority(void){
-  if(!list_empty(&ready_list)){
+  if(!list_empty(&ready_list) && thread_current()!=idle_thread){
     if (thread_current()->priority < list_entry(list_begin(&ready_list), struct thread, elem)->priority){
       thread_yield ();
     }
