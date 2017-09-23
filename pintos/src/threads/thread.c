@@ -328,9 +328,15 @@ thread_yield (void)
   intr_set_level (old_level);
 }
 
+void thread_name_print(struct thread *t, void *aux)
+{
+  printf("%s\n",t->name);
+}
+
+
 bool thread_wake_ticks_less(struct list_elem* first, struct list_elem* second, void* aux)
 {
-  return (*list_entry(first, struct thread, elem)).wake_ticks < (*list_entry(second, struct thread, elem)).wake_ticks;
+  return list_entry(first, struct thread, elem)->wake_ticks < list_entry(second, struct thread, elem)->wake_ticks;
 }
 
 void
@@ -338,18 +344,28 @@ thread_sleep (int64_t wake_ticks)
 {
   struct thread *cur = thread_current();
   enum intr_level old_level;
+  int aux = 1;
+
   ASSERT (!intr_context ());
   old_level = intr_disable ();
   ASSERT(cur != idle_thread);
-  printf("%s\n",cur->name);
+
   cur->wake_ticks = wake_ticks;
   list_insert_ordered (&sleep_list, &cur->elem, &thread_wake_ticks_less, NULL); // -> precedes &
   next_wake_ticks = list_entry(list_begin(&sleep_list), struct thread, elem)->wake_ticks;
 
+  printf("SLEEPING %s\n",cur->name);
+  printf("ALL LIST SHOWING\n");
+  thread_foreach(&thread_name_print,NULL)
+  printf("READY LIST SHOWING\n");
+  thread_foreach(&thread_name_print,&aux);
+  aux=2;
+  printf("SLEEP LIST SHOWING\n");
+  thread_foreach(&thread_name_print,&aux);
+
   thread_block();
   printf("LLL");
   intr_set_level(old_level);
-  printf("WWW");
 }
 
 void
@@ -383,15 +399,37 @@ void
 thread_foreach (thread_action_func *func, void *aux)
 {
   struct list_elem *e;
-
+  int *a = (int *)aux;
   ASSERT (intr_get_level () == INTR_OFF);
 
-  for (e = list_begin (&all_list); e != list_end (&all_list);
-       e = list_next (e))
+  if(a==NULL){
+    for (e = list_begin (&all_list); e != list_end (&all_list);
+         e = list_next (e))
     {
       struct thread *t = list_entry (e, struct thread, allelem);
       func (t, aux);
     }
+  }
+  else if(*a==1){
+    for (e = list_begin (&ready_list); e != list_end (&ready_list);
+         e = list_next (e))
+    {
+      struct thread *t = list_entry (e, struct thread, elem);
+      func (t, aux);
+    }
+  }
+  else if(*a==2){
+    for (e = list_begin (&sleep_list); e != list_end (&sleep_list);
+         e = list_next (e))
+    {
+      struct thread *t = list_entry (e, struct thread, elem);
+      func (t, aux);
+    }
+  }
+  else{
+    printf("INVALID AUX FOR THREAD_FOREACH\n");
+  }
+  
 }
 
 /* Sets the current thread's priority to NEW_PRIORITY. */
