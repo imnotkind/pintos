@@ -338,11 +338,10 @@ thread_sleep (int64_t wake_ticks)
 {
   struct thread *cur = thread_current();
   enum intr_level old_level;
-  printf("Q");
   ASSERT (!intr_context ());
   old_level = intr_disable ();
   ASSERT(cur != idle_thread);
-  printf("%s",cur->name);
+  printf("%s\n",cur->name);
   cur->wake_ticks = wake_ticks;
   list_insert_ordered (&sleep_list, &cur->elem, &thread_wake_ticks_less, NULL); // -> precedes &
   next_wake_ticks = list_entry(list_begin(&sleep_list), struct thread, elem)->wake_ticks;
