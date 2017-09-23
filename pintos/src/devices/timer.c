@@ -178,10 +178,11 @@ timer_interrupt (struct intr_frame *args UNUSED)
 {
   
   ticks++;
-  thread_tick ();
   if(ticks > next_wake_ticks){
     thread_wake(ticks);
   }
+  thread_tick ();
+  
     
 }
 
