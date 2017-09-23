@@ -92,13 +92,13 @@ timer_elapsed (int64_t then)
 void
 timer_sleep (int64_t ticks) 
 {
-  int64_t start = timer_ticks (); /* Returns the number of timer ticks since the OS booted. */
+  int64_t start = timer_ticks (); 
 
-  ASSERT (intr_get_level () == INTR_ON); /* Returns the current interrupt status. */
-  //while (timer_elapsed (start) < ticks) 
+  ASSERT (intr_get_level () == INTR_ON); 
+  //while (timer_elapsed (start) < ticks)  BUSY WAIT
   //  thread_yield();
   thread_sleep (start + ticks); //start+ticks == target timer_ticks() return value
-  printf("<%s> : TID %d timer sleep ends\n",thread_current()->name, thread_current()->tid);
+  //printf("<%s> : TID %d timer sleep ends\n",thread_current()->name, thread_current()->tid);
 
 }
 

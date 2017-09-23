@@ -368,12 +368,12 @@ thread_sleep (int64_t wake_ticks)
   list_insert_ordered (&sleep_list, &cur->elem, &thread_wake_ticks_less, NULL); // -> precedes &
   next_wake_ticks = list_entry(list_begin(&sleep_list), struct thread, elem)->wake_ticks;
 
-  printf("<%s> FELL ASLEEP JUST NOW\n",cur->name);
-  thread_list_stat();
+  //printf("<%s> FELL ASLEEP JUST NOW\n",cur->name);
+  //thread_list_stat();
 
   thread_block();
-  printf("<%s> : TID %d back to life\n",cur->name, cur->tid);
-  thread_list_stat();
+  //printf("<%s> : TID %d back to life\n",cur->name, cur->tid);
+  //thread_list_stat();
   intr_set_level(old_level);
 }
 
@@ -381,30 +381,30 @@ void
 thread_wake (int64_t current_ticks) 
 {
   struct list_elem *e;
-  printf("THREAD WAKE BEGINS\n");
+  //printf("THREAD WAKE BEGINS\n");
   for (e = list_begin (&sleep_list); e != list_end (&sleep_list); ){
       struct thread *t = list_entry(e, struct thread, elem);
-      printf("CHECKING <%s> : TID %d\n",t->name,t->tid);
+      //printf("CHECKING <%s> : TID %d\n",t->name,t->tid);
       if( t->wake_ticks > current_ticks){
-        printf("No more ticks to unblock\n");
+        //printf("No more ticks to unblock\n");
         next_wake_ticks = t->wake_ticks;
         break;
       }
       else{
-        printf("I WILL NOW TRY TO UNBLOCK <%s> : TID %d\n",t->name,t->tid);
-        thread_list_stat();
+        //printf("I WILL NOW TRY TO UNBLOCK <%s> : TID %d\n",t->name,t->tid);
+        //thread_list_stat();
         e = list_remove(e); //if we don't remove from list before unblock, list gets corrupted
-        printf("REMOVE <%s> : TID %d from SLEEP LIST\n",t->name,t->tid);
-        thread_list_stat();
+        //printf("REMOVE <%s> : TID %d from SLEEP LIST\n",t->name,t->tid);
+        //thread_list_stat();
         thread_unblock(t);
-        printf("UNBLOCK SUCCESS!\n");
-        thread_list_stat();
+        //printf("UNBLOCK SUCCESS!\n");
+        //thread_list_stat();
 
       }
   }
 
   if(list_empty(&sleep_list)){
-    printf("SLEEP LIST IS EMPTY\n");
+    //printf("SLEEP LIST IS EMPTY\n");
     next_wake_ticks = INT64_MAX;
   }
   
