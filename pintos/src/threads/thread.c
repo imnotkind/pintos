@@ -251,7 +251,7 @@ thread_unblock (struct thread *t)
 
   old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
-  list_insert_ordered (&ready_list, &t->elem, &thread_priority_bigger, NULL);
+  list_insert_ordered ((const struct *)&ready_list,(const struct *)&t->elem, &thread_priority_bigger, NULL);
   t->status = THREAD_READY;
   intr_set_level (old_level);
   check_current_thread_priority();
@@ -329,7 +329,7 @@ thread_yield (void)
   intr_set_level (old_level);
 }
 
-void thread_name_print(struct thread *t, void *aux)
+void thread_name_print(struct thread *t, void *aux UNUSED)
 {
   printf("%s : TID %d\n",t->name, t->tid);
 }
@@ -359,12 +359,12 @@ void check_current_thread_priority(void){
 }
 
 
-bool thread_wake_ticks_less(struct list_elem* first, struct list_elem* second, void* aux)
+bool thread_wake_ticks_less(struct list_elem* first, struct list_elem* second, void* aux UNUSED)
 {
   return list_entry(first, struct thread, elem)->wake_ticks < list_entry(second, struct thread, elem)->wake_ticks;
 }
 
-bool thread_priority_bigger(struct list_elem* first, struct list_elem* second, void* aux)
+bool thread_priority_bigger(struct list_elem* first, struct list_elem* second, void* aux UNUSED)
 {
   return list_entry(first, struct thread, elem)->priority > list_entry(second, struct thread, elem)->priority;
 }
