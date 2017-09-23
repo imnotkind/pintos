@@ -389,6 +389,7 @@ thread_wake (int64_t current_ticks)
       else{
         printf("I WILL NOW TRY TO UNBLOCK <%s>\n",t->name);
         thread_unblock(t);
+        printf("UNBLOCK SUCCESS!");
       }
       
   }
