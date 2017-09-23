@@ -20,6 +20,9 @@ git reset --hard origin/master
 git pull origin master
 #ONLY SOURCE is in git, so don't forget to make clean, build again!
 
+#if you want to establish the source to a particular commit state
+git reset --hard <hash>
+
 #if you want to ignore some file or folder, go to .git/info/exclude and add the name of it.
 
 
