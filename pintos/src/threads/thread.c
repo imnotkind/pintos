@@ -372,6 +372,7 @@ thread_sleep (int64_t wake_ticks)
   thread_list_stat();
 
   thread_block();
+  thread_list_stat();
   printf("LLL");
   intr_set_level(old_level);
 }
@@ -381,7 +382,6 @@ thread_wake (int64_t current_ticks)
 {
   struct list_elem *e;
   printf("THREAD WAKE BEGINS\n");
-  thread_list_stat();
   for (e = list_begin (&sleep_list); e != list_end (&sleep_list); ){
       struct thread *t = list_entry(e, struct thread, elem);
       if(t->tid == 0){
@@ -403,6 +403,7 @@ thread_wake (int64_t current_ticks)
         printf("I WILL NOW TRY TO UNBLOCK <%s> : TID %d\n",t->name,t->tid);
         thread_list_stat();
         e = list_remove(e);
+        printf("REMOVE <%s> : TID %d from SLEEP LIST\n",t->name,t->tid);
         thread_list_stat();
         thread_unblock(t);
         printf("UNBLOCK SUCCESS!\n");
