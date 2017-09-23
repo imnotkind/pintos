@@ -202,7 +202,7 @@ lock_acquire (struct lock *lock)
   old_level = intr_disable();
   
   if(lock->holder != NULL){
-    thread_current()->
+    thread_current()->need_lock = lock;
     lock_donation(lock);
     
   }
