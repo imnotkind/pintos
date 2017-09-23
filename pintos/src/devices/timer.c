@@ -98,7 +98,7 @@ timer_sleep (int64_t ticks)
   //while (timer_elapsed (start) < ticks) 
   //  thread_yield();
   thread_sleep (start + ticks); //start+ticks == target timer_ticks() return value
-  printf("TTT");
+  printf("<%s> : TID %d timer sleep ends\n",cur->name, cur->tid);
 
 }
 
