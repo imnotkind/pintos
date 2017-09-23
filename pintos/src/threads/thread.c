@@ -377,10 +377,11 @@ thread_wake (int64_t current_ticks)
 {
   struct list_elem *e;
   printf("THREAD WAKE BEGINS\n");
+  thread_list_stat();
   for (e = list_begin (&sleep_list); e != list_end (&sleep_list); e = list_next(e)){
       struct thread *t = list_entry(e, struct thread, elem);
       if(t->tid == 0){
-        printf("TID 0!!");
+        printf("TID 0!!\n");
         continue;
       }
       printf("CHECKING <%s> : TID %d\n",t->name,t->tid);
