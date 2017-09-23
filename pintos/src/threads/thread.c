@@ -396,11 +396,9 @@ void
 thread_wake (int64_t current_ticks) 
 {
   struct list_elem *e;
-  enum intr_level old_level;
   //printf("THREAD WAKE BEGINS\n");
 
   ASSERT(intr_context()); //thread_wake should be called only by timer_interrupt
-  old_level = intr_disable();
 
   for (e = list_begin (&sleep_list); e != list_end (&sleep_list); ){
       struct thread *t = list_entry(e, struct thread, elem);
@@ -427,7 +425,6 @@ thread_wake (int64_t current_ticks)
     //printf("SLEEP LIST IS EMPTY\n");
     next_wake_ticks = INT64_MAX;
   }
-  intr_set_level(old_level);
 }
 
 /* Invoke function 'func' on all threads, passing along 'aux'.
