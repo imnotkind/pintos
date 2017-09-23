@@ -400,7 +400,7 @@ thread_wake (int64_t current_ticks)
         break;
       }
       else{
-        printf("I WILL NOW TRY TO UNBLOCK <%s>\n",t->name);
+        printf("I WILL NOW TRY TO UNBLOCK <%s> : TID %d\n",t->name,t->tid);
         thread_list_stat();
         thread_unblock(t);
         printf("UNBLOCK SUCCESS!\n");
