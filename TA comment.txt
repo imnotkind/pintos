@@ -1,5 +1,5 @@
 Project #1 Design Report : 
-	(3/3/2/3) Overall comment: 
+  (3/3/2/3) Overall comment: 
   설명이 조금 더 자세할 필요가 있습니다. 
   어떤 구조체, 함수를 추가/고쳐야 하는지도 명시해주어야 합니다. 
   예를들어 load_avg 는 global variable 로 선언해야 하나요? 
