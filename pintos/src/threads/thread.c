@@ -373,7 +373,9 @@ thread_wake (int64_t current_ticks)
 {
   struct list_elem *e;
   printf("THREAD WAKE BEGINS\n");
-  for (e = list_begin (&sleep_list); e != list_end (&sleep_list); e = list_remove(e)){
+  for (e = list_begin (&sleep_list); e != list_end (&sleep_list); e = list_next(e)){
+      if(e==NULL)
+        printf("SEX");
       struct thread *t = list_entry(e, struct thread, elem);
       if( t->wake_ticks > current_ticks){
         if(list_empty(&sleep_list)){
