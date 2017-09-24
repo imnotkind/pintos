@@ -472,20 +472,19 @@ void
 thread_set_priority (int new_priority) 
 {
   struct thread* cur = thread_current();
-  cur->priority = new_priority;
-  /*
-  if(cur->priority_orig == cur->priority){
+  if(list_empty(&cur->lock_list)){
     cur->priority = new_priority;
     cur->priority_orig = new_priority;
   }
   else{
     if(new_priority > cur->priority)
       cur->priority = new_priority;
+    else if(new_priority == cur->priority_orig)
+      cur->priority = new_priority;
     else
       cur->priority_orig = new_priority;
   }
-  */
-  
+
   check_current_thread_priority();
 }
 
