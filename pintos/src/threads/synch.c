@@ -292,7 +292,7 @@ lock_release (struct lock *lock)
     }
 
     if(max != NULL){
-      printf("HELL");
+      //printf("HELL");
       thread_set_priority(list_entry(list_begin(&max->semaphore.waiters), struct thread, elem)->priority);
     }
 
