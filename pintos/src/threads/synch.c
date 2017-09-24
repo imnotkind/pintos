@@ -267,7 +267,7 @@ lock_release (struct lock *lock)
   struct list_elem *e;
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
-
+  printf("HELL");
   //print_thread_lock_list();
 
   lock->holder = NULL;
