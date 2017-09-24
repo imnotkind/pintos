@@ -179,7 +179,7 @@ lock_init (struct lock *lock)
   ASSERT (lock != NULL);
 
   lock->holder = NULL;
-  lock->lock_elem = NULL;
+  //lock->lock_elem = NULL;
   sema_init (&lock->semaphore, 1);
 }
 
