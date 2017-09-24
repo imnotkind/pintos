@@ -225,13 +225,11 @@ void lock_donation(struct lock* lock)
 
 	if(lock_holder->priority < cur->priority){
     
-    lock_holder->donated++; 
     lock_holder->priority = cur->priority;
     
-    /*
 		if (lock_holder->need_lock != NULL){
 			lock_donation (lock_holder->need_lock);
-		}*/
+		}
 	}
 }
 
