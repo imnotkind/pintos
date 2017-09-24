@@ -267,11 +267,14 @@ lock_release (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
   
-  if(cur->donated){
+  if(cur->donated >1){
     //thread_set_priority(cur->priority_orig); 
     //NO! maybe A(p32) is waiting for the lock held by main(p31) : main's priority_orig is 31
     thread_set_priority(list_entry(list_begin(&lock->semaphore.waiters), struct thread, elem)->priority);
     cur->donated -= 1;
+  }
+  else if (cur->donated ==1){
+    thread_set_priority(cur->priority_orig); 
   }
 
   lock->holder = NULL;
