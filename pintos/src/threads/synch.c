@@ -270,13 +270,15 @@ lock_release (struct lock *lock)
   ASSERT (lock_held_by_current_thread (lock));
   
   if(cur->donated){
-    thread_set_priority(cur->priority_orig);
-    cur->donated = false;
+    //thread_set_priority(cur->priority_orig); 
+    //NO! maybe A(p32) is waiting for the lock held by main(p31) : main's priority_orig is 31
+    thread_set_priority(list_entry(list_begin(&lock->semaphore.waiters), struct thread, elem)->priority);
+    cur->donated -= 1;
   }
 
   lock->holder = NULL;
   sema_up (&lock->semaphore);
-  check_current_thread_priority();  
+  check_current_thread_priority();  //just unblocked a waiter
 }
 
 /* Returns true if the current thread holds LOCK, false

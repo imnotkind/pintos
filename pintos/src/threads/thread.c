@@ -325,7 +325,7 @@ thread_yield (void)
   if (cur != idle_thread) 
     list_insert_ordered (&ready_list, &cur->elem, &thread_priority_bigger, NULL);
   cur->status = THREAD_READY;
-  schedule (); 
+  schedule (); //it is ok to schedule between SAME THREAD
   intr_set_level (old_level);
 }
 
