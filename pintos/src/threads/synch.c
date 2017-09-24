@@ -296,7 +296,6 @@ lock_release (struct lock *lock)
         max = L; 
       }
     }
-    ASSERT(max != NULL);
 
     if(max != NULL){
     //  printf("<%s>\n",list_entry(list_begin(&max->semaphore.waiters), struct thread, elem)->name);
