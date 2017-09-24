@@ -270,7 +270,13 @@ lock_release (struct lock *lock)
   //print_thread_lock_list();
 
   lock->holder = NULL;
-  sema_up (&lock->semaphore); //sema_up pops front waiter before unblock!! 
+  sema_up (&lock->semaphore); //sema_up pops front waiter before unblock!!
+  for(e = list_begin(&cur->lock_list); e != list_end(&cur->lock_list); e = list_next(e)){
+    if(lock == list_entry(list_begin(e, struct lock, lock_elem);)){
+      list_remove(e);
+      break;
+    }
+  }
   //remove this lock from cur -> lock_list
 
   if(!list_empty(&cur->lock_list)){ // max is the lock with highest priority front waiter
