@@ -268,8 +268,8 @@ lock_release (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
 
-  print_thread_lock_list();
-  
+  //print_thread_lock_list();
+
   lock->holder = NULL;
   sema_up (&lock->semaphore); //sema_up pops front waiter before unblock!! 
 
