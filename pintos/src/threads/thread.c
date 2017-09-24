@@ -471,8 +471,14 @@ thread_foreach (thread_action_func *func, void *aux)
 void
 thread_set_priority (int new_priority) 
 {
-  thread_current ()->priority = new_priority;
-  //thread_current ()->priority_orig = new_priority; No!
+  struct thread* cur = thread_current();
+  if(cur->priority_orig == cur->priority)){
+    cur->priority = new_priority;
+    cur->priority_orig = new_priority;
+  }
+  else{
+    cur->priority_orig = new_priority;
+  }
   check_current_thread_priority();
 }
 
