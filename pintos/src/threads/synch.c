@@ -272,17 +272,17 @@ lock_release (struct lock *lock)
 
   lock->holder = NULL;
   sema_up (&lock->semaphore); //sema_up pops front waiter before unblock!! 
-
+  //remove this lock from cur -> lock_list
 
   if(!list_empty(&cur->lock_list)){ // max is the lock with highest priority front waiter
     struct lock *max = NULL;
     for(e = list_begin(&cur->lock_list); e != list_end(&cur->lock_list); e = list_next(e)){
       struct lock *L = list_entry(e,struct lock, lock_elem);
       if(list_empty(&L->semaphore.waiters))
-        break;
+        continue;
       if( max == NULL){
         max = L;
-        break;
+        continue;
       }  
       struct thread *t = list_entry(list_begin(&L->semaphore.waiters),struct thread, elem);
       struct thread *p = list_entry(list_begin(&max->semaphore.waiters),struct thread, elem); // prev champion
