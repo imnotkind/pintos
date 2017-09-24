@@ -275,6 +275,7 @@ lock_release (struct lock *lock)
   }
   else if (cur->donated ==1){
     thread_set_priority(cur->priority_orig); 
+    cur->donated -= 1;
   }
 
   lock->holder = NULL;
