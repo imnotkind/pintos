@@ -306,12 +306,12 @@ lock_release (struct lock *lock)
 
     if(max != NULL){
     //  printf("<%s>\n",list_entry(list_begin(&max->semaphore.waiters), struct thread, elem)->name);
-      thread_set_priority_for_donation(list_entry(list_begin(&max->semaphore.waiters), struct thread, elem)->priority);
+      thread_set_priority_for_release(list_entry(list_begin(&max->semaphore.waiters), struct thread, elem)->priority);
     }
 
   }
   else{
-    thread_set_priority_for_donation(thread_current()->priority_orig);
+    thread_set_priority_for_release(thread_current()->priority_orig);
   }
 
 

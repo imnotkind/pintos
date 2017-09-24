@@ -483,7 +483,7 @@ thread_set_priority (int new_priority)
   check_current_thread_priority();
 }
 
-thread_set_priority_for_donation (int new_priority) 
+thread_set_priority_for_release (int new_priority) 
 {
   struct thread* cur = thread_current();
   if(list_empty(&cur->lock_list)){
