@@ -268,9 +268,11 @@ lock_release (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
 
-
+  print_thread_lock_list();
+  
   lock->holder = NULL;
   sema_up (&lock->semaphore); //sema_up pops front waiter before unblock!! 
+
 
   if(!list_empty(&cur->lock_list)){ // max is the lock with highest priority front waiter
     struct lock *max = NULL;
@@ -307,9 +309,24 @@ lock_held_by_current_thread (const struct lock *lock)
   return lock->holder == thread_current ();
 }
 
-void print_thread_lock_list(struct lock* lock)
+void print_thread_lock_list(void)
 {
-  
+  struct thread* cur = thread_current();
+  struct list_elem *e;
+  struct list_elem *f;
+  int count = 1;
+  printf("CURRENT THREAD <%s> : Priority %d, orig priority %d",cur->name, cur->priority, cur->priority_orig);
+  if(!list_empty(&cur->lock_list)){ // max is the lock with highest priority front waiter
+    for(e = list_begin(&cur->lock_list); e != list_end(&cur->lock_list); e = list_next(e)){
+      struct lock *L = list_entry(e,struct lock, lock_elem);
+      printf("LOCK LIST %d",count);
+      for(f = list_begin(&L->semaphore.waiters); f != list_end(&L->semaphore.waiters); f = list_next(f)){
+        struct thread *t = list_entry(f, struct thread, elem);
+        printf("  <%s> : Priority %d, orig priority %d", t->name, t->priority, t->priority_orig);
+      }
+      count++;
+    }
+  }
 }
 
 /* One semaphore in a list. */

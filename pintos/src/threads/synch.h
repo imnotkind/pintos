@@ -31,7 +31,7 @@ void lock_donation(struct lock*);
 bool lock_try_acquire (struct lock *);
 void lock_release (struct lock *);
 bool lock_held_by_current_thread (const struct lock *);
-void print_thread_lock_list(struct lock* lock);
+void print_thread_lock_list(void);
 
 /* Condition variable. */
 struct condition 
