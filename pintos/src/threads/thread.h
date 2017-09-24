@@ -94,7 +94,7 @@ struct thread      //pintos manual 67
     int priority_orig;                  /* Original priority. same as priority when thread is not donated*/
     struct lock* need_lock;             /*only when thread is in blocked state in waiter list*/ 
     int donated;                        
-
+    struct lock* lock_list;
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
 
