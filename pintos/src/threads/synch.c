@@ -272,7 +272,7 @@ lock_release (struct lock *lock)
   lock->holder = NULL;
   sema_up (&lock->semaphore); //sema_up pops front waiter before unblock!!
   for(e = list_begin(&cur->lock_list); e != list_end(&cur->lock_list); e = list_next(e)){
-    if(lock == list_entry(e, struct lock, lock_elem))){
+    if(lock == list_entry(e, struct lock, lock_elem)){
       list_remove(e);
       break;
     }
