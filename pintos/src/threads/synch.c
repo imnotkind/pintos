@@ -291,7 +291,7 @@ lock_release (struct lock *lock)
       }  
       struct thread *t = list_entry(list_begin(&(L->semaphore.waiters)),struct thread, elem);
       struct thread *p = list_entry(list_begin(&(max->semaphore.waiters)),struct thread, elem); // prev champion
-      printf("t's TID %d p's TID %d\n", t->tid, p->tid);
+      //printf("t's TID %d p's TID %d\n", t->tid, p->tid);
       if(t->priority > p->priority){
         max = L; 
       }
