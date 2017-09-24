@@ -477,11 +477,26 @@ thread_set_priority (int new_priority)
     cur->priority_orig = new_priority;
   }
   else{
-      cur->priority = new_priority;
+    cur->priority_orig = new_priority;
   }
 
   check_current_thread_priority();
 }
+
+thread_set_priority_for_donation (int new_priority) 
+{
+  struct thread* cur = thread_current();
+  if(list_empty(&cur->lock_list)){
+    cur->priority = new_priority;
+    cur->priority_orig = new_priority;
+  }
+  else{
+    cur->priority = new_priority;
+  }
+
+  check_current_thread_priority();
+}
+
 
 
 /* Returns the current thread's priority. */
