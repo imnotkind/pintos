@@ -93,7 +93,7 @@ struct thread      //pintos manual 67
     int64_t wake_ticks;                 /* Saved ticks to wake up when blocked. */
     int priority_orig;                  /* Original priority. same as priority when thread is not donated*/
     struct lock* need_lock;             /*only when thread is in blocked state in waiter list*/ 
-    int donated;
+    int donated;                        
 
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */

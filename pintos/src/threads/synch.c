@@ -226,7 +226,7 @@ void lock_donation(struct lock* lock)
       lock_holder->priority_orig = lock_holder->priority;
     }
     
-    lock_holder->donated++;
+    lock_holder->donated++; 
 		lock_holder->priority = cur->priority;
     /*
 		if (lock_holder->need_lock != NULL){
@@ -267,19 +267,20 @@ lock_release (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
   
-  if(cur->donated >1){
+  if(list_size(&lock->semaphore.waiters) > 1){
     //thread_set_priority(cur->priority_orig); 
     //NO! maybe A(p32) is waiting for the lock held by main(p31) : main's priority_orig is 31
     thread_set_priority(list_entry(list_begin(&lock->semaphore.waiters), struct thread, elem)->priority);
     cur->donated -= 1;
   }
-  else if (cur->donated ==1){
+  else if (list_size(&lock->semaphore.waiters) == 1){
     thread_set_priority(cur->priority_orig); 
     cur->donated -= 1;
   }
 
   lock->holder = NULL;
   sema_up (&lock->semaphore);
+  
   check_current_thread_priority();  //just unblocked a waiter
 }
 
