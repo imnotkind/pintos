@@ -267,7 +267,6 @@ lock_release (struct lock *lock)
   struct list_elem *e;
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
-  printf("HELL");
   //print_thread_lock_list();
 
   lock->holder = NULL;
@@ -292,7 +291,7 @@ lock_release (struct lock *lock)
     }
 
     if(max != NULL){
-      //printf("HELL");
+      printf("<%s>\n",list_entry(list_begin(&max->semaphore.waiters), struct thread, elem)->name);
       thread_set_priority(list_entry(list_begin(&max->semaphore.waiters), struct thread, elem)->priority);
     }
 
