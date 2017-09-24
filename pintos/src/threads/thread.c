@@ -600,7 +600,8 @@ init_thread (struct thread *t, const char *name, int priority)
   t->priority = priority;
   t->priority_orig = priority;
   t->need_lock = NULL;
-  t->donated = false;
+  t->donated = 0;
+  list_init(&t->lock_list);
   t->magic = THREAD_MAGIC;
   list_push_back (&all_list, &t->allelem);
 }

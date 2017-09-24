@@ -179,6 +179,7 @@ lock_init (struct lock *lock)
   ASSERT (lock != NULL);
 
   lock->holder = NULL;
+  lock->lock_elem = NULL;
   sema_init (&lock->semaphore, 1);
 }
 
@@ -212,6 +213,7 @@ lock_acquire (struct lock *lock)
   sema_down (&lock->semaphore);
   cur->need_lock = NULL;
   lock->holder = cur;
+  list_push_back(&cur->lock_list,&lock->lock_elem);
   intr_set_level(old_level);
 }
 
@@ -222,12 +224,10 @@ void lock_donation(struct lock* lock)
 	struct thread* lock_holder = lock->holder;
 
 	if(lock_holder->priority < cur->priority){
-		if(!(lock_holder->donated)){
-      lock_holder->priority_orig = lock_holder->priority;
-    }
     
     lock_holder->donated++; 
-		lock_holder->priority = cur->priority;
+    lock_holder->priority = cur->priority;
+    
     /*
 		if (lock_holder->need_lock != NULL){
 			lock_donation (lock_holder->need_lock);
@@ -264,23 +264,36 @@ void
 lock_release (struct lock *lock) 
 {
   struct thread* cur = thread_current();
+  struct list_elem *e;
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
 
-  lock->holder = NULL;
-  sema_up (&lock->semaphore);
 
-  if(list_size(&lock->semaphore.waiters) > 1){
-    //thread_set_priority(cur->priority_orig); 
-    //NO! maybe A(p32) is waiting for the lock held by main(p31) : main's priority_orig is 31
-    thread_set_priority(list_entry(list_begin(&lock->semaphore.waiters), struct thread, elem)->priority);
-    cur->donated -= 1;
+  lock->holder = NULL;
+  sema_up (&lock->semaphore); //sema_up pops front waiter before unblock!! 
+
+  if(!list_empty(&cur->lock_list)){ // max is the lock with highest priority front waiter
+    struct lock *max = NULL;
+    for(e = list_begin(&cur->lock_list); e != list_end(&cur->lock_list); e = list_next(e)){
+      struct lock *L = list_entry(e,struct lock, lock_elem);
+      if(list_empty(&L->semaphore.waiters))
+        break;
+      if( max == NULL){
+        max = L;
+        break;
+      }  
+      struct thread *t = list_entry(list_begin(&L->semaphore.waiters),struct thread, elem);
+      struct thread *p = list_entry(list_begin(&max->semaphore.waiters),struct thread, elem); // prev champion
+      if(t->priority > p->priority){
+        max = L; 
+      }
+    }
+
+    if(max != NULL){
+      thread_set_priority(list_entry(list_begin(&max->semaphore.waiters), struct thread, elem)->priority);
+    }
   }
-  else if (list_size(&lock->semaphore.waiters) == 1){
-    thread_set_priority(cur->priority_orig); 
-    cur->donated -= 1;
-  }
-  //check_current_thread_priority();  //just unblocked a waiter
+
 }
 
 /* Returns true if the current thread holds LOCK, false
@@ -294,7 +307,7 @@ lock_held_by_current_thread (const struct lock *lock)
   return lock->holder == thread_current ();
 }
 
-void lock_waiter_print(struct lock* lock)
+void print_thread_lock_list(struct lock* lock)
 {
   
 }
