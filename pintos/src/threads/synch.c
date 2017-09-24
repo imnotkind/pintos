@@ -235,8 +235,6 @@ void lock_donation(struct lock* lock)
 	}
 }
 
-
-
 /* Tries to acquires LOCK and returns true if successful or false
    on failure.  The lock must not already be held by the current
    thread.
@@ -292,7 +290,10 @@ lock_held_by_current_thread (const struct lock *lock)
   return lock->holder == thread_current ();
 }
 
-
+void lock_waiter_print(struct lock* lock)
+{
+  
+}
 
 /* One semaphore in a list. */
 struct semaphore_elem 

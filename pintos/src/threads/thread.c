@@ -472,7 +472,7 @@ void
 thread_set_priority (int new_priority) 
 {
   thread_current ()->priority = new_priority;
-  thread_current ()->priority_orig = new_priority;
+  //thread_current ()->priority_orig = new_priority; No!
   check_current_thread_priority();
 }
 
