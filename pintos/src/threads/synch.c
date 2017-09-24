@@ -296,12 +296,16 @@ lock_release (struct lock *lock)
         max = L; 
       }
     }
+    ASSERT(max != NULL);
 
     if(max != NULL){
     //  printf("<%s>\n",list_entry(list_begin(&max->semaphore.waiters), struct thread, elem)->name);
       thread_set_priority(list_entry(list_begin(&max->semaphore.waiters), struct thread, elem)->priority);
     }
 
+  }
+  else{
+    thread_set_priority(thread_current()->priority_orig);
   }
 
 
