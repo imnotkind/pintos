@@ -388,10 +388,6 @@ cond_init (struct condition *cond)
    interrupts disabled, but interrupts will be turned back on if
    we need to sleep. */
 
-bool cond_priority_bigger(const struct list_elem* first, const struct list_elem* second, void* aux UNUSED){
-  return list_entry(first, struct semaphore_elem, elem)->priority > list_entry(second, struct semaphore_elem, elem)->priority;
-}
-
 void
 cond_wait (struct condition *cond, struct lock *lock) 
 {
@@ -444,4 +440,9 @@ cond_broadcast (struct condition *cond, struct lock *lock)
 
   while (!list_empty (&cond->waiters))
     cond_signal (cond, lock);
+}
+
+
+bool cond_priority_bigger(const struct list_elem* first, const struct list_elem* second, void* aux UNUSED){
+  return list_entry(first, struct semaphore_elem, elem)->priority > list_entry(second, struct semaphore_elem, elem)->priority;
 }
