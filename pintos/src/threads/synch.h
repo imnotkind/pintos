@@ -36,10 +36,11 @@ void print_thread_lock_list(void);
 /* Condition variable. */
 struct condition 
   {
-    struct list waiters;        /* List of waiting threads. */
+    struct list waiters;        /* List of waiting threads. list type: struct semaphore elem */
   };
 
 void cond_init (struct condition *);
+bool cond_priority_bigger(const strcut list_elem* first, const struct list_elem* second, void* aux UNUSED);
 void cond_wait (struct condition *, struct lock *);
 void cond_signal (struct condition *, struct lock *);
 void cond_broadcast (struct condition *, struct lock *);
