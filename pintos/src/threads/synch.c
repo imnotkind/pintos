@@ -328,7 +328,7 @@ lock_held_by_current_thread (const struct lock *lock)
   return lock->holder == thread_current ();
 }
 
-void print_thread_lock_list(void)
+void print_thread_lock_list(void) // FOR DEBUGGING
 {
   struct thread* cur = thread_current();
   struct list_elem *e;

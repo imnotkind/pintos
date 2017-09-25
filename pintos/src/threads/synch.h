@@ -36,7 +36,7 @@ void print_thread_lock_list(void);
 /* Condition variable. */
 struct condition 
   {
-    struct list waiters;        /* List of waiting threads. list type: struct semaphore elem */
+    struct list waiters;        /* List of waiting threads. list type: struct semaphore_elem */
   };
 
 void cond_init (struct condition *);

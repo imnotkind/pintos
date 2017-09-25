@@ -329,12 +329,12 @@ thread_yield (void)
   intr_set_level (old_level);
 }
 
-void thread_name_print(struct thread *t, void *aux UNUSED)
+void thread_name_print(struct thread *t, void *aux UNUSED) // FOR DEBUGGING
 {
   printf("%s : TID %d\n",t->name, t->tid);
 }
 
-void thread_list_stat(void)
+void thread_list_stat(void) // FOR DEBUGGING
 {
   int aux = 1;
   printf("\n");
