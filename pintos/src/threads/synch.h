@@ -40,7 +40,7 @@ struct condition
   };
 
 void cond_init (struct condition *);
-bool cond_priority_bigger(const struct list_elem* first, const struct list_elem* second, void* aux UNUSED);
+bool cond_priority_bigger(const struct list_elem* first, const struct list_elem* second, void* aux);
 void cond_wait (struct condition *, struct lock *);
 void cond_signal (struct condition *, struct lock *);
 void cond_broadcast (struct condition *, struct lock *);
