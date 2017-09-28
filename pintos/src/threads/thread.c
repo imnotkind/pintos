@@ -345,6 +345,9 @@ void thread_name_print(struct thread *t, void *aux UNUSED) // FOR DEBUGGING
 
 void thread_list_stat(void) // FOR DEBUGGING
 {
+  enum intr_level old_level;
+
+  old_level = intr_disable ();
   int aux = 1;
   printf("\n");
   printf("ALL LIST SHOWING\n");
@@ -355,8 +358,11 @@ void thread_list_stat(void) // FOR DEBUGGING
   printf("SLEEP LIST SHOWING\n");
   thread_foreach(&thread_name_print,&aux);
   printf("RUNNING THREAD\n");
-  printf("%s : TID %d\n",thread_current()->name,thread_current()->tid);
+  thread_name_print(thread_current(),NULL);
+  aux=3;
+  thread_foreach(&thread_name_print,&aux);
   printf("\n");
+  intr_set_level (old_level);
 }
 
 void check_current_thread_priority(void){
