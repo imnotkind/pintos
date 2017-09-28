@@ -184,6 +184,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
   thread_tick ();
   
   if(thread_mlfqs == 1){
+    thread_foreach(&recent_cpu_inc,NULL);
     if(ticks % TIMER_FREQ == 0){
       calc_load_avg();
       thread_foreach(&calc_recent_cpu,NULL);

@@ -552,16 +552,28 @@ thread_get_recent_cpu (void)
   return fixedtoi(temp);
 }
 
+void recent_cpu_inc(struct thread *t, void* aux UNUSED){
+  enum intr_level old_level;
+  old_level = intr_disable();
+
+  if(t == idle_thread)
+    return;
+
+  t->recent_cpu = Fixed_add(recent_cpu, itofixed(1));
+  intr_set_level(old_level);
+}
+
 //load_avg = (59/60)*load_avg + (1/60)*ready_threads.
 void calc_load_avg(void)
 {
   enum intr_level old_level;
   old_level = intr_disable();
+
   int ready_threads = 0;
   ready_threads += list_size(&ready_list);
-
   if(thread_current() != idle_thread)
     ready_threads++;
+
   load_avg = fixed_add(fixed_mul(fixed_div(itofixed(59),itofixed(60)),load_avg), fixed_mul(fixed_div(itofixed(1),itofixed(60)), itofixed(ready_threads)));
 
   intr_set_level(old_level);

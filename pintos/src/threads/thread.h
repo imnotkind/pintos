@@ -153,6 +153,7 @@ int thread_get_priority (void);
 void thread_set_priority (int);
 void thread_set_priority_for_release(int);
 
+void recent_cpu_inc(struct thread *t, void* aux UNUSED);
 void calc_load_avg(void);
 void calc_recent_cpu(struct thread*, void*);
 void calc_priority(struct thread*, void*);
