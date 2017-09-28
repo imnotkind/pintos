@@ -27,6 +27,8 @@ static struct list ready_list;
 /* a list for sleeping threads*/
 static struct list sleep_list;
 
+static struct list mlfqs_list[PRI_MAX+1];
+
 /* List of all processes.  Processes are added to this list
    when they are first scheduled and removed when they exit. */
 static struct list all_list;
@@ -42,6 +44,8 @@ static struct lock tid_lock;
 
 /* Save next wake ticks */
 int64_t next_wake_ticks = INT64_MAX;
+
+Fixed load_avg;
 
 /* Stack frame for kernel_thread(). */
 struct kernel_thread_frame 
@@ -116,6 +120,8 @@ thread_start (void)
   struct semaphore idle_started;
   sema_init (&idle_started, 0);
   thread_create ("idle", PRI_MIN, idle, &idle_started);
+
+  load_avg = itofixed(0);
 
   /* Start preemptive thread scheduling. */
   intr_enable ();
