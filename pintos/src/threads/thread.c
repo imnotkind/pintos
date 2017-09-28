@@ -559,7 +559,7 @@ void recent_cpu_inc(struct thread *t, void* aux UNUSED){
   if(t == idle_thread)
     return;
 
-  t->recent_cpu = Fixed_add(recent_cpu, itofixed(1));
+  t->recent_cpu = fixed_add(recent_cpu, itofixed(1));
   intr_set_level(old_level);
 }
 
