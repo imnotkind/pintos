@@ -340,11 +340,14 @@ thread_yield (void)
 
 void thread_name_print(struct thread *t, void *aux UNUSED) // FOR DEBUGGING
 {
-  printf("%s : TID %d\n",t->name, t->tid);
+  printf("%s : TID %d : PRIORITY %d : RECENTCPU %d :STATUS %d\n",t->name, t->tid, t->priority, fixedtoi(t->recent_cpu) ,t->status);
 }
 
 void thread_list_stat(void) // FOR DEBUGGING
 {
+  enum intr_level old_level;
+
+  old_level = intr_disable ();
   int aux = 1;
   printf("\n");
   printf("ALL LIST SHOWING\n");
@@ -355,8 +358,11 @@ void thread_list_stat(void) // FOR DEBUGGING
   printf("SLEEP LIST SHOWING\n");
   thread_foreach(&thread_name_print,&aux);
   printf("RUNNING THREAD\n");
-  printf("%s : TID %d\n",thread_current()->name,thread_current()->tid);
+  thread_name_print(thread_current(),NULL);
+  aux=3;
+  thread_foreach(&thread_name_print,&aux);
   printf("\n");
+  intr_set_level (old_level);
 }
 
 void check_current_thread_priority(void){
@@ -468,6 +474,18 @@ thread_foreach (thread_action_func *func, void *aux)
     {
       struct thread *t = list_entry (e, struct thread, elem);
       func (t, aux);
+    }
+  }
+  else if(*a==3){
+    int i;
+    for(i=0;i<=63;i++){
+      printf("MLFQS LIST %d\n",i);
+      for (e = list_begin (&mlfqs_list[i]); e != list_end (&mlfqs_list[i]);
+           e = list_next (e))
+      {
+        struct thread *t = list_entry (e, struct thread, mlfqselem);
+        func (t, aux);
+      }
     }
   }
   else{
@@ -670,6 +688,16 @@ init_thread (struct thread *t, const char *name, int priority)
   t->stack = (uint8_t *) t + PGSIZE;
   t->priority = priority;
   t->priority_orig = priority;
+
+  if(thread_mlfqs == 1){
+    t->nice = 0;
+    if( t == initial_thread)
+      t->recent_cpu = 0;
+    else
+      t->recent_cpu = thread_current()->recent_cpu;
+    //priority calc needed!!
+  }
+  
   t->need_lock = NULL;
   list_init(&t->lock_list);
   t->magic = THREAD_MAGIC;
