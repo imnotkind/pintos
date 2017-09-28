@@ -428,7 +428,7 @@ thread_wake (int64_t current_ticks)
         //printf("REMOVE <%s> : TID %d from SLEEP LIST\n",t->name,t->tid);
         //thread_list_stat();
         thread_unblock(t);
-        check_current_thread_priority();
+        //check_current_thread_priority();
         //printf("UNBLOCK SUCCESS!\n");
         //thread_list_stat();
 
