@@ -470,6 +470,18 @@ thread_foreach (thread_action_func *func, void *aux)
       func (t, aux);
     }
   }
+  else if(*a==3){
+    int i;
+    for(i=0;i<=63;i++){
+      printf("MLFQS LIST %d\n",i);
+      for (e = list_begin (&mlfqs_list[i]); e != list_end (&mlfqs_list[i]);
+           e = list_next (e))
+      {
+        struct thread *t = list_entry (e, struct thread, mlfqselem);
+        func (t, aux);
+      }
+    }
+  }
   else{
     printf("INVALID AUX FOR THREAD_FOREACH\n");
   }
