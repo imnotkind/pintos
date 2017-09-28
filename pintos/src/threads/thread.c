@@ -631,6 +631,16 @@ init_thread (struct thread *t, const char *name, int priority)
   t->stack = (uint8_t *) t + PGSIZE;
   t->priority = priority;
   t->priority_orig = priority;
+
+  if(thread_mlfqs == 1){
+    t->nice = 0;
+    if( t == initial_thread)
+      t->recent_cpu = 0;
+    else
+      t->recent_cpu = thread_current()->recent_cpu;
+    //priority calc needed!!
+  }
+  
   t->need_lock = NULL;
   list_init(&t->lock_list);
   t->magic = THREAD_MAGIC;
