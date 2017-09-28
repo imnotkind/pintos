@@ -510,6 +510,7 @@ thread_set_priority (int new_priority)
   check_current_thread_priority();
 }
 
+void
 thread_set_priority_for_release (int new_priority) 
 {
   struct thread* cur = thread_current();
