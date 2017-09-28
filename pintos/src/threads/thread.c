@@ -517,33 +517,72 @@ thread_get_priority (void)
 
 /* Sets the current thread's nice value to NICE. */
 void
-thread_set_nice (int nice UNUSED) 
+thread_set_nice (int nice) 
 {
-  /* Not yet implemented. */
+  thread_current()->nice = nice;
+  //calc_priority();
+  //if priority low, then yield
 }
 
 /* Returns the current thread's nice value. */
 int
 thread_get_nice (void) 
 {
-  /* Not yet implemented. */
-  return 0;
+  return thread_current()->nice;
 }
 
 /* Returns 100 times the system load average. */
 int
 thread_get_load_avg (void) 
 {
-  /* Not yet implemented. */
-  return 0;
+  Fixed temp =fixed_mul(load_avg, itofixed(100));
+  return fixedtoi(temp);
 }
 
 /* Returns 100 times the current thread's recent_cpu value. */
 int
 thread_get_recent_cpu (void) 
 {
-  /* Not yet implemented. */
-  return 0;
+  Fixed temp = fixed_mul(thread_current()->recent_cpu, itofixed(100));
+  return fixedtoi(temp);
+}
+
+//load_avg = (59/60)*load_avg + (1/60)*ready_threads.
+void calc_load_avg(void)
+{
+  ASSERT (intr_get_level () == INTR_OFF);
+  int ready_threads = 0, i;
+  for(i = 0; i <= PRI_MAX; i++)
+    ready_threads += list_size(&mlfqs_list[i]);
+
+  if(thread_current() != idle_thread)
+    ready_threads++;
+  load_avg = fixed_add(fixed_mul(fixed_div(itofixed(59),itofixed(60)),load_avg), fixed_mul(fixed_div(itofixed(1),itofixed(60)), itofixed(ready_threads)));
+}
+
+//recent_cpu = (2*load_avg)/(2*load_avg + 1) * recent_cpu + nice.
+void calc_recent_cpu(struct thread *t, void* aux UNUSED)
+{
+  ASSERT (intr_get_level () == INTR_OFF);
+  if(t == idle_thread)
+    return;
+
+  Fixed d_load_avg = fixed_mul(itofixed(2),load_avg);
+  
+  t->recent_cpu = fixed_add(fixed_mul(fixed_div(d_load_avg,fixed_add(d_load_avg,itofixed(1))), t->recent_cpu), itofixed(t->nice));
+}
+
+//priority = PRI_MAX - (recent_cpu / 4) - (nice * 2).
+void calc_priority(struct thread *t, void* aux UNUSED)
+{
+  ASSERT (intr_get_level () == INTR_OFF);
+  if(t == idle_thread)
+    return;
+
+  Fixed primax = itofixed(PRI_MAX);
+  Fixed temp;
+  temp = fixed_sub(fixed_sub(primax, fixed_div(t->recent_cpu, itofixed(4))), (fixed_mul(itofixed(t->nice), itofixed(2))));
+  t->priority = fixedtoi(temp);
 }
 
 /* Idle thread.  Executes when no other thread is ready to run.
