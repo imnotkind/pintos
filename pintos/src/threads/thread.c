@@ -27,8 +27,6 @@ static struct list ready_list;
 /* a list for sleeping threads*/
 static struct list sleep_list;
 
-static struct list mlfqs_list[PRI_MAX+1];
-
 /* List of all processes.  Processes are added to this list
    when they are first scheduled and removed when they exit. */
 static struct list all_list;
@@ -103,8 +101,6 @@ thread_init (void)
   list_init (&ready_list);
   list_init (&sleep_list);
   list_init (&all_list);
-  for(i=0;i<=PRI_MAX;i++){
-    list_init(&mlfqs_list[i]);
   }
 
   /* Set up a thread structure for the running thread. */
@@ -478,18 +474,6 @@ thread_foreach (thread_action_func *func, void *aux)
       func (t, aux);
     }
   }
-  else if(*a==3){
-    int i;
-    for(i=0;i<=63;i++){
-      printf("MLFQS LIST %d\n",i);
-      for (e = list_begin (&mlfqs_list[i]); e != list_end (&mlfqs_list[i]);
-           e = list_next (e))
-      {
-        struct thread *t = list_entry (e, struct thread, mlfqselem);
-        func (t, aux);
-      }
-    }
-  }
   else{
     printf("INVALID AUX FOR THREAD_FOREACH\n");
   }
@@ -571,32 +555,37 @@ thread_get_recent_cpu (void)
 //load_avg = (59/60)*load_avg + (1/60)*ready_threads.
 void calc_load_avg(void)
 {
-  ASSERT (intr_get_level () == INTR_OFF);
-  int ready_threads = 0, i;
-  for(i = 0; i <= PRI_MAX; i++)
-    ready_threads += list_size(&mlfqs_list[i]);
+  enum intr_level old_level;
+  old_level = intr_disable();
+  int ready_threads = 0;
+  ready_threads += list_size(&ready_list);
 
   if(thread_current() != idle_thread)
     ready_threads++;
   load_avg = fixed_add(fixed_mul(fixed_div(itofixed(59),itofixed(60)),load_avg), fixed_mul(fixed_div(itofixed(1),itofixed(60)), itofixed(ready_threads)));
+
+  intr_set_level(old_level);
 }
 
 //recent_cpu = (2*load_avg)/(2*load_avg + 1) * recent_cpu + nice.
 void calc_recent_cpu(struct thread *t, void* aux UNUSED)
 {
-  ASSERT (intr_get_level () == INTR_OFF);
+  enum intr_level old_level;
+  old_level = intr_disable();
   if(t == idle_thread)
     return;
 
   Fixed d_load_avg = fixed_mul(itofixed(2),load_avg);
   
   t->recent_cpu = fixed_add(fixed_mul(fixed_div(d_load_avg,fixed_add(d_load_avg,itofixed(1))), t->recent_cpu), itofixed(t->nice));
+  intr_set_level(old_level);
 }
 
 //priority = PRI_MAX - (recent_cpu / 4) - (nice * 2).
 void calc_priority(struct thread *t, void* aux UNUSED)
 {
-  ASSERT (intr_get_level () == INTR_OFF);
+  enum intr_level old_level;
+  old_level = intr_disable();
   if(t == idle_thread)
     return;
 
@@ -604,6 +593,7 @@ void calc_priority(struct thread *t, void* aux UNUSED)
   Fixed temp;
   temp = fixed_sub(fixed_sub(primax, fixed_div(t->recent_cpu, itofixed(4))), (fixed_mul(itofixed(t->nice), itofixed(2))));
   t->priority = fixedtoi(temp);
+  intr_set_level(old_level);
 }
 
 /* Idle thread.  Executes when no other thread is ready to run.
@@ -698,7 +688,7 @@ init_thread (struct thread *t, const char *name, int priority)
       t->recent_cpu = 0;
     else
       t->recent_cpu = thread_current()->recent_cpu;
-    //priority calc needed!!
+    calc_priority(t,NULL);
   }
   
   t->need_lock = NULL;

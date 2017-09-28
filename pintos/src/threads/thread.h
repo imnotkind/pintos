@@ -97,7 +97,6 @@ struct thread      //pintos manual 67
     struct list lock_list;             /* list of locks a thread has*/
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
-    struct list_elem mlfqselem;
     int nice;
     Fixed recent_cpu;
 
