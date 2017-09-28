@@ -340,7 +340,7 @@ thread_yield (void)
 
 void thread_name_print(struct thread *t, void *aux UNUSED) // FOR DEBUGGING
 {
-  printf("%s : TID %d\n",t->name, t->tid);
+  printf("%s : TID %d : PRIORITY %d : RECENTCPU %d :STATUS %d\n",t->name, t->tid, t->priority, fixedtoi(t->recent_cpu) ,t->status);
 }
 
 void thread_list_stat(void) // FOR DEBUGGING
