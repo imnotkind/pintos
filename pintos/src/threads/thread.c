@@ -98,11 +98,14 @@ void
 thread_init (void) 
 {
   ASSERT (intr_get_level () == INTR_OFF);
-
+  int i;
   lock_init (&tid_lock);
   list_init (&ready_list);
   list_init (&sleep_list);
   list_init (&all_list);
+  for(i=0;i<=PRI_MAX;i++){
+    list_init(&mlfqs_list[i]);
+  }
 
   /* Set up a thread structure for the running thread. */
   initial_thread = running_thread ();
