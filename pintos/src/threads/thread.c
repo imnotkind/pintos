@@ -394,6 +394,8 @@ thread_sleep (int64_t wake_ticks)
   old_level = intr_disable ();
   ASSERT(cur != idle_thread);
 
+  thread_list_stat();
+
   cur->wake_ticks = wake_ticks;
   list_insert_ordered (&sleep_list, &cur->elem, &thread_wake_ticks_less, NULL); // -> precedes &
   next_wake_ticks = list_entry(list_begin(&sleep_list), struct thread, elem)->wake_ticks;
