@@ -525,8 +525,9 @@ void
 thread_set_nice (int nice) 
 {
   thread_current()->nice = nice;
-  //calc_priority();
-  //if priority low, then yield
+  calc_recent_cpu(thread_current(),NULL);
+  calc_priority(thread_current(),NULL);
+  mlfqs_sort();
 }
 
 /* Returns the current thread's nice value. */
