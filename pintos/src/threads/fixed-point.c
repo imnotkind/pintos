@@ -21,7 +21,7 @@ Fixed itofixed(int a){
 }
 
 int fixedtoi(Fixed a){
-    if(x>=0){
+    if(a>=0){
         return (a + CORR/2) / CORR;
     }
     else{
