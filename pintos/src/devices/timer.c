@@ -191,7 +191,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
     if(ticks % 4 == 0){
       thread_foreach(&calc_priority,NULL);
     }
-    list_sort(&ready_list,&thread_priority_bigger,NULL);
+    
     check_current_thread_priority();
   }
 }

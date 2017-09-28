@@ -361,6 +361,7 @@ void thread_list_stat(void) // FOR DEBUGGING
 }
 
 void check_current_thread_priority(void){
+  list_sort(&ready_list,&thread_priority_bigger,NULL);
   if(!list_empty(&ready_list) && thread_current()!=idle_thread){
     if (thread_current()->priority < list_entry(list_begin(&ready_list), struct thread, elem)->priority){
       thread_yield ();
