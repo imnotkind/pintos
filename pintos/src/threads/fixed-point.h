@@ -2,7 +2,7 @@
 #define FIXED_POINT_H
 
 #define POINT_POS 14 // 17.14 format. 1 bit is signed bit
-#define CORR 1 << POINT_POS
+#define CORR (1 << POINT_POS)
 typedef int32_t Fixed;
 
 Fixed fixed_add(Fixed a, Fixed b){
