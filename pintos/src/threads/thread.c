@@ -361,7 +361,7 @@ void thread_list_stat(void) // FOR DEBUGGING
 }
 
 void check_current_thread_priority(void){
-  list_sort(&ready_list,&thread_priority_bigger,NULL);
+  
   if(!list_empty(&ready_list) && thread_current()!=idle_thread){
     if (thread_current()->priority < list_entry(list_begin(&ready_list), struct thread, elem)->priority){
       thread_yield ();
@@ -594,6 +594,11 @@ void calc_priority(struct thread *t, void* aux UNUSED)
   temp = fixed_sub(fixed_sub(primax, fixed_div(t->recent_cpu, itofixed(4))), (fixed_mul(itofixed(t->nice), itofixed(2))));
   t->priority = fixedtoi(temp);
   intr_set_level(old_level);
+}
+
+void mlfqs_sort(void)
+{
+  list_sort(&ready_list,&thread_priority_bigger,NULL);
 }
 
 /* Idle thread.  Executes when no other thread is ready to run.
