@@ -606,6 +606,10 @@ void calc_priority(struct thread *t, void* aux UNUSED)
   Fixed temp;
   temp = fixed_sub(fixed_sub(primax, fixed_div(t->recent_cpu, itofixed(4))), (fixed_mul(itofixed(t->nice), itofixed(2))));
   t->priority = fixedtoi(temp);
+  if(t->priority > PRI_MAX)
+    t->priority = PRI_MAX;
+  else if(t->priority < 0)
+    t->priority = 0;
   intr_set_level(old_level);
 }
 
