@@ -623,7 +623,7 @@ void mlfqs_schedule(void)
   if(!list_empty(&ready_list)){
     struct thread* cur = thread_current();
     if(cur->priority < list_entry(list_front(&ready_list), struct thread, elem)->priority){
-      thread_yield();
+      intr_yield_on_return ();
     }
   }
 }
