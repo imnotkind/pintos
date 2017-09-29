@@ -112,6 +112,8 @@ load_thread (void *ti_)
   int64_t spin_time = sleep_time + 30 * TIMER_FREQ;
   int64_t last_time = 0;
 
+  thread_list_stat();
+
   thread_set_nice (ti->nice);
   timer_sleep (sleep_time - timer_elapsed (ti->start_time));
   while (timer_elapsed (ti->start_time) < spin_time) 
@@ -121,4 +123,6 @@ load_thread (void *ti_)
         ti->tick_count++;
       last_time = cur_time;
     }
+  
+  thread_list_stat();
 }
