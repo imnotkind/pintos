@@ -555,11 +555,11 @@ thread_get_recent_cpu (void)
 }
 
 void recent_cpu_inc(struct thread *t, void* aux UNUSED){
-  enum intr_level old_level;
-  old_level = intr_disable();
-
   if(t == idle_thread)
     return;
+
+  enum intr_level old_level;
+  old_level = intr_disable();
 
   t->recent_cpu = fixed_add(t->recent_cpu, itofixed(1));
   intr_set_level(old_level);
@@ -584,10 +584,11 @@ void calc_load_avg(void)
 //recent_cpu = (2*load_avg)/(2*load_avg + 1) * recent_cpu + nice.
 void calc_recent_cpu(struct thread *t, void* aux UNUSED)
 {
-  enum intr_level old_level;
-  old_level = intr_disable();
   if(t == idle_thread)
     return;
+  enum intr_level old_level;
+  old_level = intr_disable();
+
 
   Fixed d_load_avg = fixed_mul(itofixed(2),load_avg);
   Fixed coef = fixed_div(d_load_avg,fixed_add(d_load_avg,itofixed(1)));
@@ -598,10 +599,11 @@ void calc_recent_cpu(struct thread *t, void* aux UNUSED)
 //priority = PRI_MAX - (recent_cpu / 4) - (nice * 2).
 void calc_priority(struct thread *t, void* aux UNUSED)
 {
-  enum intr_level old_level;
-  old_level = intr_disable();
   if(t == idle_thread)
     return;
+  enum intr_level old_level;
+  old_level = intr_disable();
+
 
   Fixed primax = itofixed(PRI_MAX);
   Fixed temp;
