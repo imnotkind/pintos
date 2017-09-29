@@ -335,7 +335,7 @@ thread_yield (void)
 
 void thread_name_print(struct thread *t, void *aux UNUSED) // FOR DEBUGGING
 {
-  printf("%s : TID %d : PRIORITY %d : RECENTCPU %d :STATUS %d\n",t->name, t->tid, t->priority, fixedtoi(t->recent_cpu) ,t->status);
+  printf("%s : TID %d : PRIORITY %d : RECENTCPU %d : NICE %d :STATUS %d\n",t->name, t->tid, t->priority, fixedtoi(t->recent_cpu),t->nice ,t->status);
 }
 
 void thread_list_stat(void) // FOR DEBUGGING
@@ -354,8 +354,6 @@ void thread_list_stat(void) // FOR DEBUGGING
   thread_foreach(&thread_name_print,&aux);
   printf("RUNNING THREAD\n");
   thread_name_print(thread_current(),NULL);
-  aux=3;
-  thread_foreach(&thread_name_print,&aux);
   printf("\n");
   intr_set_level (old_level);
 }
