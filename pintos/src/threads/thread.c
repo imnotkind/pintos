@@ -618,6 +618,13 @@ void mlfqs_sort(void)
   list_sort(&ready_list,&thread_priority_bigger,NULL);
 }
 
+void mlfqs_schedule(void)
+{
+  if(!list_empty(ready_list))
+    if(thread_current()->priority < list_entry(list_front(ready_list), struct thread, elem)->priority);
+      schedule();
+}
+
 /* Idle thread.  Executes when no other thread is ready to run.
 
    The idle thread is initially put on the ready list by
