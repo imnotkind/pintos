@@ -590,8 +590,8 @@ void calc_recent_cpu(struct thread *t, void* aux UNUSED)
     return;
 
   Fixed d_load_avg = fixed_mul(itofixed(2),load_avg);
-  
-  t->recent_cpu = fixed_add(fixed_mul(fixed_div(d_load_avg,fixed_add(d_load_avg,itofixed(1))), t->recent_cpu), itofixed(t->nice));
+  Fixed coef = fixed_div(d_load_avg,fixed_add(d_load_avg,itofixed(1)))
+  t->recent_cpu = fixed_add(fixed_mul(coef, t->recent_cpu), itofixed(t->nice));
   intr_set_level(old_level);
 }
 
