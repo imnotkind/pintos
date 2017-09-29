@@ -193,6 +193,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
       thread_foreach(&calc_priority,NULL);
     }
     mlfqs_sort();
+    mlfqs_schedule();
   }
 }
 
