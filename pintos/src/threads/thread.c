@@ -484,15 +484,17 @@ thread_foreach (thread_action_func *func, void *aux)
 void
 thread_set_priority (int new_priority) 
 {
-  struct thread* cur = thread_current();
-  if(list_empty(&cur->lock_list)){
-    cur->priority = new_priority;
-    cur->priority_orig = new_priority;
+  if(thread_mlfqs == 0){
+    struct thread* cur = thread_current();
+    if(list_empty(&cur->lock_list)){
+      cur->priority = new_priority;
+      cur->priority_orig = new_priority;
+    }
+    else{
+      cur->priority_orig = new_priority;
+    }
   }
-  else{
-    cur->priority_orig = new_priority;
-  }
-
+  
   check_current_thread_priority();
 }
 
