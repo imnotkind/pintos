@@ -493,9 +493,10 @@ thread_set_priority (int new_priority)
     else{
       cur->priority_orig = new_priority;
     }
-  }
+  
   
   check_current_thread_priority();
+  }
 }
 
 void
