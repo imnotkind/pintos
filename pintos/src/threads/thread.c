@@ -621,7 +621,7 @@ void mlfqs_sort(void)
 void mlfqs_schedule(void)
 {
   if(!list_empty(&ready_list))
-    if(thread_current()->priority < list_entry(list_front(ready_list), struct thread, elem)->priority);
+    if(thread_current()->priority < list_entry(list_front(&ready_list), struct thread, elem)->priority);
       schedule();
 }
 
