@@ -45,6 +45,7 @@ perl -I../.. ../../tests/threads/alarm-single.ck tests/threads/alarm-single test
 make tests/threads/alarm-multiple.result
 
 #reference solution's fixed code files:
+PROJECT 1
 devices/timer.c | 42 +++++-
 threads/fixed-point.h | 120 ++++++++++++++++++
 threads/synch.c | 88 ++++++++++++-
@@ -53,5 +54,12 @@ threads/thread.h | 23 +++
 fixed-point.h is a new file added.
 
 
-
+PROJECT 2
+threads/thread.c | 13
+threads/thread.h | 26 +
+userprog/exception.c | 8
+userprog/process.c | 247 ++++++++++++++--
+userprog/syscall.c | 468 ++++++++++++++++++++++++++++++-
+userprog/syscall.h | 1
+6 files changed, 725 insertions(+), 38 deletions(-)
 
