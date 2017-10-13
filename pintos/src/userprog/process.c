@@ -44,7 +44,7 @@ process_execute (const char *file_name)
   fn_pure = strtok_r(fn_pure, " " ,&save_ptr);
 
   /* Create a new thread to execute FILE_NAME. */
-  tid = thread_create (file_name, PRI_DEFAULT, start_process, fn_copy);
+  tid = thread_create (fn_pure, PRI_DEFAULT, start_process, fn_copy);
   if (tid == TID_ERROR)
     palloc_free_page (fn_copy);
   free(fn_pure);
@@ -66,6 +66,8 @@ start_process (void *file_name_)
   if_.cs = SEL_UCSEG;
   if_.eflags = FLAG_IF | FLAG_MBS;
   success = load (file_name, &if_.eip, &if_.esp);
+
+
 
   /* If load failed, quit. */
   palloc_free_page (file_name);
