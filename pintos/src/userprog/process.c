@@ -28,7 +28,7 @@ static bool load (const char *cmdline, void (**eip) (void), void **esp);
 tid_t
 process_execute (const char *file_name) 
 {
-  char *fn_copy;
+  char *fn_copy, *fn_pure,*save_ptr;
   tid_t tid;
 
   /* Make a copy of FILE_NAME.
@@ -38,10 +38,16 @@ process_execute (const char *file_name)
     return TID_ERROR;
   strlcpy (fn_copy, file_name, PGSIZE);
 
+  fn_pure = malloc(sizeof(char) * strlen(file_name)+1);
+  if(fn_pure == NULL)
+  strlcpy (fn_pure, file_name, sizeof(char) * strlen(file_name)+1);
+  fn_pure = strtok_r(fn_pure, " " ,&save_ptr);
+
   /* Create a new thread to execute FILE_NAME. */
   tid = thread_create (file_name, PRI_DEFAULT, start_process, fn_copy);
   if (tid == TID_ERROR)
-    palloc_free_page (fn_copy); 
+    palloc_free_page (fn_copy);
+  free(fn_pure);
   return tid;
 }
 
