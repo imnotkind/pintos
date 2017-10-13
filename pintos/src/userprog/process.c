@@ -28,7 +28,7 @@ static bool load (const char *cmdline, void (**eip) (void), void **esp);
 tid_t
 process_execute (const char *file_name) 
 {
-  char *fn_copy, *fn_pure,*save_ptr;
+  char *fn_copy, *fn_pure, *save_ptr;
   tid_t tid;
 
   /* Make a copy of FILE_NAME.
@@ -59,6 +59,7 @@ start_process (void *file_name_)
   char *file_name = file_name_;
   struct intr_frame if_;
   bool success;
+  char *token, *save_ptr;
 
   /* Initialize interrupt frame and load executable. */
   memset (&if_, 0, sizeof if_);
@@ -67,7 +68,9 @@ start_process (void *file_name_)
   if_.eflags = FLAG_IF | FLAG_MBS;
   success = load (file_name, &if_.eip, &if_.esp);
 
+  for (token = strtok_r (s, " ", &save_ptr); token != NULL; token = strtok_r (NULL, " ", &save_ptr)){
 
+  }
 
   /* If load failed, quit. */
   palloc_free_page (file_name);
