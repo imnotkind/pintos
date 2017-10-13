@@ -76,7 +76,6 @@ start_process (void *file_name_)
     argv[argc-1] = token;
   }
 
-  printf("%s",file_name);
   success = load (file_name, &if_.eip, &if_.esp);
 
   /* If load failed, quit. */
