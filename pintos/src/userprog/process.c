@@ -39,7 +39,7 @@ process_execute (const char *file_name)
   strlcpy (fn_copy, file_name, PGSIZE);
 
   fn_pure = malloc(sizeof(char) * (strlen(file_name)+1));
-  ASSERT(fn_pure == NULL);
+  ASSERT(fn_pure != NULL);
   strlcpy (fn_pure, file_name, sizeof(char) * (strlen(file_name)+1));
   fn_pure = strtok_r(fn_pure, " " ,&save_ptr);
 
