@@ -60,7 +60,7 @@ start_process (void *file_name_)
   struct intr_frame if_;
   bool success;
   int argc;
-  char *argv[128];
+  char *argv[64];
   char *token, *save_ptr;
 
   /* Initialize interrupt frame and load executable. */
@@ -80,8 +80,11 @@ start_process (void *file_name_)
 
   /* If load failed, quit. */
   palloc_free_page (file_name);
-  if (!success) 
+  if (!success){
     thread_exit ();
+  }
+  else{
+  }
 
   /* Start the user process by simulating a return from an
      interrupt, implemented by intr_exit (in
