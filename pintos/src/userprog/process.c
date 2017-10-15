@@ -108,9 +108,9 @@ start_process (void *file_name_)
     *(int *)if_.esp = argc;
     if_.esp -= 4;
     *(int *)if_.esp = 0; // return_address
-    
   }
 
+  printf("HHH");
   /* Start the user process by simulating a return from an
      interrupt, implemented by intr_exit (in
      threads/intr-stubs.S).  Because intr_exit takes all of its
