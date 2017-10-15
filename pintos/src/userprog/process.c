@@ -96,8 +96,8 @@ start_process (void *file_name_)
     *(char ***)if_.esp = argv;
     if_.esp -= 4;
     *(int *)if_.esp = argc;
-    if_.esp -= 4;
-    *(int *)if_.esp = 0; //return_address
+    //if_.esp -= 4;
+    //*(int *)if_.esp = 0; //return_address
     
   }
 
