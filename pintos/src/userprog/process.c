@@ -85,19 +85,29 @@ start_process (void *file_name_)
   }
   else{
     int i;
+    void *fn_save = if_.esp;
+  
+    for(i = argc - 1; i >= 0; i--){
+      if_.esp -= strlen(argv[i]) + 1;
+      strlcpy (if_.esp, argv[i], strlen(argv[i]) + 1);
+    }
+
+    if_.esp -= if_.esp % 4; // align
+
     if_.esp -= 4;
     *(int *)if_.esp = 0;
-    for (i = argc - 1; i >= 0; i--)
-    {
+
+    for (i = argc - 1; i >= 0; i--){
       if_.esp -= 4;
-      *(char **)if_.esp = argv[i];
+      fn_save -= strlen(argv[i]) + 1;
+      *if_.esp = fn_save;
     }
     if_.esp -= 4;
-    *(char ***)if_.esp = argv;
+    *(char ***)if_.esp = if_.esp + 4;
     if_.esp -= 4;
     *(int *)if_.esp = argc;
     if_.esp -= 4;
-    *(int *)if_.esp = 0; //return_address
+    *(int *)if_.esp = 0; // return_address
     
   }
 
