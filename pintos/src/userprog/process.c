@@ -92,7 +92,7 @@ start_process (void *file_name_)
       strlcpy (if_.esp, argv[i], strlen(argv[i]) + 1);
     }
 
-    if_.esp -= (int)if_.esp % 4; // align
+    if_.esp -= (unsigned int)if_.esp % 4; // align
 
     if_.esp -= 4;
     *(int *)if_.esp = 0;
