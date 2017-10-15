@@ -84,6 +84,7 @@ start_process (void *file_name_)
     thread_exit ();
   }
   else{
+    int i;
     if_.esp -= 4;
     *if_.esp = 0;
     for (i = argc - 1; i >= 0; i--)
