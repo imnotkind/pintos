@@ -63,7 +63,6 @@ start_process (void *file_name_)
   char *argv[64];
   char *token, *save_ptr;
 
-  msg("hey");
   /* Initialize interrupt frame and load executable. */
   memset (&if_, 0, sizeof if_);
   if_.gs = if_.fs = if_.es = if_.ds = if_.ss = SEL_UDSEG;
