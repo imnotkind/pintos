@@ -100,7 +100,7 @@ start_process (void *file_name_)
     for (i = argc - 1; i >= 0; i--){
       if_.esp -= 4;
       fn_save -= strlen(argv[i]) + 1;
-      *if_.esp = fn_save;
+      *(void **)if_.esp = fn_save;
     }
     if_.esp -= 4;
     *(char ***)if_.esp = if_.esp + 4;
