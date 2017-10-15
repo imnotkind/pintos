@@ -63,6 +63,7 @@ start_process (void *file_name_)
   char *argv[64];
   char *token, *save_ptr;
 
+  msg("hey");
   /* Initialize interrupt frame and load executable. */
   memset (&if_, 0, sizeof if_);
   if_.gs = if_.fs = if_.es = if_.ds = if_.ss = SEL_UDSEG;
@@ -110,7 +111,7 @@ start_process (void *file_name_)
     *(int *)if_.esp = 0; // return_address
   }
 
-  printf("HHH");
+  
   /* Start the user process by simulating a return from an
      interrupt, implemented by intr_exit (in
      threads/intr-stubs.S).  Because intr_exit takes all of its
