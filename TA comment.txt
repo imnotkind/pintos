@@ -4,3 +4,7 @@ Project #1 Design Report :
   어떤 구조체, 함수를 추가/고쳐야 하는지도 명시해주어야 합니다. 
   예를들어 load_avg 는 global variable 로 선언해야 하나요? 
   Prob2. Donation을 위한 방법이 더 필요합니다.
+
+Project #2 Design Report :
+"arg.passing: arg들을 stack에 저장하는 기준과 방법에 대한 상세한 설명이 필요합니다. 
+syscall: 전체적으로 설명이 빈약합니다. 각 syscall의 역할 뿐 아니라 고려해야 하는 조건 등에 대해 서술해주셔야 합니다. 특히 exit, wait 등은 깊은 고찰이 필요합니다. 예를 들면, exit시, parent가 wait중인 경우도 고려해야 합니다. wait시 process를 block, unblock하는 방법에 대해 생각해보세요. child가 wait되면 안되는 조건에 대해 고려해야 합니다. open된 file들을 관리하는 방법을 생각해보세요."
