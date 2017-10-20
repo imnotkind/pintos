@@ -79,6 +79,7 @@ start_process (void *file_name_)
   success = load (file_name, &if_.eip, &if_.esp);
 
   if (!success){
+    palloc_free_page (file_name);
     thread_exit ();
   }
   else{
@@ -88,7 +89,6 @@ start_process (void *file_name_)
     printf("debuging one...\n");
     for(i = argc - 1; i >= 0; i--){
       if_.esp -= strlen(argv[i]) + 1;
-      printf("argv[%d]: %s\n", i, argv[i]);
       strlcpy (if_.esp, argv[i], strlen(argv[i]) + 1);
     }
 
@@ -113,12 +113,12 @@ start_process (void *file_name_)
     *(int *)if_.esp = argc;
     if_.esp -= 4;
     *(int *)if_.esp = 0; // return_address
-
+    printf("%64x\n", if_.esp);
     printf("debuging five...\n");
   }
 
   palloc_free_page (file_name);
-
+  
   
   /* Start the user process by simulating a return from an
      interrupt, implemented by intr_exit (in
