@@ -79,7 +79,6 @@ start_process (void *file_name_)
   success = load (file_name, &if_.eip, &if_.esp);
 
   if (!success){
-    palloc_free_page (file_name);
     thread_exit ();
   }
   else{
@@ -115,14 +114,10 @@ start_process (void *file_name_)
     if_.esp -= 4;
     *(int *)if_.esp = 0; // return_address
 
-    palloc_free_page (file_name);
-
     printf("debuging five...\n");
-
-    printf("%64x\n", debug);
-    
   }
 
+  palloc_free_page (file_name);
 
   
   /* Start the user process by simulating a return from an
