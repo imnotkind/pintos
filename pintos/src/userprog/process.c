@@ -90,10 +90,10 @@ start_process (void *file_name_)
   
     for(i = argc - 1; i >= 0; i--){
       if_.esp -= strlen(argv[i]) + 1;
-      strlcpy (if_.esp, argv[i], strlen(argv[i]) + 1);
+      memcpy (if_.esp, argv[i], strlen(argv[i]) + 1);
     }
 
-
+    if_.esp -= (unsigned int)if_.esp % 4; // align
 
     if_.esp -= 4;
     *(int *)if_.esp = 0;
