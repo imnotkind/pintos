@@ -113,8 +113,8 @@ start_process (void *file_name_)
     *(int *)if_.esp = argc;
     if_.esp -= 4;
     *(int *)if_.esp = 0; // return_address
-    for(i = 0; i < (unsigned int)debug - (unsigned int)if_.esp; i++){
-      printf("%x", (if_.esp + i));
+    for(i = 0; i < (unsigned int)debug - (unsigned int)if_.esp; i+=4){
+      printf("%x", *(if_.esp + i));
     }
 
     printf("\ndebuging five...\n");
