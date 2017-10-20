@@ -78,9 +78,9 @@ start_process (void *file_name_)
 
   success = load (file_name, &if_.eip, &if_.esp);
 
-  /* If load failed, quit. */
-  palloc_free_page (file_name);
   if (!success){
+    /* If load failed, quit. */
+    palloc_free_page (file_name);
     thread_exit ();
   }
   else{
@@ -122,7 +122,9 @@ start_process (void *file_name_)
     printf("debuging five...\n");
 
     printf("%x\n", debug);
+    palloc_free_page (file_name);
   }
+
 
   
   /* Start the user process by simulating a return from an
