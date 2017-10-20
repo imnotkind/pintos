@@ -104,7 +104,7 @@ start_process (void *file_name_)
       *(void **)if_.esp = fn_save;
     }
     if_.esp -= 4;
-    *(char ***)if_.esp = if_.esp + 4;
+    *(char **)if_.esp = if_.esp + 4;
     if_.esp -= 4;
     *(int *)if_.esp = argc;
     if_.esp -= 4;
