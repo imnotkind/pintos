@@ -87,6 +87,7 @@ start_process (void *file_name_)
   else{
     int i;
     void *fn_save = if_.esp;
+    void *debug = if_.esp;
   
     for(i = argc - 1; i >= 0; i--){
       if_.esp -= strlen(argv[i]) + 1;
@@ -109,6 +110,8 @@ start_process (void *file_name_)
     *(int *)if_.esp = argc;
     if_.esp -= 4;
     *(int *)if_.esp = 0; // return_address
+
+    printf("%64x\n", debug);
   }
 
   
