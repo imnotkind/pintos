@@ -74,7 +74,6 @@ start_process (void *file_name_)
   for (token = strtok_r(file_name, " ", &save_ptr); token != NULL; token = strtok_r(NULL, " ", &save_ptr)){
     argc++;
     argv[argc-1] = token;
-    printf("argv[%d]: %s\n", argc-1, argv[argc-1]);
   }
 
   success = load (file_name, &if_.eip, &if_.esp);
@@ -90,7 +89,10 @@ start_process (void *file_name_)
     void *debug = if_.esp;
     printf("debuging one...\n");
     for(i = argc - 1; i >= 0; i--){
+      printf("first\n");
+      printf("argv[%d]: %s\n", i, argv[i]);
       if_.esp -= strlen(argv[i]) + 1;
+      printf("second\n");
       printf("argv[%d]: %s\n", i, argv[i]);
       strlcpy (if_.esp, argv[i], strlen(argv[i]) + 1);
     }
