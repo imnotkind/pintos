@@ -74,7 +74,7 @@ start_process (void *file_name_)
   for (token = strtok_r(file_name, " ", &save_ptr); token != NULL; token = strtok_r(NULL, " ", &save_ptr)){
     argc++;
     argv[argc-1] = token;
-    printf("argv[%d]: %s\n", argc, argv[argc-1]);
+    printf("argv[%d]: %s\n", argc-1, argv[argc-1]);
   }
 
   success = load (file_name, &if_.eip, &if_.esp);
