@@ -111,7 +111,8 @@ start_process (void *file_name_)
     if_.esp -= 4;
     *(int *)if_.esp = 0; // return_address
 
-    printf("%64x\n", debug);
+    printf("debuging...\n");
+    printf("%x\n", debug);
   }
 
   
