@@ -85,20 +85,21 @@ start_process (void *file_name_)
     thread_exit ();
   }
   else{
-    printf("debuging one...\n");
     int i;
     void *fn_save = if_.esp;
     void *debug = if_.esp;
-  
+    printf("debuging one...\n");
     for(i = argc - 1; i >= 0; i--){
       if_.esp -= strlen(argv[i]) + 1;
       memcpy (if_.esp, argv[i], strlen(argv[i]) + 1);
     }
+    printf("debuging two...\n");
 
     if_.esp -= (unsigned int)if_.esp % 4; // align
 
     if_.esp -= 4;
     *(int *)if_.esp = 0;
+    printf("debuging three...\n");
 
     for (i = argc - 1; i >= 0; i--){
       if_.esp -= 4;
@@ -112,7 +113,7 @@ start_process (void *file_name_)
     if_.esp -= 4;
     *(int *)if_.esp = 0; // return_address
 
-    printf("debuging two...\n");
+    printf("debuging four...\n");
     printf("%x\n", debug);
   }
 
