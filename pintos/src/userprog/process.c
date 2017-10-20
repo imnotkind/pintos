@@ -85,6 +85,7 @@ start_process (void *file_name_)
     thread_exit ();
   }
   else{
+    printf("debuging one...\n");
     int i;
     void *fn_save = if_.esp;
     void *debug = if_.esp;
@@ -111,7 +112,7 @@ start_process (void *file_name_)
     if_.esp -= 4;
     *(int *)if_.esp = 0; // return_address
 
-    printf("debuging...\n");
+    printf("debuging two...\n");
     printf("%x\n", debug);
   }
 
