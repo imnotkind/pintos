@@ -90,6 +90,7 @@ start_process (void *file_name_)
     for(i = argc - 1; i >= 0; i--){
       if_.esp -= strlen(argv[i]) + 1;
       strlcpy (if_.esp, argv[i], strlen(argv[i]) + 1);
+      printf("current esp : %s\n",if_.esp);
     }
 
     printf("debuging two...\n");
