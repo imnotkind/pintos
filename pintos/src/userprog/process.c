@@ -113,8 +113,11 @@ start_process (void *file_name_)
     *(int *)if_.esp = argc;
     if_.esp -= 4;
     *(int *)if_.esp = 0; // return_address
-    printf("%.128x\n", if_.esp);
-    printf("debuging five...\n");
+    for(i = 0; i < debug - esp; i++){
+      printf("%c", &(if_.esp + i));
+    }
+
+    printf("\ndebuging five...\n");
     palloc_free_page (file_name);
   }
   
