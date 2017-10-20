@@ -60,7 +60,7 @@ start_process (void *file_name_)
   struct intr_frame if_;
   bool success;
   int argc;
-  char *argv[64];
+  char *argv[64] = {NULL,};
   char *token, *save_ptr;
 
   /* Initialize interrupt frame and load executable. */
