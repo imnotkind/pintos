@@ -77,12 +77,9 @@ start_process (void *file_name_)
   }
 
   success = load (file_name, &if_.eip, &if_.esp);
-  printf("argv[0]: %s\n", argv[0]);
-  /* If load failed, quit. */
-  palloc_free_page (file_name);
-  printf("argv[0]: %s\n", argv[0]);
 
   if (!success){
+    palloc_free_page (file_name);
     thread_exit ();
   }
   else{
@@ -118,9 +115,11 @@ start_process (void *file_name_)
     if_.esp -= 4;
     *(int *)if_.esp = 0; // return_address
 
+    palloc_free_page (file_name);
+
     printf("debuging five...\n");
 
-    printf("%x\n", debug);
+    printf("%64x\n", debug);
     
   }
 
