@@ -90,7 +90,6 @@ start_process (void *file_name_)
     for(i = argc - 1; i >= 0; i--){
       if_.esp -= strlen(argv[i]) + 1;
       strlcpy (if_.esp, argv[i], strlen(argv[i]) + 1);
-      printf("current esp : %s\n",if_.esp);
     }
 
     printf("debuging two...\n");
@@ -114,7 +113,7 @@ start_process (void *file_name_)
     *(int *)if_.esp = argc;
     if_.esp -= 4;
     *(int *)if_.esp = 0; // return_address
-    printf("%.64x\n", if_.esp);
+    printf("%.128x\n", if_.esp);
     printf("debuging five...\n");
     palloc_free_page (file_name);
   }
