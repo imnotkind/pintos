@@ -77,10 +77,12 @@ start_process (void *file_name_)
   }
 
   success = load (file_name, &if_.eip, &if_.esp);
+  
+  /* If load failed, quit. */
+  palloc_free_page (file_name);
+  printf("argv[0]: %s\n", argv[0]);
 
   if (!success){
-    /* If load failed, quit. */
-    palloc_free_page (file_name);
     thread_exit ();
   }
   else{
@@ -89,8 +91,6 @@ start_process (void *file_name_)
     void *debug = if_.esp;
     printf("debuging one...\n");
     for(i = argc - 1; i >= 0; i--){
-      printf("first\n");
-      printf("argv[%d]: %s\n", i, argv[i]);
       if_.esp -= strlen(argv[i]) + 1;
       printf("second\n");
       printf("argv[%d]: %s\n", i, argv[i]);
@@ -122,7 +122,7 @@ start_process (void *file_name_)
     printf("debuging five...\n");
 
     printf("%x\n", debug);
-    palloc_free_page (file_name);
+    
   }
 
 
