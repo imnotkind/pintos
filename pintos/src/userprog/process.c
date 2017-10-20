@@ -71,11 +71,11 @@ start_process (void *file_name_)
 
 
   argc = 0;
-  for (token = strtok_r (file_name, " ", &save_ptr); token != NULL; token = strtok_r (NULL, " ", &save_ptr)){
+  for (token = strtok_r(file_name, " ", &save_ptr); token != NULL; token = strtok_r(NULL, " ", &save_ptr)){
     argc++;
     argv[argc-1] = token;
+    printf("%s\n", argv[argc-1]);
   }
-
 
   success = load (file_name, &if_.eip, &if_.esp);
 
