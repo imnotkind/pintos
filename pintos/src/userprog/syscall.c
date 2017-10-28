@@ -17,18 +17,29 @@ syscall_init (void)
 static void
 syscall_handler (struct intr_frame *f) 
 {
-  printf ("system call!\n");
   int *p = f->esp;
   //address safety checking needed !!!!!!!!!!!!!
   //is_user_vaddr(), pagedir_get_page() two tests required!
   int sysno = *p;
-  printf ("no %d\n",sysno);
+  printf ("system call! no %d\n",sysno);
   switch(sysno)
   {
     case SYS_HALT:                   /* Halt the operating system. */
       shutdown_power_off();
       break;
+
     case SYS_EXIT:                   /* Terminate this process. */
+    {
+      int status = *(int *)(p+1);
+      //we must close all files opened by process! LATER
+      //OR we must interact with parents MAYBE
+      f->eax = status;
+      printf("Exit : %s %d %d\n",thread_current()->name, thread_current()->tid, status);
+      thread_exit();
+      printf("hey");
+    }
+      break;
+
     case SYS_EXEC:                   /* Start another process. */
     case SYS_WAIT:                   /* Wait for a child process to die. */
     case SYS_CREATE:                 /* Create a file. */
@@ -45,10 +56,10 @@ syscall_handler (struct intr_frame *f)
       //printf("buffer : %s\n",buffer);
       //printf("size : %d\n",size);
       if(fd == 1)
-        putbuf(buffer,(size_t)size); //too big size may be a problem, but i wont care for now
+        putbuf(buffer,(size_t)size); //too big size may be a problem, but i wont care for now. LATER
       f->eax = size;
     }
-    break;
+      break;
 
     case SYS_SEEK:                   /* Change position in a file. */
     case SYS_TELL:                   /* Report current position in a file. */
