@@ -46,6 +46,7 @@ syscall_handler (struct intr_frame *f)
       printf("size : %d\n",size);
       if(fd == 1)
         putbuf(buffer,(size_t)size); //too big size may be a problem, but i wont care for now
+      f->eax = size;
     }
     break;
 
