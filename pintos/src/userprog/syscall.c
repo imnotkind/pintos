@@ -20,7 +20,7 @@ syscall_handler (struct intr_frame *f)
   printf ("system call!\n");
   int *p = f->esp;
   //address safety checking needed !!!!!!!!!!!!!
-  //is_user_vaddr(), pagedir_get_page() two tests
+  //is_user_vaddr(), pagedir_get_page() two tests required!
   int sysno = *p;
   printf ("no %d\n",sysno);
   switch(sysno)
@@ -66,5 +66,5 @@ syscall_handler (struct intr_frame *f)
     default:
       break;
   }
-  thread_exit ();
+  //thread_exit ();
 }
