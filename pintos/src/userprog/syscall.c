@@ -41,9 +41,9 @@ syscall_handler (struct intr_frame *f)
       int fd = *(int *)(p+1);
       char * buffer = *(char **)(p+2);
       unsigned int size = *(int *)(p+3);
-      printf("fd : %d\n",fd);
-      printf("buffer : %s\n",buffer);
-      printf("size : %d\n",size);
+      //printf("fd : %d\n",fd);
+      //printf("buffer : %s\n",buffer);
+      //printf("size : %d\n",size);
       if(fd == 1)
         putbuf(buffer,(size_t)size); //too big size may be a problem, but i wont care for now
       f->eax = size;
