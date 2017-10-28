@@ -34,7 +34,7 @@ syscall_handler (struct intr_frame *f)
       //we must close all files opened by process! LATER
       //OR we must interact with parents MAYBE
       f->eax = status;
-      printf("Exit : %s %d %d\n",thread_current()->name, thread_current()->tid, status);
+      printf("%s: exit(%d)\n",thread_current()->name, status);
       thread_exit();
       /* not reached */
     }
