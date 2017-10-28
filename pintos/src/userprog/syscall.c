@@ -20,8 +20,9 @@ syscall_handler (struct intr_frame *f)
   printf ("system call!\n");
   int *p = f->esp;
   //address safety checking needed !!!!!!!!!!!!!
+  //is_user_vaddr(), pagedir_get_page() two tests
   int sysno = *p;
-  printf ("no %d",sysno);
+  printf ("no %d\n",sysno);
   switch(sysno)
   {
     case SYS_HALT:                   /* Halt the operating system. */
@@ -41,6 +42,10 @@ syscall_handler (struct intr_frame *f)
       char * buffer = *(char **)(p+2);
       unsigned int size = *(int *)(p+3);
       printf("fd : %d ",fd);
+      printf("buffer : %s",buffer);
+      printf("size : %d",size);
+      if(fd == 1)
+        putbuf(buffer,(size_t)size);
     }
 
     case SYS_SEEK:                   /* Change position in a file. */
