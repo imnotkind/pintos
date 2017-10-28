@@ -36,7 +36,7 @@ syscall_handler (struct intr_frame *f)
       f->eax = status;
       printf("Exit : %s %d %d\n",thread_current()->name, thread_current()->tid, status);
       thread_exit();
-      printf("hey");
+      /* not reached */
     }
       break;
 
