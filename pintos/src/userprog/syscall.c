@@ -4,6 +4,7 @@
 #include "threads/interrupt.h"
 #include "threads/thread.h"
 #include "threads/vaddr.h"
+#include "devices/shutdown.h"
 
 static void syscall_handler (struct intr_frame *);
 
@@ -56,6 +57,8 @@ syscall_handler (struct intr_frame *f)
     case SYS_READDIR:                /* Reads a directory entry. */
     case SYS_ISDIR:                  /* Tests if a fd represents a directory. */
     case SYS_INUMBER:                 /* Returns the inode number for a fd. */
+    default:
+      break;
   }
   thread_exit ();
 }
