@@ -16,5 +16,9 @@ static void
 syscall_handler (struct intr_frame *f UNUSED) 
 {
   printf ("system call!\n");
+  int *p = f->esp;
+  //address safety checking needed
+  int sysno = *p;
+  printf ("no %d",sysno);
   thread_exit ();
 }
