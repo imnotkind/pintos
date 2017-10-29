@@ -7,6 +7,7 @@
 #include "devices/shutdown.h"
 #include "filesys/file.h"
 #include "filesys/filesys.h"
+#include <syscall.h>
 
 static void syscall_handler (struct intr_frame *);
 
@@ -23,7 +24,7 @@ syscall_handler (struct intr_frame *f)
   //address safty check with is_user_vaddr() and pagrfir_get_page()
   if (!is_user_vaddr(p) || !pagedir_get_page(thread_current()->pagedir, p)){
     printf("adress is not safe!\n");
-    //exit(-1);
+    exit(-1);
   }
     
 
@@ -44,7 +45,7 @@ syscall_handler (struct intr_frame *f)
       f->eax = status;
       printf("%s: exit(%d)\n",thread_current()->name, status);//maybe if process_exit occurs without syscall, then this print doesnt occur. it this ok?
       thread_exit();
-      /* not reached */
+      NOT_REACHED();
       break;
     }
 
