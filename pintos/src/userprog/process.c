@@ -152,6 +152,7 @@ process_wait (tid_t child_tid)
       child = t;
       break;
     }
+    printf("child list tid : %d\n",t->tid);
   }
   ASSERT(child != NULL);
   sema_down(&child->wait);
