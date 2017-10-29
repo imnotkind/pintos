@@ -111,9 +111,11 @@ start_process (void *file_name_)
     if_.esp -= 4;
     *(int *)if_.esp = 0; // return_address
 
+    /*
     for(i = 0; i < (unsigned int)debug - (unsigned int)if_.esp; i+=4){
       printf("[%x] %.8x\n", (int)if_.esp + i, *(int *)(if_.esp + i));
     }
+    */
 
     palloc_free_page (file_name);
   }
@@ -146,12 +148,13 @@ process_wait (tid_t child_tid)
   for (e = list_begin (&thread_current()->child_list); e != list_end (&thread_current()->child_list);
   e = list_next (e))
   {
-    t = list_entry (e, struct thread, allelem);
+    t = list_entry (e, struct thread, child_elem);
     if(t->tid == child_tid)
     {
       child = t;
       break;
     }
+    //printf("child list tid : %d, name : %s\n",t->tid, t->name);
   }
   ASSERT(child != NULL);
   sema_down(&child->wait);
@@ -182,7 +185,11 @@ process_exit (void)
       pagedir_activate (NULL);
       pagedir_destroy (pd);
     }
+    
   list_remove(&cur->child_elem);
+  intr_disable();
+  thread_block();
+  intr_enable();
 }
 
 /* Sets up the CPU for running user code in the current
