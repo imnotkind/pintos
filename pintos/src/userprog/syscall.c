@@ -22,7 +22,6 @@ syscall_handler (struct intr_frame *f)
   int *p = f->esp;
   //address safty check with is_user_vaddr() and pagrfir_get_page()
   if (!is_user_vaddr(p) || !pagedir_get_page(thread_current()->pagedir, p)){
-    printf("adress is not safe!\n");
     //sys_exit(-1);
     f->eax = -1;
     printf("%s: exit(%d)\n",thread_current()->name, -1);//maybe if process_exit occurs without syscall, then this print doesnt occur. it this ok?
