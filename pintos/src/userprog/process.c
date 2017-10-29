@@ -111,9 +111,11 @@ start_process (void *file_name_)
     if_.esp -= 4;
     *(int *)if_.esp = 0; // return_address
 
+    /*
     for(i = 0; i < (unsigned int)debug - (unsigned int)if_.esp; i+=4){
       printf("[%x] %.8x\n", (int)if_.esp + i, *(int *)(if_.esp + i));
     }
+    */
 
     palloc_free_page (file_name);
   }
