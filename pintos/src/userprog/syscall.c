@@ -25,7 +25,7 @@ syscall_handler (struct intr_frame *f)
     printf("adress is not safe!\n");
     //sys_exit(-1);
     f->eax = -1;
-    printf("%s: exit(%d)\n",thread_current()->name, status);//maybe if process_exit occurs without syscall, then this print doesnt occur. it this ok?
+    printf("%s: exit(%d)\n",thread_current()->name, -1);//maybe if process_exit occurs without syscall, then this print doesnt occur. it this ok?
     thread_exit();
     NOT_REACHED();
   }
