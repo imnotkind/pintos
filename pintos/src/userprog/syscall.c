@@ -20,9 +20,12 @@ static void
 syscall_handler (struct intr_frame *f) 
 {
   int *p = f->esp;
-  //address safety checking needed !!!!!!!!!!!!!
-  //is_user_vaddr(), pagedir_get_page() two tests required!
+  //address safty check with is_user_vaddr() and pagrfir_get_page()
+  if (!is_user_vaddr(p) || !pagedir_get_page(thread_current()->pagedir, p);)
+    exit(-1);
+
   int sysno = *p;
+  
   printf ("system call! no %d\n",sysno);
   switch(sysno)
   {
