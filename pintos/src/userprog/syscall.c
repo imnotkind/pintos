@@ -29,7 +29,7 @@ syscall_handler (struct intr_frame *f)
 
   int sysno = *p;
   
-  printf ("system call! no %d\n",sysno);
+  //printf ("system call! no %d\n",sysno);
   switch(sysno)
   {
     case SYS_HALT:                   /* Halt the operating system. */
