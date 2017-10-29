@@ -5,6 +5,7 @@
 #include <list.h>
 #include <stdint.h>
 #include "fixed-point.h"
+#include "threads/synch.h"
 
 /* States in a thread's life cycle. */
 enum thread_status
@@ -103,7 +104,7 @@ struct thread      //pintos manual 67
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
-    //struct semaphore wait;
+    struct semaphore wait;
 #endif
 
     /* Owned by thread.c. */
