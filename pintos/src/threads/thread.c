@@ -294,6 +294,14 @@ thread_tid (void)
   return thread_current ()->tid;
 }
 
+/*
+struct thread *
+get_thread_by_tid (tid_t tid)
+{
+
+}
+*/
+
 /* Deschedules the current thread and destroys it.  Never
    returns to the caller. */
 void
@@ -719,6 +727,9 @@ init_thread (struct thread *t, const char *name, int priority)
   t->need_lock = NULL;
   list_init(&t->lock_list);
   t->magic = THREAD_MAGIC;
+  #ifdef USERPROG
+    sema_init(&t->wait,0);
+  #endif
   list_push_back (&all_list, &t->allelem);
 }
 

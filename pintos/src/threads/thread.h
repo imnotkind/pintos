@@ -103,6 +103,7 @@ struct thread      //pintos manual 67
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
+    struct semaphore wait;
 #endif
 
     /* Owned by thread.c. */
