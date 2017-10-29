@@ -140,7 +140,20 @@ start_process (void *file_name_)
 int
 process_wait (tid_t child_tid) 
 {
-  struct thread * child = tid_to_thread(child_tid);
+  struct list_elem * e;
+  struct thread *t;
+  struct thread *child = NULL;
+  for (e = list_begin (&thread_current()->child_list); e != list_end (&thread_current()->child_list);
+  e = list_next (e))
+  {
+    t = list_entry (e, struct thread, allelem);
+    if(t->tid == child_tid)
+    {
+      child = t;
+      break;
+    }
+  }
+  ASSERT(child != NULL);
   sema_down(&child->wait);
   
 }

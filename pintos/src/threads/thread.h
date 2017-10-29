@@ -105,6 +105,7 @@ struct thread      //pintos manual 67
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
     struct semaphore wait;
+    struct list child_list;
 #endif
 
     /* Owned by thread.c. */
@@ -131,7 +132,6 @@ void thread_unblock (struct thread *);
 struct thread *thread_current (void);
 tid_t thread_tid (void);
 const char *thread_name (void);
-struct thread *tid_to_thread (tid_t tid);
 
 void thread_exit (void) NO_RETURN;
 void thread_yield (void);
