@@ -5,6 +5,8 @@
 #include "threads/thread.h"
 #include "threads/vaddr.h"
 #include "devices/shutdown.h"
+#include "filesys/file.h"
+#include "filesys/filesys.h"
 
 static void syscall_handler (struct intr_frame *);
 
@@ -45,6 +47,18 @@ syscall_handler (struct intr_frame *f)
     case SYS_CREATE:                 /* Create a file. */
     case SYS_REMOVE:                 /* Delete a file. */
     case SYS_OPEN:                   /* Open a file. */
+    {
+      struct file* fp = filesys_open (*(char **)(p+1));
+      if(!fp){
+        return -1;
+      }
+      else{
+        int fd;
+        
+      }
+    }
+      break;
+
     case SYS_FILESIZE:               /* Obtain a file's size. */
     case SYS_READ:                   /* Read from a file. */
     case SYS_WRITE:                  /* Write to a file. */
