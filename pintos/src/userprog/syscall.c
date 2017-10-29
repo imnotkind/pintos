@@ -18,9 +18,8 @@ syscall_init (void)
 
 static void check_addr_safe(void *vaddr)
 {
-  if (!is_user_vaddr(vadder) || !pagedir_get_page(thread_current()->pagedir, vadder)){
-    f->eax = -1;
-    printf("%s: exit(%d)\n",thread_current()->name, -1);//maybe if process_exit occurs without syscall, then this print doesnt occur. it this ok?
+  if (!is_user_vaddr(vaddr) || !pagedir_get_page(thread_current()->pagedir, vaddr)){
+    printf("%s: exit(-1)\n",thread_current()->name);//maybe if process_exit occurs without syscall, then this print doesnt occur. it this ok?
     thread_exit();
     NOT_REACHED();
   }
