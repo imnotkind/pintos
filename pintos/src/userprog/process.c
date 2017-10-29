@@ -146,7 +146,7 @@ process_wait (tid_t child_tid)
   for (e = list_begin (&thread_current()->child_list); e != list_end (&thread_current()->child_list);
   e = list_next (e))
   {
-    t = list_entry (e, struct thread, allelem);
+    t = list_entry (e, struct thread, child_elem);
     if(t->tid == child_tid)
     {
       child = t;
