@@ -182,6 +182,7 @@ process_exit (void)
       pagedir_activate (NULL);
       pagedir_destroy (pd);
     }
+  list_remove(thread_current()->child_elem);
 }
 
 /* Sets up the CPU for running user code in the current
