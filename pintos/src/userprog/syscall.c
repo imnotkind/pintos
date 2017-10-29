@@ -36,11 +36,12 @@ syscall_handler (struct intr_frame *f)
       //we must close all files opened by process! LATER
       //OR we must interact with parents MAYBE
       f->eax = status;
-      printf("%s: exit(%d)\n",thread_current()->name, status);
+      printf("%s: exit(%d)\n",thread_current()->name, status);//maybe if process_exit occurs without syscall, then this print doesnt occur. it this ok?
       thread_exit();
       /* not reached */
-    }
       break;
+    }
+
 
     case SYS_EXEC:                   /* Start another process. */
     case SYS_WAIT:                   /* Wait for a child process to die. */
@@ -72,8 +73,9 @@ syscall_handler (struct intr_frame *f)
       if(fd == 1)
         putbuf(buffer,(size_t)size); //too big size may be a problem, but i wont care for now. LATER
       f->eax = size;
-    }
       break;
+    }
+
 
     case SYS_SEEK:                   /* Change position in a file. */
     case SYS_TELL:                   /* Report current position in a file. */

@@ -17,6 +17,7 @@
 #include "threads/palloc.h"
 #include "threads/thread.h"
 #include "threads/vaddr.h"
+#include "threads/thread.h"
 
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
@@ -137,9 +138,24 @@ start_process (void *file_name_)
    This function will be implemented in problem 2-2.  For now, it
    does nothing. */
 int
-process_wait (tid_t child_tid UNUSED) 
+process_wait (tid_t child_tid) 
 {
-  while(1);
+  struct list_elem * e;
+  struct thread *t;
+  struct thread *child = NULL;
+  for (e = list_begin (&thread_current()->child_list); e != list_end (&thread_current()->child_list);
+  e = list_next (e))
+  {
+    t = list_entry (e, struct thread, allelem);
+    if(t->tid == child_tid)
+    {
+      child = t;
+      break;
+    }
+  }
+  ASSERT(child != NULL);
+  sema_down(&child->wait);
+  
 }
 
 /* Free the current process's resources. */
@@ -149,6 +165,7 @@ process_exit (void)
   struct thread *cur = thread_current ();
   uint32_t *pd;
 
+  sema_up(&thread_current()->wait);
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
   pd = cur->pagedir;

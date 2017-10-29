@@ -719,6 +719,10 @@ init_thread (struct thread *t, const char *name, int priority)
   t->need_lock = NULL;
   list_init(&t->lock_list);
   t->magic = THREAD_MAGIC;
+  #ifdef USERPROG
+    sema_init(&t->wait,0);
+    list_init(&t->child_list);
+  #endif
   list_push_back (&all_list, &t->allelem);
 }
 
