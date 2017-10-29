@@ -51,11 +51,9 @@ syscall_handler (struct intr_frame *f)
     {
       struct file* fp = filesys_open (*(char **)(p+1));
       if(!fp){
-        return -1;
+        f->eax = -1;
       }
-      else{
-        int fd;
-        
+      else{        
       }
     }
       break;
