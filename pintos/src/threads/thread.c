@@ -294,13 +294,21 @@ thread_tid (void)
   return thread_current ()->tid;
 }
 
-/*
-struct thread *
-get_thread_by_tid (tid_t tid)
-{
 
+struct thread *
+tid_to_thread (tid_t tid)
+{
+  struct list_elem * e;
+  for (e = list_begin (&all_list); e != list_end (&all_list);
+  e = list_next (e))
+  {
+  struct thread *t = list_entry (e, struct thread, allelem);
+  if(t->tid == tid)
+    return t;
+  }
+  NOT_REACHED();
 }
-*/
+
 
 /* Deschedules the current thread and destroys it.  Never
    returns to the caller. */
