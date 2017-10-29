@@ -16,19 +16,22 @@ syscall_init (void)
   intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
 }
 
-static void
-syscall_handler (struct intr_frame *f) 
+void check_addr_safe(void *vaddr)
 {
-  int *p = f->esp;
-  //address safty check with is_user_vaddr() and pagrfir_get_page()
-  if (!is_user_vaddr(p) || !pagedir_get_page(thread_current()->pagedir, p)){
-    //sys_exit(-1);
+  if (!is_user_vaddr(vadder) || !pagedir_get_page(thread_current()->pagedir, vadder)){
     f->eax = -1;
     printf("%s: exit(%d)\n",thread_current()->name, -1);//maybe if process_exit occurs without syscall, then this print doesnt occur. it this ok?
     thread_exit();
     NOT_REACHED();
   }
-    
+}
+
+static void
+syscall_handler (struct intr_frame *f) 
+{
+  int *p = f->esp;
+  //address safty check with is_user_vaddr() and pagrfir_get_page()
+  check_addr_safe(p);
 
   int sysno = *p;
   
@@ -41,6 +44,7 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_EXIT:                   /* Terminate this process. */
     {
+      check_addr_safe(p+1);
       int status = *(int *)(p+1);
       //we must close all files opened by process! LATER
       //OR we must interact with parents MAYBE
@@ -71,6 +75,9 @@ syscall_handler (struct intr_frame *f)
     case SYS_READ:                   /* Read from a file. */
     case SYS_WRITE:                  /* Write to a file. */
     {
+      check_addr_safe(p+1);
+      check_addr_safe(p+2);
+      check_addr_safe(p+3);
       int fd = *(int *)(p+1);
       char * buffer = *(char **)(p+2);
       unsigned int size = *(int *)(p+3);
