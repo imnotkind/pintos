@@ -23,7 +23,7 @@ syscall_handler (struct intr_frame *f)
   //address safty check with is_user_vaddr() and pagrfir_get_page()
   if (!is_user_vaddr(p) || !pagedir_get_page(thread_current()->pagedir, p);){
     printf("adress is not safe!\n");
-    exit(-1);
+    //exit(-1);
   }
     
 
