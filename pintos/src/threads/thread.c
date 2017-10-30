@@ -725,6 +725,7 @@ init_thread (struct thread *t, const char *name, int priority)
   #ifdef USERPROG
     sema_init(&t->wait,0);
     list_init(&t->child_list);
+    list_init(&t->file_list);
   #endif
   list_push_back (&all_list, &t->allelem);
 }

@@ -7,9 +7,8 @@
 #include "devices/shutdown.h"
 #include "filesys/file.h"
 #include "filesys/filesys.h"
-#include <list.h>
-
-static void syscall_handler (struct intr_frame *); //don't move this to header
+#include <list.h>]
+#include "threads/malloc.h"
 
 struct  flist_elem
 {
@@ -19,6 +18,8 @@ struct  flist_elem
 };
 
 static fd_next = 3;
+
+static void syscall_handler (struct intr_frame *); //don't move this to header
 
 void
 syscall_init (void) 
@@ -79,7 +80,7 @@ syscall_handler (struct intr_frame *f)
         f->eax = -1;
       }
       else{
-        struct flist_elem *fe = (struct flist_elem *)malloc(sizeof(struct flist_elem));
+        struct flist_elem *fe = (struct flist_elem*)malloc(sizeof(struct flist_elem));
         fe->fp = fp;
         fe->fd = fd_next++;
         list_push_back(&thread_current()->file_list, fe->flist_elem);
