@@ -22,7 +22,6 @@ struct  flist_elem
 static int fd_next = 3;
 
 static void syscall_handler (struct intr_frame *); //don't move this to header
-static void check_addr_safe(const void *vaddr);
 
 void
 syscall_init (void) 
