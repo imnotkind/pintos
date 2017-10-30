@@ -8,7 +8,7 @@
 #include "filesys/file.h"
 #include "filesys/filesys.h"
 
-
+static void syscall_handler (struct intr_frame *);
 
 void
 syscall_init (void) 
@@ -29,7 +29,7 @@ static void
 syscall_handler (struct intr_frame *f) 
 {
   int *p = f->esp;
-  //address safty check with is_user_vaddr() and pagedir_get_page()
+  //address safty check with is_user_vaddr() and pagrfir_get_page()
   check_addr_safe(p);
 
   int sysno = *p;
