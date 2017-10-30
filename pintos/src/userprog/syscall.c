@@ -67,7 +67,12 @@ syscall_handler (struct intr_frame *f)
       
     case SYS_CREATE:                 /* Create a file. */
     {
-
+      check_addr_safe(p+1);
+      check_addr_safe(*(p+1));
+      check_addr_safe(p+2);
+      //lock
+      f->eax = filesys_create(*(p+1),*(p+2));
+      //unlock
     }
     case SYS_REMOVE:                 /* Delete a file. */
     case SYS_OPEN:                   /* Open a file. */
@@ -75,14 +80,9 @@ syscall_handler (struct intr_frame *f)
       check_addr_safe(p+1);
       check_addr_safe(*(p+1));
       char * file_name = *(char **)(p+1);
-      /*
-      if(file_name==NULL){
-        f->eax = -1;
-        break;
-      }
-      */
-        
+      //lock
       struct file* fp = filesys_open (file_name);
+      //unlock
       if(!fp){
         f->eax = -1;
         break;
