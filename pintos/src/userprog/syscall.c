@@ -71,7 +71,7 @@ syscall_handler (struct intr_frame *f)
     case SYS_EXEC:                   /* Start another process. */
     case SYS_WAIT:                   /* Wait for a child process to die. */
       check_addr_safe(p+1);
-      f->eax = process_wait();
+      //f->eax = process_wait();
     case SYS_CREATE:                 /* Create a file. */
     case SYS_REMOVE:                 /* Delete a file. */
     case SYS_OPEN:                   /* Open a file. */
@@ -85,7 +85,7 @@ syscall_handler (struct intr_frame *f)
         struct flist_elem *fe = (struct flist_elem*)malloc(sizeof(struct flist_elem));
         fe->fp = fp;
         fe->fd = fd_next++;
-        list_push_back(&thread_current()->file_list, fe->flist_elem);
+        list_push_back(&thread_current()->file_list, fe->elem);
         f->eax = fe->fd;
       }
     }
