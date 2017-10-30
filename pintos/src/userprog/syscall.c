@@ -8,7 +8,7 @@
 #include "filesys/file.h"
 #include "filesys/filesys.h"
 
-static void syscall_handler (struct intr_frame *);
+static void syscall_handler (struct intr_frame *); //don't move this to header
 
 void
 syscall_init (void) 
@@ -29,7 +29,7 @@ static void
 syscall_handler (struct intr_frame *f) 
 {
   int *p = f->esp;
-  //address safty check with is_user_vaddr() and pagrfir_get_page()
+  //address safty check with is_user_vaddr() and pagedir_get_page()
   check_addr_safe(p);
 
   int sysno = *p;
@@ -57,6 +57,7 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_EXEC:                   /* Start another process. */
     case SYS_WAIT:                   /* Wait for a child process to die. */
+      check_addr_safe(p+1);
       f->eax = process_wait();
     case SYS_CREATE:                 /* Create a file. */
     case SYS_REMOVE:                 /* Delete a file. */
