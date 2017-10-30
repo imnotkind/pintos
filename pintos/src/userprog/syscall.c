@@ -76,6 +76,7 @@ syscall_handler (struct intr_frame *f)
       //lock
       f->eax = filesys_create(file, initial_size);
       //unlock
+      break;
     }
     case SYS_REMOVE:                 /* Delete a file. */
     case SYS_OPEN:                   /* Open a file. */
