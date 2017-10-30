@@ -70,8 +70,11 @@ syscall_handler (struct intr_frame *f)
       check_addr_safe(p+1);
       check_addr_safe(*(p+1));
       check_addr_safe(p+2);
+      char *file = *(char **)(p+1);
+      unsigned initial_size = *(unsigned *)(p+2);
+
       //lock
-      f->eax = filesys_create(*(p+1),*(p+2));
+      f->eax = filesys_create(file, initial_size);
       //unlock
     }
     case SYS_REMOVE:                 /* Delete a file. */
