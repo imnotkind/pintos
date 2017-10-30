@@ -141,7 +141,7 @@ syscall_handler (struct intr_frame *f)
         if (!fe)
           f->eax = -1;
         else
-          f->eax = file_read(fe->fp, buffer, size);
+          f->eax = file_read(fe->fp, buffer, (off_t)size);
         //unlock
       }
       
