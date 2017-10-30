@@ -58,8 +58,13 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_EXEC:                   /* Start another process. */
     case SYS_WAIT:                   /* Wait for a child process to die. */
+    {
       check_addr_safe(p+1);
-      //f->eax = process_wait();
+      pid_t pid = *(pid_t *)(p+1);
+      f->eax = process_wait(pid);
+      break;
+    }
+      
     case SYS_CREATE:                 /* Create a file. */
     case SYS_REMOVE:                 /* Delete a file. */
     case SYS_OPEN:                   /* Open a file. */
