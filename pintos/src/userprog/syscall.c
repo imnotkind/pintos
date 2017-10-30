@@ -7,7 +7,7 @@
 #include "devices/shutdown.h"
 #include "filesys/file.h"
 #include "filesys/filesys.h"
-#include <list.h>]
+#include <list.h>
 #include "threads/malloc.h"
 #include "userprog/pagedir.h"
 #include "userprog/process.h"
