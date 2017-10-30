@@ -11,7 +11,6 @@
 #include "threads/malloc.h"
 #include "userprog/pagedir.h"
 #include "userprog/process.h"
-#include <syscall.h>
 
 struct  flist_elem
 {
@@ -61,7 +60,7 @@ syscall_handler (struct intr_frame *f)
     case SYS_WAIT:                   /* Wait for a child process to die. */
     {
       check_addr_safe(p+1);
-      pid_t pid = *(pid_t *)(p+1);
+      int pid = *(int *)(p+1);
       f->eax = process_wait(pid);
       break;
     }
