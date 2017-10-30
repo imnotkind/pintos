@@ -51,10 +51,7 @@ syscall_handler (struct intr_frame *f)
       int status = *(int *)(p+1);
       //we must close all files opened by process! LATER
       //OR we must interact with parents MAYBE
-      f->eax = status;
-      printf("%s: exit(%d)\n",thread_current()->name, status);//maybe if process_exit occurs without syscall, then this print doesnt occur. it this ok?
-      thread_exit();
-      NOT_REACHED();
+      exit(status);
       break;
     }
 
@@ -68,9 +65,16 @@ syscall_handler (struct intr_frame *f)
     case SYS_OPEN:                   /* Open a file. */
     {
       check_addr_safe(p+1);
-      struct file* fp = filesys_open (*(char **)(p+1));
+      char * file_name = *(char **)(p+1);
+      if(file_name==NULL){
+        f->eax = -1;
+        break;
+      }
+        
+      struct file* fp = filesys_open (file_name);
       if(!fp){
         f->eax = -1;
+        break;
       }
       else{
         struct flist_elem *fe = (struct flist_elem*)malloc(sizeof(struct flist_elem));
@@ -79,8 +83,9 @@ syscall_handler (struct intr_frame *f)
         list_push_back(&thread_current()->file_list, &fe->elem);
         f->eax = fe->fd;
       }
-    }
       break;
+    }
+      
 
     case SYS_FILESIZE:               /* Obtain a file's size. */
     case SYS_READ:                   /* Read from a file. */
@@ -123,9 +128,16 @@ syscall_handler (struct intr_frame *f)
 
 static void check_addr_safe(const void *vaddr)
 {
-  if (!vaddr || !is_user_vaddr(vaddr) || !pagedir_get_page(thread_current()->pagedir, vaddr)){
-    printf("%s: exit(-1)\n",thread_current()->name);//maybe if process_exit occurs without syscall, then this print doesnt occur. it this ok?
-    thread_exit();
-    NOT_REACHED();
+  if (!vaddr || !is_user_vaddr(vaddr) || !pagedir_get_page(thread_current()->pagedir, vaddr))
+  {
+    exit(-1);
   }
+}
+
+void exit(int status)
+{
+  thread_current()->exit_code = status;
+  printf("%s: exit(%d)\n",thread_current()->name, status);
+  thread_exit();
+  NOT_REACHED();
 }

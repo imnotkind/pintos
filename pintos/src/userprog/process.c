@@ -145,6 +145,7 @@ process_wait (tid_t child_tid)
   struct list_elem * e;
   struct thread *t;
   struct thread *child = NULL;
+  int ret = -1;
   for (e = list_begin (&thread_current()->child_list); e != list_end (&thread_current()->child_list);
   e = list_next (e))
   {
@@ -154,12 +155,19 @@ process_wait (tid_t child_tid)
       child = t;
       break;
     }
-    //printf("child list tid : %d, name : %s\n",t->tid, t->name);
+    
   }
   if(child == NULL)
     return -1;
+  if(child->exit_code != EXIT_CODE_DEFAULT && child->exit_code != EXIT_CODE_INVALID){
+    ret = child->exit_code;
+    return ret;
+  }
+    
   sema_down(&child->wait);
+  ret = child->exit_code;
   
+  return ret;
 }
 
 /* Free the current process's resources. */
