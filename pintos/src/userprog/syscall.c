@@ -22,6 +22,7 @@ struct  flist_elem
 static int fd_next = 3;
 
 static void syscall_handler (struct intr_frame *); //don't move this to header
+struct flist_elem* find_flist_elem(int fd);
 
 void
 syscall_init (void) 
@@ -114,6 +115,38 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_FILESIZE:               /* Obtain a file's size. */
     case SYS_READ:                   /* Read from a file. */
+    {
+      check_addr_safe(p+1);
+      check_addr_safe(p+2);
+      check_addr_safe(*(p+2));
+      check_addr_safe(p+3);
+      int fd = *(int *)(p+1);
+      char *buffer = *(char **)(p+2);
+      unsigned size = *(unsigned *)(p+3);
+
+      if (fd == STDIN_FILENO)
+      {
+        int i;
+        uint8_t* local_buffer = (uint8_t *)buffer;
+        for(i = 0; i < size; i++)
+        {
+          local_buffer[i] = input_getc();
+        }
+        f->eax = size;
+      }
+      else
+      {
+        //lock
+        struct flist_elem *fe = find_flist_elem(fd);
+        if (!fe)
+          f->eax = -1;
+        else
+          f->eax = file_read(fe->fp, buffer, size);
+        //unlock
+      }
+      
+      break;
+    }
     case SYS_WRITE:                  /* Write to a file. */
     {
       check_addr_safe(p+1);
@@ -122,7 +155,7 @@ syscall_handler (struct intr_frame *f)
       check_addr_safe(p+3);
       int fd = *(int *)(p+1);
       char * buffer = *(char **)(p+2);
-      unsigned int size = *(int *)(p+3);
+      unsigned size = *(unsigned *)(p+3);
       //printf("fd : %d\n",fd);
       //printf("buffer : %s\n",buffer);
       //printf("size : %d\n",size);
@@ -138,22 +171,12 @@ syscall_handler (struct intr_frame *f)
     case SYS_CLOSE:                  /* Close a file. */
     {
       check_addr_safe(p+1);
-      struct list_elem *e;
       int fd = *(int *)(p+1);
-      struct flist_elem *fe = NULL;
-      struct thread *cur = thread_current();
-      
-      for (e = list_begin(&cur->file_list); e != list_end(&cur->file_list); e = list_next(e))
+
+      struct flist_elem *fe = find_flist_elem(fd);
+      if(!fe)
       {
-        fe = list_entry (e, struct flist_elem, elem);
-        if (fe->fd == fd){
-          list_remove(e);
-          file_close(fe->fp);
-          break;
-        }
-      }
-      if(!fe){
-        //when there is no file 
+        //when file is not found
       }
       free(fe);
       break;
@@ -180,6 +203,21 @@ static void check_addr_safe(const void *vaddr)
   {
     sys_exit(-1);
   }
+}
+
+struct flist_elem* find_flist_elem(int fd)
+{
+  struct flist_elem *fe = NULL;
+  struct thread *cur = thread_current();
+  struct list_elem *e;
+  
+  for (e = list_begin(&cur->file_list); e != list_end(&cur->file_list); e = list_next(e))
+  {
+    fe = list_entry (e, struct flist_elem, elem);
+    if (fe->fd == fd)
+      break;
+  }
+  return fe;
 }
 
 void sys_exit(int status)
