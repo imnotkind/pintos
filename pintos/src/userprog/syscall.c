@@ -85,7 +85,7 @@ syscall_handler (struct intr_frame *f)
         struct flist_elem *fe = (struct flist_elem*)malloc(sizeof(struct flist_elem));
         fe->fp = fp;
         fe->fd = fd_next++;
-        list_push_back(&thread_current()->file_list, fe->elem);
+        list_push_back(&thread_current()->file_list, &fe->elem);
         f->eax = fe->fd;
       }
     }
