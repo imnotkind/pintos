@@ -9,6 +9,7 @@
 #include "filesys/filesys.h"
 #include <list.h>]
 #include "threads/malloc.h"
+#include "userprog/pagedir.h"
 
 struct  flist_elem
 {
