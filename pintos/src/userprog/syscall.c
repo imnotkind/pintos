@@ -79,6 +79,16 @@ syscall_handler (struct intr_frame *f)
       break;
     }
     case SYS_REMOVE:                 /* Delete a file. */
+    {
+      check_addr_safe(p+1);
+      check_addr_safe(*(p+1));
+      char *file = *(char **)(p+1);
+
+      //lock
+      f->eax = filesys_remove(file);
+      //unlock
+      break;
+    }
     case SYS_OPEN:                   /* Open a file. */
     {
       check_addr_safe(p+1);
