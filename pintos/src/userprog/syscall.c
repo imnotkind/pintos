@@ -7,8 +7,18 @@
 #include "devices/shutdown.h"
 #include "filesys/file.h"
 #include "filesys/filesys.h"
+#include <list.h>
 
 static void syscall_handler (struct intr_frame *); //don't move this to header
+
+struct  flist_elem
+{
+  int fd; //file descriptor
+  struct file *fp //file pointer
+  struct list_elem elem;
+};
+
+static fd_next = 3;
 
 void
 syscall_init (void) 
@@ -63,11 +73,17 @@ syscall_handler (struct intr_frame *f)
     case SYS_REMOVE:                 /* Delete a file. */
     case SYS_OPEN:                   /* Open a file. */
     {
+      check_addr_safe(p+1);
       struct file* fp = filesys_open (*(char **)(p+1));
       if(!fp){
         f->eax = -1;
       }
-      else{        
+      else{
+        struct flist_elem *fe = (struct flist_elem *)malloc(sizeof(struct flist_elem));
+        fe->fp = fp;
+        fe->fd = fd_next++;
+        list_push_back(&thread_current()->file_list, fe->flist_elem);
+        f->eax = fd;
       }
     }
       break;

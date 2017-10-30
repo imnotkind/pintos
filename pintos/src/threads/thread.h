@@ -107,6 +107,7 @@ struct thread      //pintos manual 67
     struct semaphore wait;
     struct list child_list;
     struct list_elem child_elem;
+    struct list file_list;
 #endif
 
     /* Owned by thread.c. */
