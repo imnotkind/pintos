@@ -10,6 +10,7 @@
 #include <list.h>]
 #include "threads/malloc.h"
 #include "userprog/pagedir.h"
+#include "userprog/process.h"
 
 struct  flist_elem
 {
@@ -18,7 +19,7 @@ struct  flist_elem
   struct list_elem elem;
 };
 
-static fd_next = 3;
+static int fd_next = 3;
 
 static void syscall_handler (struct intr_frame *); //don't move this to header
 
@@ -85,7 +86,7 @@ syscall_handler (struct intr_frame *f)
         fe->fp = fp;
         fe->fd = fd_next++;
         list_push_back(&thread_current()->file_list, fe->flist_elem);
-        f->eax = fd;
+        f->eax = fe->fd;
       }
     }
       break;
