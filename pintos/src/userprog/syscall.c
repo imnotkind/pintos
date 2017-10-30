@@ -178,7 +178,12 @@ syscall_handler (struct intr_frame *f)
       {
         //when file is not found
       }
-      free(fe);
+      else
+      {
+        list_remove(fe->elem);
+        file_close(fe->fp);
+        free(fe);
+      }
       break;
     }
 
