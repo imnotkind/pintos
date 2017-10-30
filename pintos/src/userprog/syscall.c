@@ -22,20 +22,12 @@ struct  flist_elem
 static int fd_next = 3;
 
 static void syscall_handler (struct intr_frame *); //don't move this to header
+static void check_addr_safe(const void *vaddr);
 
 void
 syscall_init (void) 
 {
   intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
-}
-
-static void check_addr_safe(void *vaddr)
-{
-  if (!is_user_vaddr(vaddr) || !pagedir_get_page(thread_current()->pagedir, vaddr)){
-    printf("%s: exit(-1)\n",thread_current()->name);//maybe if process_exit occurs without syscall, then this print doesnt occur. it this ok?
-    thread_exit();
-    NOT_REACHED();
-  }
 }
 
 static void
@@ -127,5 +119,14 @@ syscall_handler (struct intr_frame *f)
     case SYS_INUMBER:                 /* Returns the inode number for a fd. */
     default:
       break;
+  }
+}
+
+static void check_addr_safe(const void *vaddr)
+{
+  if (!vaddr || !is_user_vaddr(vaddr) || !pagedir_get_page(thread_current()->pagedir, vaddr)){
+    printf("%s: exit(-1)\n",thread_current()->name);//maybe if process_exit occurs without syscall, then this print doesnt occur. it this ok?
+    thread_exit();
+    NOT_REACHED();
   }
 }
