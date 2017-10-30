@@ -212,7 +212,7 @@ static void check_addr_safe(const void *vaddr)
 
 struct flist_elem* find_flist_elem(int fd)
 {
-  struct flist_elem *fe = NULL;
+  struct flist_elem *fe;
   struct thread *cur = thread_current();
   struct list_elem *e;
   
@@ -220,9 +220,9 @@ struct flist_elem* find_flist_elem(int fd)
   {
     fe = list_entry (e, struct flist_elem, elem);
     if (fe->fd == fd)
-      break;
+      return fe;
   }
-  return fe;
+  return NULL;
 }
 
 void sys_exit(int status)
