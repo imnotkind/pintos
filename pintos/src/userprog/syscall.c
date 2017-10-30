@@ -180,7 +180,7 @@ syscall_handler (struct intr_frame *f)
       }
       else
       {
-        list_remove(fe->elem);
+        list_remove(&fe->elem);
         file_close(fe->fp);
         free(fe);
       }
