@@ -11,6 +11,7 @@
 #include "threads/malloc.h"
 #include "userprog/pagedir.h"
 #include "userprog/process.h"
+#include <syscall.h>
 
 struct  flist_elem
 {
