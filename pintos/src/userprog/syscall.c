@@ -51,7 +51,7 @@ syscall_handler (struct intr_frame *f)
       int status = *(int *)(p+1);
       //we must close all files opened by process! LATER
       //OR we must interact with parents MAYBE
-      exit(status);
+      sys_exit(status);
       break;
     }
 
@@ -118,6 +118,7 @@ syscall_handler (struct intr_frame *f)
     {
       check_addr_safe(p+1);
       check_addr_safe(p+2);
+      check_addr_safe(*(p+2));
       check_addr_safe(p+3);
       int fd = *(int *)(p+1);
       char * buffer = *(char **)(p+2);
@@ -135,6 +136,28 @@ syscall_handler (struct intr_frame *f)
     case SYS_SEEK:                   /* Change position in a file. */
     case SYS_TELL:                   /* Report current position in a file. */
     case SYS_CLOSE:                  /* Close a file. */
+    {
+      check_addr_safe(p+1);
+      struct list_elem *e;
+      int fd = *(int *)(p+1);
+      struct flist_elem *fe = NULL;
+      struct thread *cur = thread_current();
+      
+      for (e = list_begin(&cur->file_list); e != list_end(&cur->file_list); e = list_next(e))
+      {
+        fe = list_entry (e, struct flist_elem, elem);
+        if (fe->fd == fd){
+          list_remove(e);
+          file_close(fe->fp);
+          break;
+        }
+      }
+      if(!fe){
+        //when there is no file 
+      }
+      free(fe);
+      break;
+    }
 
     /* Project 3 and optionally project 4. */
     case SYS_MMAP:                   /* Map a file into memory. */
@@ -155,11 +178,11 @@ static void check_addr_safe(const void *vaddr)
 {
   if (!vaddr || !is_user_vaddr(vaddr) || !pagedir_get_page(thread_current()->pagedir, vaddr))
   {
-    exit(-1);
+    sys_exit(-1);
   }
 }
 
-void exit(int status)
+void sys_exit(int status)
 {
   thread_current()->exit_code = status;
   printf("%s: exit(%d)\n",thread_current()->name, status);
