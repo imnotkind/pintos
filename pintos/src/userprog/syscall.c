@@ -121,7 +121,7 @@ syscall_handler (struct intr_frame *f)
       check_addr_safe(*(p+2));
       check_addr_safe(p+3);
       int fd = *(int *)(p+1);
-      char *buffer = *(char **)(p+2);
+      void *buffer = *(void **)(p+2);
       unsigned size = *(unsigned *)(p+3);
 
       if (fd == STDIN_FILENO)
@@ -154,13 +154,13 @@ syscall_handler (struct intr_frame *f)
       check_addr_safe(*(p+2));
       check_addr_safe(p+3);
       int fd = *(int *)(p+1);
-      char * buffer = *(char **)(p+2);
+      void * buffer = *(void **)(p+2);
       unsigned size = *(unsigned *)(p+3);
       //printf("fd : %d\n",fd);
       //printf("buffer : %s\n",buffer);
       //printf("size : %d\n",size);
       if(fd == 1)
-        putbuf(buffer,(size_t)size); //too big size may be a problem, but i wont care for now. LATER
+        putbuf((char *)buffer,(size_t)size); //too big size may be a problem, but i wont care for now. LATER
       f->eax = size;
       break;
     }
