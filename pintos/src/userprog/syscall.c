@@ -14,7 +14,7 @@ static void syscall_handler (struct intr_frame *); //don't move this to header
 struct  flist_elem
 {
   int fd; //file descriptor
-  struct file *fp //file pointer
+  struct file *fp; //file pointer
   struct list_elem elem;
 };
 
