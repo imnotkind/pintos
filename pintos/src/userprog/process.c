@@ -44,11 +44,11 @@ process_execute (const char *file_name)
   strlcpy (fn_pure, file_name, sizeof(char) * (strlen(file_name)+1));
   fn_pure = strtok_r(fn_pure, " " ,&save_ptr);
 
+  
   /* Create a new thread to execute FILE_NAME. */
   tid = thread_create (fn_pure, PRI_DEFAULT, start_process, fn_copy);
 
-  if (tid == TID_ERROR) //if it ran normally, fn_copy should be already freed
-    free(fn_copy);
+  //fn_copy is already freed in start_process
   free(fn_pure);
   return tid;
 }
