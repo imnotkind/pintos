@@ -22,6 +22,7 @@
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
 
+extern struct lock filesys_lock;
 /* Starts a new thread running a user program loaded from
    FILENAME.  The new thread may be scheduled (and may even exit)
    before process_execute() returns.  Returns the new process's
@@ -177,6 +178,7 @@ process_exit (void)
   struct thread *cur = thread_current ();
   uint32_t *pd;
 
+  file_close(cur->run_file);
   sema_up(&cur->wait);
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
@@ -306,6 +308,8 @@ load (const char *file_name, void (**eip) (void), void **esp)
     goto done;
   process_activate ();
 
+  
+  lock_acquire(&file_lock);
   /* Open executable file. */
   file = filesys_open (file_name);
   if (file == NULL) 
@@ -314,7 +318,9 @@ load (const char *file_name, void (**eip) (void), void **esp)
       goto done; 
     }
 
+  t->run_file = file;
   file_deny_write(file);
+  lock_release(&file_lock);
   /* Read and verify executable header. */
   if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
       || memcmp (ehdr.e_ident, "\177ELF\1\1\1", 7)
