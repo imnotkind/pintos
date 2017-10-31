@@ -12,6 +12,7 @@
 #include "userprog/pagedir.h"
 #include "userprog/process.h"
 #include <string.h>
+#include "threads/synch.h"
 
 struct flist_pack
 {
@@ -19,6 +20,8 @@ struct flist_pack
   struct file *fp; //file pointer
   struct list_elem elem;
 };
+
+struct lock filesys_lock;
 
 static int fd_next = 3;
 
@@ -30,6 +33,7 @@ void sys_exit(int status);
 void
 syscall_init (void) 
 {
+  lock_init(&filesys_lock);
   intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
 }
 
@@ -46,6 +50,7 @@ syscall_handler (struct intr_frame *f)
   {
     case SYS_HALT:                   /* Halt the operating system. */
       shutdown_power_off();
+      NOT_REACHED();
       break;
 
     case SYS_EXIT:                   /* Terminate this process. */
@@ -69,7 +74,8 @@ syscall_handler (struct intr_frame *f)
       strlcpy(file_name,cmd_line,strlen(cmd_line)+1);
       char *save_ptr;
       file_name = strtok_r(file_name," ",&save_ptr);
-      
+
+      lock_acquire(&filesys_lock);
       struct file *fp = filesys_open(file_name);
       if(fp == NULL)
       {
@@ -80,6 +86,7 @@ syscall_handler (struct intr_frame *f)
         file_close(fp);
         f->eax = process_execute(cmd_line);
       }
+      lock_release(&filesys_lock);
       break;
     }
       
@@ -99,9 +106,9 @@ syscall_handler (struct intr_frame *f)
       char *file = *(char **)(p+1);
       unsigned initial_size = *(unsigned *)(p+2);
 
-      //lock
+      lock_acquire(&filesys_lock);
       f->eax = filesys_create(file, initial_size);
-      //unlock
+      lock_release(&filesys_lock);
       break;
     }
 
@@ -111,9 +118,9 @@ syscall_handler (struct intr_frame *f)
       check_addr_safe((void *)*(p+1));
       char *file = *(char **)(p+1);
 
-      //lock
+      lock_acquire(&filesys_lock);
       f->eax = filesys_remove(file);
-      //unlock
+      lock_release(&filesys_lock);
       break;
     }
 
@@ -122,9 +129,10 @@ syscall_handler (struct intr_frame *f)
       check_addr_safe(p+1);
       check_addr_safe((void *)*(p+1));
       char * file_name = *(char **)(p+1);
-      //lock
+
+      lock_acquire(&filesys_lock);
       struct file* fp = filesys_open (file_name);
-      //unlock
+      lock_release(&filesys_lock);
       if(!fp){
         f->eax = -1;
         break;
@@ -170,13 +178,13 @@ syscall_handler (struct intr_frame *f)
       }
       else
       {
-        //lock
+        lock_acquire(&filesys_lock);
         struct flist_pack *fe = fd_to_flist_pack(fd);
         if (!fe)
           f->eax = -1;
         else
           f->eax = file_read(fe->fp, buffer, (off_t)size);
-        //unlock
+        lock_release(&filesys_lock);
       }
       
       break;
@@ -197,13 +205,13 @@ syscall_handler (struct intr_frame *f)
         f->eax = size;
       }
       else{
-        //lock
+        lock_acquire(&filesys_lock);
         struct flist_pack *fe = fd_to_flist_pack(fd);
         if (!fe)
           f->eax = -1;
         else
           f->eax = file_write(fe->fp, buffer, (off_t)size);
-        //unlock
+        lock_release(&filesys_lock);
       }
       
       break;
@@ -218,9 +226,9 @@ syscall_handler (struct intr_frame *f)
       unsigned position = *(unsigned *)(p+2);
 
       struct flist_pack *fe = fd_to_flist_pack(fd);
-      //lock
+      lock_acquire(&filesys_lock);
       file_seek(fe->fp, (off_t)position);
-      //unlock
+      lock_release(&filesys_lock);
       break;
     }
 
@@ -242,7 +250,11 @@ syscall_handler (struct intr_frame *f)
       else
       {
         list_remove(&fe->elem);
+
+        lock_acquire(&filesys_lock);
         file_close(fe->fp);
+        lock_release(&filesys_lock);
+        
         free(fe);
       }
       break;
