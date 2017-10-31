@@ -213,7 +213,6 @@ syscall_handler (struct intr_frame *f)
           f->eax = file_write(fe->fp, buffer, (off_t)size);
         lock_release(&filesys_lock);
       }
-      
       break;
     }
 
@@ -250,11 +249,10 @@ syscall_handler (struct intr_frame *f)
       else
       {
         list_remove(&fe->elem);
-
+        
         lock_acquire(&filesys_lock);
         file_close(fe->fp);
         lock_release(&filesys_lock);
-        
         free(fe);
       }
       break;
