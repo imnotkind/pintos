@@ -42,7 +42,6 @@ syscall_handler (struct intr_frame *f)
 
   int sysno = *p;
   
-  //printf ("system call! no %d\n",sysno);
   switch(sysno)
   {
     case SYS_HALT:                   /* Halt the operating system. */
@@ -105,6 +104,7 @@ syscall_handler (struct intr_frame *f)
       //unlock
       break;
     }
+
     case SYS_REMOVE:                 /* Delete a file. */
     {
       check_addr_safe(p+1);
@@ -116,6 +116,7 @@ syscall_handler (struct intr_frame *f)
       //unlock
       break;
     }
+
     case SYS_OPEN:                   /* Open a file. */
     {
       check_addr_safe(p+1);
@@ -222,8 +223,12 @@ syscall_handler (struct intr_frame *f)
       //unlock
       break;
     }
+
     case SYS_TELL:                   /* Report current position in a file. */
+    {
       break;
+    }
+      
     case SYS_CLOSE:                  /* Close a file. */
     {
       check_addr_safe(p+1);
