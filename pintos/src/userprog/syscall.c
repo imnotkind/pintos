@@ -22,7 +22,9 @@ struct flist_pack
 static int fd_next = 3;
 
 static void syscall_handler (struct intr_frame *); //don't move this to header
+static void check_addr_safe(const void *vaddr);
 struct flist_pack* fd_to_flist_pack(int fd);
+void sys_exit(int status);
 
 void
 syscall_init (void) 
@@ -58,7 +60,11 @@ syscall_handler (struct intr_frame *f)
 
 
     case SYS_EXEC:                   /* Start another process. */
+    {
+
       break;
+    }
+      
     case SYS_WAIT:                   /* Wait for a child process to die. */
     {
       check_addr_safe(p+1);
