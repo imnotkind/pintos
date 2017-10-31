@@ -155,6 +155,7 @@ syscall_handler (struct intr_frame *f)
       
       break;
     }
+
     case SYS_WRITE:                  /* Write to a file. */
     {
       check_addr_safe(p+1);
@@ -164,12 +165,21 @@ syscall_handler (struct intr_frame *f)
       int fd = *(int *)(p+1);
       void * buffer = *(void **)(p+2);
       unsigned size = *(unsigned *)(p+3);
-      //printf("fd : %d\n",fd);
-      //printf("buffer : %s\n",buffer);
-      //printf("size : %d\n",size);
-      if(fd == 1)
+
+      if(fd == 1){
         putbuf((char *)buffer,(size_t)size); //too big size may be a problem, but i wont care for now. LATER
-      f->eax = size;
+        f->eax = size;
+      }
+      else{
+        //lock
+        struct flist_pack *fe = fd_to_flist_pack(fd);
+        if (!fe)
+          f->eax = -1;
+        else
+          f->eax = file_write(fe->fp, buffer, (off_t)size);
+        //unlock
+      }
+      
       break;
     }
 
