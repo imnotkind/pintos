@@ -12,7 +12,7 @@
 #include "userprog/pagedir.h"
 #include "userprog/process.h"
 
-struct  flist_elem
+struct flist_pack
 {
   int fd; //file descriptor
   struct file *fp; //file pointer
@@ -22,7 +22,7 @@ struct  flist_elem
 static int fd_next = 3;
 
 static void syscall_handler (struct intr_frame *); //don't move this to header
-struct flist_elem* find_flist_elem(int fd);
+struct flist_pack* fd_to_flist_pack(int fd);
 
 void
 syscall_init (void) 
@@ -115,7 +115,13 @@ syscall_handler (struct intr_frame *f)
       
 
     case SYS_FILESIZE:               /* Obtain a file's size. */
+    {
+      check_addr_safe(p+1);
+      int fd = *(int *)(p+1);
+      //f->eax = (uint32_t)file_length();
       break;
+    }
+      
     case SYS_READ:                   /* Read from a file. */
     {
       check_addr_safe(p+1);
@@ -139,7 +145,7 @@ syscall_handler (struct intr_frame *f)
       else
       {
         //lock
-        struct flist_elem *fe = find_flist_elem(fd);
+        struct flist_elem *fe = fd_to_flist_pack(fd);
         if (!fe)
           f->eax = -1;
         else
@@ -177,7 +183,7 @@ syscall_handler (struct intr_frame *f)
       check_addr_safe(p+1);
       int fd = *(int *)(p+1);
 
-      struct flist_elem *fe = find_flist_elem(fd);
+      struct flist_elem *fe = fd_to_flist_pack(fd);
       if(!fe)
       {
         //when file is not found
@@ -215,15 +221,15 @@ static void check_addr_safe(const void *vaddr)
   }
 }
 
-struct flist_elem* find_flist_elem(int fd)
+struct flist_pack* fd_to_flist_pack(int fd)
 {
-  struct flist_elem *fe;
+  struct flist_pack *fe;
   struct thread *cur = thread_current();
   struct list_elem *e;
   
   for (e = list_begin(&cur->file_list); e != list_end(&cur->file_list); e = list_next(e))
   {
-    fe = list_entry (e, struct flist_elem, elem);
+    fe = list_entry (e, struct flist_pack, elem);
     if (fe->fd == fd)
       return fe;
   }

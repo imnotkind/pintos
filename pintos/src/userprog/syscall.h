@@ -4,5 +4,5 @@
 void syscall_init (void);
 
 static void check_addr_safe(const void *vaddr);
-void exit(int status);
+void sys_exit(int status);
 #endif /* userprog/syscall.h */
