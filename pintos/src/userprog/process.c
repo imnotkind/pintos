@@ -44,7 +44,6 @@ process_execute (const char *file_name)
   strlcpy (fn_pure, file_name, sizeof(char) * (strlen(file_name)+1));
   fn_pure = strtok_r(fn_pure, " " ,&save_ptr);
 
-  
   /* Create a new thread to execute FILE_NAME. */
   tid = thread_create (fn_pure, PRI_DEFAULT, start_process, fn_copy);
 
@@ -160,7 +159,7 @@ process_wait (tid_t child_tid)
   }
   if(child == NULL)
     return -1;
-  if(child->exit_code != EXIT_CODE_DEFAULT && child->exit_code != EXIT_CODE_INVALID){
+  if(child->exit_code != EXIT_CODE_DEFAULT){
     ret = child->exit_code;
     return ret;
   }
@@ -315,6 +314,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
       goto done; 
     }
 
+  file_deny_write(file);
   /* Read and verify executable header. */
   if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
       || memcmp (ehdr.e_ident, "\177ELF\1\1\1", 7)
