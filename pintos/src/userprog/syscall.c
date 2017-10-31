@@ -70,7 +70,7 @@ syscall_handler (struct intr_frame *f)
     case SYS_CREATE:                 /* Create a file. */
     {
       check_addr_safe(p+1);
-      check_addr_safe(*(p+1));
+      check_addr_safe((void *)*(p+1));
       check_addr_safe(p+2);
       char *file = *(char **)(p+1);
       unsigned initial_size = *(unsigned *)(p+2);
@@ -83,7 +83,7 @@ syscall_handler (struct intr_frame *f)
     case SYS_REMOVE:                 /* Delete a file. */
     {
       check_addr_safe(p+1);
-      check_addr_safe(*(p+1));
+      check_addr_safe((void *)*(p+1));
       char *file = *(char **)(p+1);
 
       //lock
@@ -94,7 +94,7 @@ syscall_handler (struct intr_frame *f)
     case SYS_OPEN:                   /* Open a file. */
     {
       check_addr_safe(p+1);
-      check_addr_safe(*(p+1));
+      check_addr_safe((void *)*(p+1));
       char * file_name = *(char **)(p+1);
       //lock
       struct file* fp = filesys_open (file_name);
@@ -104,7 +104,7 @@ syscall_handler (struct intr_frame *f)
         break;
       }
       else{
-        struct flist_elem *fe = (struct flist_elem*)malloc(sizeof(struct flist_elem));
+        struct flist_pack *fe = (struct flist_pack*)malloc(sizeof(struct flist_pack));
         fe->fp = fp;
         fe->fd = fd_next++;
         list_push_back(&thread_current()->file_list, &fe->elem);
@@ -118,7 +118,7 @@ syscall_handler (struct intr_frame *f)
     {
       check_addr_safe(p+1);
       int fd = *(int *)(p+1);
-      //f->eax = (uint32_t)file_length();
+      f->eax = (uint32_t)file_length(fd_to_flist_pack(fd)->fp);
       break;
     }
       
@@ -126,7 +126,7 @@ syscall_handler (struct intr_frame *f)
     {
       check_addr_safe(p+1);
       check_addr_safe(p+2);
-      check_addr_safe(*(p+2));
+      check_addr_safe((void *)*(p+2));
       check_addr_safe(p+3);
       int fd = *(int *)(p+1);
       void *buffer = *(void **)(p+2);
@@ -145,7 +145,7 @@ syscall_handler (struct intr_frame *f)
       else
       {
         //lock
-        struct flist_elem *fe = fd_to_flist_pack(fd);
+        struct flist_pack *fe = fd_to_flist_pack(fd);
         if (!fe)
           f->eax = -1;
         else
@@ -159,7 +159,7 @@ syscall_handler (struct intr_frame *f)
     {
       check_addr_safe(p+1);
       check_addr_safe(p+2);
-      check_addr_safe(*(p+2));
+      check_addr_safe((void *)*(p+2));
       check_addr_safe(p+3);
       int fd = *(int *)(p+1);
       void * buffer = *(void **)(p+2);
@@ -183,7 +183,7 @@ syscall_handler (struct intr_frame *f)
       check_addr_safe(p+1);
       int fd = *(int *)(p+1);
 
-      struct flist_elem *fe = fd_to_flist_pack(fd);
+      struct flist_pack *fe = fd_to_flist_pack(fd);
       if(!fe)
       {
         //when file is not found
