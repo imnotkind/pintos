@@ -185,7 +185,18 @@ syscall_handler (struct intr_frame *f)
 
 
     case SYS_SEEK:                   /* Change position in a file. */
+    {
+      check_addr_safe(p+1);
+      check_addr_safe(p+2);
+      int fd = *(int *)(p+1);
+      unsigned position = *(unsigned *)(p+2);
+
+      struct flist_pack *fe = fd_to_flist_pack(fd);
+      //lock
+      file_seek(fe->fp, (off_t)position);
+      //unlock
       break;
+    }
     case SYS_TELL:                   /* Report current position in a file. */
       break;
     case SYS_CLOSE:                  /* Close a file. */
