@@ -18,6 +18,7 @@
 #include "threads/thread.h"
 #include "threads/vaddr.h"
 #include "threads/thread.h"
+#include "threads/malloc.h"
 
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
@@ -309,7 +310,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
   process_activate ();
 
   
-  lock_acquire(&file_lock);
+  lock_acquire(&filesys_lock);
   /* Open executable file. */
   file = filesys_open (file_name);
   if (file == NULL) 
@@ -320,7 +321,8 @@ load (const char *file_name, void (**eip) (void), void **esp)
 
   t->run_file = file;
   file_deny_write(file);
-  lock_release(&file_lock);
+  lock_release(&filesys_lock);
+  
   /* Read and verify executable header. */
   if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
       || memcmp (ehdr.e_ident, "\177ELF\1\1\1", 7)
