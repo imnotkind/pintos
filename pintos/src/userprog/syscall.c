@@ -178,13 +178,12 @@ syscall_handler (struct intr_frame *f)
       }
       else
       {
-        lock_acquire(&filesys_lock);
         struct flist_pack *fe = fd_to_flist_pack(fd);
         if (!fe){
-          lock_release(&filesys_lock);
           f->eax = -1;
         }          
         else{
+          lock_acquire(&filesys_lock);
           f->eax = file_read(fe->fp, buffer, (off_t)size);
           lock_release(&filesys_lock);
         }
@@ -208,13 +207,12 @@ syscall_handler (struct intr_frame *f)
         f->eax = size;
       }
       else{
-        lock_acquire(&filesys_lock);
         struct flist_pack *fe = fd_to_flist_pack(fd);
         if (!fe){
-          lock_release(&filesys_lock);
           f->eax = -1;
         }          
         else{
+          lock_acquire(&filesys_lock);
           f->eax = file_write(fe->fp, buffer, (off_t)size);
           lock_release(&filesys_lock);
         }
