@@ -46,8 +46,8 @@ process_execute (const char *file_name)
 
   /* Create a new thread to execute FILE_NAME. */
   tid = thread_create (fn_pure, PRI_DEFAULT, start_process, fn_copy);
-  
-  if (tid == TID_ERROR) //why?
+
+  if (tid == TID_ERROR) //if it ran normally, fn_copy should be already freed
     free(fn_copy);
   free(fn_pure);
   return tid;
@@ -81,7 +81,7 @@ start_process (void *file_name_)
   success = load (file_name, &if_.eip, &if_.esp);
 
   if (!success){
-    palloc_free_page (file_name);
+    free (file_name);
     thread_exit ();
   }
   else{
@@ -118,7 +118,7 @@ start_process (void *file_name_)
     }
     */
 
-    palloc_free_page (file_name);
+    free (file_name);
   }
   
   /* Start the user process by simulating a return from an
