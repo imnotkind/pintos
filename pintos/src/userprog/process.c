@@ -180,7 +180,7 @@ process_exit (void)
   uint32_t *pd;
 
   
-  sema_up(&cur->wait);
+  
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
   pd = cur->pagedir;
@@ -200,7 +200,9 @@ process_exit (void)
     
   list_remove(&cur->child_elem);
   file_close(cur->run_file);
+  
   intr_disable();
+  sema_up(&cur->wait);
   thread_block();
   intr_enable();
 }
