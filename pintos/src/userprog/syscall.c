@@ -213,7 +213,7 @@ syscall_handler (struct intr_frame *f)
       struct flist_pack *fe = fd_to_flist_pack(fd);
       if(!fe)
       {
-        //when file is not found
+        sys_exit(-1);
       }
       else
       {
