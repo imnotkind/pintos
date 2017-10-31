@@ -26,7 +26,7 @@ struct lock filesys_lock;
 static int fd_next = 3;
 
 static void syscall_handler (struct intr_frame *); //don't move this to header
-static void check_addr_safe(const void *vaddr);
+void check_addr_safe(const void *vaddr);
 struct flist_pack* fd_to_flist_pack(int fd);
 void sys_exit(int status);
 
@@ -274,7 +274,7 @@ syscall_handler (struct intr_frame *f)
   }
 }
 
-static void check_addr_safe(const void *vaddr)
+void check_addr_safe(const void *vaddr)
 {
   if (!vaddr || !is_user_vaddr(vaddr) || !pagedir_get_page(thread_current()->pagedir, vaddr))
   {
