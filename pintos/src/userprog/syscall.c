@@ -67,7 +67,7 @@ syscall_handler (struct intr_frame *f)
     case SYS_EXEC:                   /* Start another process. */
     {
       check_addr_safe(p+1);
-      check_addr_safe(*(p+1));
+      check_addr_safe((void *)*(p+1));
       char *cmd_line = *(char **)(p+1);
 
       char *file_name = malloc(strlen(cmd_line)+1); //pure file name to put in filesys_open
@@ -218,6 +218,7 @@ syscall_handler (struct intr_frame *f)
           f->eax = file_write(fe->fp, buffer, (off_t)size);
           lock_release(&filesys_lock);
         }
+      }
       break;
     }
 
