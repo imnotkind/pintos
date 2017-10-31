@@ -150,8 +150,7 @@ page_fault (struct intr_frame *f)
 
   if(not_present)
   {
-    thread_current()->exit_code=-1;
-    thread_exit();
+    exit(-1); //syscall exit
   }
   /* To implement virtual memory, delete the rest of the function
      body, and replace it with code that brings in the page to
