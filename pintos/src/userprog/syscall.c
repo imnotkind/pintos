@@ -58,6 +58,7 @@ syscall_handler (struct intr_frame *f)
 
 
     case SYS_EXEC:                   /* Start another process. */
+      break;
     case SYS_WAIT:                   /* Wait for a child process to die. */
     {
       check_addr_safe(p+1);
@@ -114,6 +115,7 @@ syscall_handler (struct intr_frame *f)
       
 
     case SYS_FILESIZE:               /* Obtain a file's size. */
+      break;
     case SYS_READ:                   /* Read from a file. */
     {
       check_addr_safe(p+1);
@@ -167,7 +169,9 @@ syscall_handler (struct intr_frame *f)
 
 
     case SYS_SEEK:                   /* Change position in a file. */
+      break;
     case SYS_TELL:                   /* Report current position in a file. */
+      break;
     case SYS_CLOSE:                  /* Close a file. */
     {
       check_addr_safe(p+1);
