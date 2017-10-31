@@ -11,6 +11,7 @@
 #include "threads/malloc.h"
 #include "userprog/pagedir.h"
 #include "userprog/process.h"
+#include <string.h>
 
 struct flist_pack
 {
@@ -61,7 +62,25 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_EXEC:                   /* Start another process. */
     {
+      check_addr_safe(p+1);
+      check_addr_safe(*(p+1));
+      char *cmd_line = *(char **)(p+1);
 
+      char *file_name = malloc(strlen(cmd_line)+1); //pure file name to put in filesys_open
+      strlcpy(file_name,cmd_line,strlen(cmd_line)+1);
+      char *save_ptr;
+      file_name = strtok_r(file_name," ",&save_ptr);
+      
+      struct file *fp = filesys_open(file_name);
+      if(fp == NULL)
+      {
+        f->eax = -1;
+      }
+      else
+      {
+        file_close(fp);
+        f->eax = process_execute(cmd_line);
+      }
       break;
     }
       
