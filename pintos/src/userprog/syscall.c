@@ -124,7 +124,7 @@ syscall_handler (struct intr_frame *f)
       void *buffer = *(void **)(p+2);
       unsigned size = *(unsigned *)(p+3);
 
-      if (fd == STDIN_FILENO)
+      if (fd == 0)
       {
         int i;
         uint8_t* local_buffer = (uint8_t *)buffer;
