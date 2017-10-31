@@ -179,7 +179,7 @@ process_exit (void)
   struct thread *cur = thread_current ();
   uint32_t *pd;
 
-  file_close(cur->run_file);
+  
   sema_up(&cur->wait);
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
@@ -199,6 +199,7 @@ process_exit (void)
     }
     
   list_remove(&cur->child_elem);
+  file_close(cur->run_file);
   intr_disable();
   thread_block();
   intr_enable();
@@ -322,7 +323,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
   t->run_file = file;
   file_deny_write(file);
   lock_release(&filesys_lock);
-  
+
   /* Read and verify executable header. */
   if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
       || memcmp (ehdr.e_ident, "\177ELF\1\1\1", 7)
