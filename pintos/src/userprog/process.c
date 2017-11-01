@@ -167,8 +167,9 @@ process_wait (tid_t child_tid)
   }
     
   sema_down(&child->wait);
+  list_remove(&child->child_elem);
   ret = child->exit_code;
-  
+
   return ret;
 }
 
