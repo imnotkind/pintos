@@ -198,9 +198,9 @@ process_exit (void)
     }
     
   list_remove(&cur->child_elem);
-  lock_acquire(filesys_lock);
+  lock_acquire(&filesys_lock);
   file_close(cur->run_file);
-  lock_release(filesys_lock);
+  lock_release(&filesys_lock);
   
   intr_disable();
   sema_up(&cur->wait);
