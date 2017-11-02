@@ -5,9 +5,7 @@
 #include "threads/thread.h"
 #include "threads/vaddr.h"
 #include "devices/shutdown.h"
-#include "filesys/file.h"
 #include "filesys/filesys.h"
-#include <list.h>
 #include "threads/malloc.h"
 #include "userprog/pagedir.h"
 #include "userprog/process.h"

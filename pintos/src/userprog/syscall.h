@@ -2,6 +2,7 @@
 #define USERPROG_SYSCALL_H
 
 #include <list.h>
+#include "filesys/file.h"
 
 struct flist_pack
 {
