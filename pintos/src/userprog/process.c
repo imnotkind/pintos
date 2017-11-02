@@ -89,7 +89,7 @@ start_process (void *file_name_)
   else{
     int i;
     void *fn_save = if_.esp;
-    void *debug = if_.esp;
+    //void *debug = if_.esp;
 
     for(i = argc - 1; i >= 0; i--){
       if_.esp -= strlen(argv[i]) + 1;
@@ -181,6 +181,7 @@ process_exit (void)
   struct thread *cur = thread_current ();
   uint32_t *pd;
   struct list_elem *e;
+  struct flist_pack *fe;
   
 
   /* Destroy the current process's page directory and switch back
