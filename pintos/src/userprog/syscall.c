@@ -5,21 +5,12 @@
 #include "threads/thread.h"
 #include "threads/vaddr.h"
 #include "devices/shutdown.h"
-#include "filesys/file.h"
 #include "filesys/filesys.h"
-#include <list.h>
 #include "threads/malloc.h"
 #include "userprog/pagedir.h"
 #include "userprog/process.h"
 #include <string.h>
 #include "threads/synch.h"
-
-struct flist_pack
-{
-  int fd; //file descriptor
-  struct file *fp; //file pointer
-  struct list_elem elem;
-};
 
 struct lock filesys_lock;
 
@@ -27,7 +18,6 @@ static int fd_next = 3;
 
 static void syscall_handler (struct intr_frame *); //don't move this to header
 void check_addr_safe(const void *vaddr);
-struct flist_pack* fd_to_flist_pack(int fd);
 void sys_exit(int status);
 
 void
