@@ -34,7 +34,7 @@ process_execute (const char *file_name)
 {
   char *fn_copy, *fn_pure, *save_ptr;
   tid_t tid;
-  struct file *fp;
+  struct file *fp = NULL;
 
   /* Make a copy of FILE_NAME.
      Otherwise there's a race between the caller and load(). */
@@ -175,6 +175,7 @@ process_wait (tid_t child_tid)
   }
     
   sema_down(&child->wait);
+  thread_unblock(child);
   list_remove(&child->child_elem);
   ret = child->exit_code;
 
@@ -189,7 +190,7 @@ process_exit (void)
   uint32_t *pd;
   struct list_elem *e;
   struct flist_pack *fe;
-  
+
 
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
