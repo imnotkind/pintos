@@ -175,7 +175,7 @@ process_wait (tid_t child_tid)
   }
     
   sema_down(&child->wait);
-  thread_unblock(child);
+  //thread_unblock(child);
   list_remove(&child->child_elem);
   ret = child->exit_code;
 
