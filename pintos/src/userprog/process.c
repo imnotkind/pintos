@@ -48,7 +48,9 @@ process_execute (const char *file_name)
   strlcpy (fn_pure, file_name, sizeof(char) * (strlen(file_name)+1));
   fn_pure = strtok_r(fn_pure, " " ,&save_ptr);
 
+  lock_acquire(&filesys_lock);
   fp = filesys_open(fn_pure);
+  lock_release(&filesys_lock);
   if(fp == NULL){
     return -1;
   }
