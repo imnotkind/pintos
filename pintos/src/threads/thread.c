@@ -194,10 +194,7 @@ thread_create (const char *name, int priority,
   /* Initialize thread. */
   init_thread (t, name, priority); //makes thread status BLOCKED
   tid = t->tid = allocate_tid ();
-  
-  #ifdef USERPROG
-  list_push_back(&thread_current()->child_list,&t->child_elem);
-  #endif
+
 
   /* Prepare thread for first run by initializing its stack.
      Do this atomically so intermediate values for the 'stack' 
@@ -731,6 +728,7 @@ init_thread (struct thread *t, const char *name, int priority)
     list_init(&t->child_list);
     list_init(&t->file_list);
     t->exit_code = EXIT_CODE_DEFAULT;
+    list_push_back(&thread_current()->child_list,&t->child_elem);
   #endif
   list_push_back (&all_list, &t->allelem);
 }
