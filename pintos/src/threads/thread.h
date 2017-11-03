@@ -107,11 +107,13 @@ struct thread      //pintos manual 67
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
     struct semaphore wait;
+    struct semaphore destroy;
+    struct semaphore load;
     struct list child_list;
     struct list_elem child_elem;
     struct list file_list;
     int exit_code;
-    bool finished;
+    bool load_suceed;
     struct file *run_file;
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
