@@ -65,7 +65,6 @@ syscall_handler (struct intr_frame *f)
       strlcpy(file_name,cmd_line,strlen(cmd_line)+1);
       char *save_ptr;
       file_name = strtok_r(file_name," ",&save_ptr);
-      printf("UUUU\n");
       struct file *fp = filesys_open(file_name);
       if(fp == NULL)
       {
@@ -99,7 +98,6 @@ syscall_handler (struct intr_frame *f)
         if(child->load_succeed == false)
         {
           f->eax = TID_ERROR;
-          break;
         }
         
       }
