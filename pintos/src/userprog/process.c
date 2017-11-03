@@ -201,7 +201,6 @@ process_exit (void)
     free(fe);
   }
 
-  
   lock_release(&filesys_lock);
 
   /* Destroy the current process's page directory and switch back
@@ -221,6 +220,15 @@ process_exit (void)
       pagedir_destroy (pd);
     }
 
+  for(e = list_begin(&cur->child_list); e!=list_end(&cur->child_list); )
+  {
+    struct thread *t = list_entry(e, struct thread, child_elem);
+    e = list_remove(e);
+    sema_up(&t->destroy);
+  }
+
+  sema_up(&cur->wait);
+  sema_down(&cur->destroy);
   
 
 }
