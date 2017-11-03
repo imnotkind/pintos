@@ -34,7 +34,7 @@ process_execute (const char *file_name)
 {
   char *fn_copy, *fn_pure, *save_ptr;
   tid_t tid;
-
+  printf("JJJJ\n");
   /* Make a copy of FILE_NAME.
      Otherwise there's a race between the caller and load(). */
   fn_copy = malloc(sizeof(char) * (strlen(file_name)+1));
