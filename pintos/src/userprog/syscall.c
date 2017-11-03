@@ -13,6 +13,7 @@
 #include "threads/synch.h"
 
 struct lock filesys_lock;
+struct lock load_lock;
 
 static int fd_next = 3;
 
@@ -25,6 +26,7 @@ syscall_init (void)
 {
   intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
   lock_init(&filesys_lock);
+  lock_init(&load_lock);
 }
 
 static void
@@ -74,6 +76,7 @@ syscall_handler (struct intr_frame *f)
       else
       {
         file_close(fp);
+        lock_acquire(&load_lock);
         f->eax = process_execute(cmd_line);
       }
       lock_release(&filesys_lock);
