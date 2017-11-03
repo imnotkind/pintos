@@ -315,6 +315,9 @@ thread_exit (void)
     e = list_remove(e);
     sema_up(&t->destroy);
   }
+
+  sema_up(&cur->wait);
+  sema_down(&cur->destroy);
   /* Remove thread from all threads list, set our status to dying,
      and schedule another process.  That process will destroy us
      when it calls thread_schedule_tail(). */
@@ -737,7 +740,6 @@ init_thread (struct thread *t, const char *name, int priority)
     list_init(&t->child_list);
     list_init(&t->file_list);
     t->exit_code = EXIT_CODE_DEFAULT;
-    t->finished = false;
   #endif
   list_push_back (&all_list, &t->allelem);
 }
