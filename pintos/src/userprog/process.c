@@ -171,7 +171,7 @@ process_wait (tid_t child_tid)
   }
   if(child == NULL)
     return -1;
-  if(child->exit_code != EXIT_CODE_DEFAULT){
+  if(child->exit_code != EXIT_CODE_DEFAULT && child->finished == true){
     ret = child->exit_code;
     return ret;
   }
@@ -225,6 +225,7 @@ process_exit (void)
   sema_up(&cur->wait);
   thread_block();
   intr_enable();
+  cur->finished = true;
 }
 
 /* Sets up the CPU for running user code in the current
