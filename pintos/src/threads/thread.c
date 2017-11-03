@@ -195,7 +195,7 @@ thread_create (const char *name, int priority,
   init_thread (t, name, priority); //makes thread status BLOCKED
   tid = t->tid = allocate_tid ();
   
-  #ifdef USERPROF
+  #ifdef USERPROG
   list_push_back(&thread_current()->child_list,&t->child_elem);
   #endif
 
