@@ -90,7 +90,7 @@ start_process (void *file_name_)
   }
 
   success = load (file_name, &if_.eip, &if_.esp);
-  //sema_up(&thread_current()->load);
+  
   if (!success){
     free (file_name);
     thread_exit ();
@@ -178,9 +178,10 @@ process_wait (tid_t child_tid)
   }
   
   sema_down(&child->wait);
+  ret = child->exit_code;
   thread_unblock(child);
   list_remove(&child->child_elem);
-  ret = child->exit_code;
+  
 
   return ret;
 }
