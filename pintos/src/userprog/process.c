@@ -49,9 +49,9 @@ process_execute (const char *file_name)
   fn_pure = strtok_r(fn_pure, " " ,&save_ptr);
 
   /* Create a new thread to execute FILE_NAME. */
-  lock_acquire(&load_lock);
+  //lock_acquire(&load_lock);
   tid = thread_create (fn_pure, PRI_DEFAULT, start_process, fn_copy);
-  lock_release(&load_lock);
+  //lock_release(&load_lock);
   //fn_copy is already freed in start_process
   if(tid == TID_ERROR)
     free(fn_copy);
