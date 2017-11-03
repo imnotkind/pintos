@@ -178,8 +178,8 @@ process_wait (tid_t child_tid)
   }
   
   sema_down(&child->wait);
-  ret = child->exit_code;
-  thread_unblock(child);
+  while(child->exit_code == EXIT_CODE_DEFAULT && child->finished == false)
+    thread_unblock(child);
   list_remove(&child->child_elem);
   
 
