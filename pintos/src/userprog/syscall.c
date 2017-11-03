@@ -66,18 +66,20 @@ syscall_handler (struct intr_frame *f)
       char *save_ptr;
       file_name = strtok_r(file_name," ",&save_ptr);
       printf("UUUU\n");
-      lock_acquire(&filesys_lock);
       struct file *fp = filesys_open(file_name);
       if(fp == NULL)
       {
-        f->eax = -1;
+        f->eax = TID_ERROR;
       }
       else
       {
         file_close(fp);
         tid = process_execute(cmd_line);
         if(tid == TID_ERROR)
-          return TID_ERROR;
+        {
+          f->eax = TID_ERROR;
+          break;
+        }
         struct thread * child;
         struct thread * t;
         struct list_elem * e;
@@ -93,11 +95,14 @@ syscall_handler (struct intr_frame *f)
         }
         ASSERT(child);
         sema_down(&child->load);
-        if(child->load_succeed == false)
-          return TID_ERROR;
         f->eax = tid;
+        if(child->load_succeed == false)
+        {
+          f->eax = TID_ERROR;
+          break;
+        }
+        
       }
-      lock_release(&filesys_lock);
       free(file_name);
       break;
     }
