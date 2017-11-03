@@ -85,7 +85,7 @@ start_process (void *file_name_)
   success = load (file_name, &if_.eip, &if_.esp);
   t->load_succeed = success;
 
-  sema_up(&t->load);
+  sema_up(&thread_current()->load);
   
   if (!success){
     free (file_name);
