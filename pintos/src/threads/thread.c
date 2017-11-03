@@ -192,7 +192,7 @@ thread_create (const char *name, int priority,
     return TID_ERROR;
 
   /* Initialize thread. */
-  init_thread (t, name, priority); //makes thread status BLOCKED
+  init_thread (t, name, priority); //makes thread status BLOCKED, thread_current() doesn't work in this func
   tid = t->tid = allocate_tid ();
 
   #ifdef USERPROG
