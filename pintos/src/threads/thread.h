@@ -107,6 +107,7 @@ struct thread      //pintos manual 67
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
     struct semaphore wait;
+    struct semaphore load;
     struct list child_list;
     struct list_elem child_elem;
     struct list file_list;

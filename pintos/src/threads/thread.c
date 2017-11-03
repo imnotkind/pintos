@@ -724,6 +724,7 @@ init_thread (struct thread *t, const char *name, int priority)
   t->magic = THREAD_MAGIC;
   #ifdef USERPROG
     sema_init(&t->wait,0);
+    sema_init(&t->load,0);
     list_init(&t->child_list);
     list_init(&t->file_list);
     t->exit_code = EXIT_CODE_DEFAULT;
