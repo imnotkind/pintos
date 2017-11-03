@@ -28,7 +28,6 @@ typedef int tid_t;
 
 /* exit code */
 #define EXIT_CODE_DEFAULT -999
-#define EXIT_CODE_INVALID -444
 /* A kernel thread or user process.
 
    Each thread structure is stored in its own 4 kB page.  The
@@ -97,24 +96,24 @@ struct thread      //pintos manual 67
     
     int64_t wake_ticks;                 /* Saved ticks to wake up when blocked. */
     int priority_orig;                  /* Original priority. same as priority when thread is not donated*/
-    struct lock* need_lock;             /*only when thread is in blocked state in waiter list*/                         
-    struct list lock_list;             /* list of locks a thread has*/
+    struct lock* need_lock;             /* only when thread is in blocked state in waiter list*/                         
+    struct list lock_list;              /* list of locks a thread has*/
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
-    int nice;
-    Fixed recent_cpu;
+    int nice;                           /* mlfqs */
+    Fixed recent_cpu;                   /* mlfqs*/
 
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
-    struct semaphore wait;
-    struct semaphore destroy;
-    struct semaphore load;
-    struct list child_list;
-    struct list_elem child_elem;
-    struct list file_list;
-    int exit_code;
-    bool load_succeed;
-    struct file *run_file;
+    struct semaphore wait;              /* */
+    struct semaphore destroy;           /* */
+    struct semaphore load;              /* */
+    struct list child_list;             /* list of child of a thread */
+    struct list_elem child_elem;        /* elem for child list*/
+    struct list file_list;              /* list of files that thread has */
+    int exit_code;                      /* exit code used in process_wait*/
+    bool load_succeed;                  /* */
+    struct file *run_file;              /* running file, needed for rox test*/
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
   };
