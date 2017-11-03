@@ -105,14 +105,14 @@ struct thread      //pintos manual 67
 
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
-    struct semaphore wait;              /* */
-    struct semaphore destroy;           /* */
-    struct semaphore load;              /* */
+    struct semaphore wait;              /* wait for child to exit, between process_exit and process_wait*/
+    struct semaphore destroy;           /* whether to destroy data, between process_exit and process_wait*/
+    struct semaphore load;              /* between sys_exec and start_process*/
     struct list child_list;             /* list of child of a thread */
     struct list_elem child_elem;        /* elem for child list*/
     struct list file_list;              /* list of files that thread has */
     int exit_code;                      /* exit code used in process_wait*/
-    bool load_succeed;                  /* */
+    bool load_succeed;                  /* whether child proc load succeeded*/
     struct file *run_file;              /* running file, needed for rox test*/
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
