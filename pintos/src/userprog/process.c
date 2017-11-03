@@ -191,7 +191,6 @@ process_exit (void)
 
   
   lock_acquire(&filesys_lock);
-
   file_close(cur->run_file);
   while (!list_empty(&cur->file_list))
   {
@@ -200,8 +199,17 @@ process_exit (void)
     file_close(fe->fp);
     free(fe);
   }
-
   lock_release(&filesys_lock);
+
+  for(e = list_begin(&cur->child_list); e!=list_end(&cur->child_list); )
+  {
+    struct thread *t = list_entry(e, struct thread, child_elem);
+    e = list_remove(e);
+    sema_up(&t->destroy);
+  }
+
+  sema_up(&cur->wait);
+  sema_down(&cur->destroy);
 
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
@@ -220,15 +228,7 @@ process_exit (void)
       pagedir_destroy (pd);
     }
 
-  for(e = list_begin(&cur->child_list); e!=list_end(&cur->child_list); )
-  {
-    struct thread *t = list_entry(e, struct thread, child_elem);
-    e = list_remove(e);
-    sema_up(&t->destroy);
-  }
-
-  sema_up(&cur->wait);
-  sema_down(&cur->destroy);
+  
   
 
 }
