@@ -113,7 +113,7 @@ struct thread      //pintos manual 67
     struct list_elem child_elem;
     struct list file_list;
     int exit_code;
-    bool load_suceed;
+    bool load_succeed;
     struct file *run_file;
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */

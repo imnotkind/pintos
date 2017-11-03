@@ -25,7 +25,6 @@ static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
 
 extern struct lock filesys_lock;
-extern struct lock load_lock;
 /* Starts a new thread running a user program loaded from
    FILENAME.  The new thread may be scheduled (and may even exit)
    before process_execute() returns.  Returns the new process's
@@ -71,20 +70,22 @@ start_process (void *file_name_)
   char *argv[64] = {NULL,};
   char *token, *save_ptr;
 
-  /* Initialize interrupt frame and load executable. */
-  memset (&if_, 0, sizeof if_);
-  if_.gs = if_.fs = if_.es = if_.ds = if_.ss = SEL_UDSEG;
-  if_.cs = SEL_UCSEG;
-  if_.eflags = FLAG_IF | FLAG_MBS;
-
-
   argc = 0;
   for (token = strtok_r(file_name, " ", &save_ptr); token != NULL; token = strtok_r(NULL, " ", &save_ptr)){
     argc++;
     argv[argc-1] = token;
   }
 
+  /* Initialize interrupt frame and load executable. */
+  memset (&if_, 0, sizeof if_);
+  if_.gs = if_.fs = if_.es = if_.ds = if_.ss = SEL_UDSEG;
+  if_.cs = SEL_UCSEG;
+  if_.eflags = FLAG_IF | FLAG_MBS;
+
   success = load (file_name, &if_.eip, &if_.esp);
+  t->load_succeed = success;
+
+  sema_up(&t->load);
   
   if (!success){
     free (file_name);
@@ -152,7 +153,7 @@ process_wait (tid_t child_tid)
   struct list_elem * e;
   struct thread *t;
   struct thread *child = NULL;
-  int ret = -1;
+  int ret;
   
   for (e = list_begin (&thread_current()->child_list); e != list_end (&thread_current()->child_list);
   e = list_next (e))
@@ -167,15 +168,12 @@ process_wait (tid_t child_tid)
   }
   if(child == NULL)
     return -1;
-  if(child->exit_code != EXIT_CODE_DEFAULT && child->finished == true){
-    ret = child->exit_code;
-    return ret;
-  }
   
   sema_down(&child->wait);
-  ret = child->exit_code;
-  thread_unblock(child);
   list_remove(&child->child_elem);
+  ret = child->exit_code;
+  sema_up(&child->destroy);
+  
   
 
   return ret;
@@ -190,7 +188,19 @@ process_exit (void)
   struct list_elem *e;
   struct flist_pack *fe;
 
+  
   lock_acquire(&filesys_lock);
+  
+  for (e = list_begin(&cur->file_list); e != list_end(&cur->file_list); )
+  {
+    fe = list_entry (e, struct flist_pack, elem);
+    e = list_next(e);
+    free(fe);
+  }
+
+  file_close(cur->run_file);
+  lock_release(&filesys_lock);
+
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
   pd = cur->pagedir;
@@ -207,22 +217,9 @@ process_exit (void)
       pagedir_activate (NULL);
       pagedir_destroy (pd);
     }
+
   
-  list_remove(&cur->child_elem);
-  
-  file_close(cur->run_file);
-  lock_release(&filesys_lock);
-  for (e = list_begin(&cur->file_list); e != list_end(&cur->file_list); )
-  {
-    fe = list_entry (e, struct flist_pack, elem);
-    e = list_next(e);
-    free(fe);
-  }
-  intr_disable();
-  sema_up(&cur->wait);
-  thread_block();
-  intr_enable();
-  cur->finished = true;
+
 }
 
 /* Sets up the CPU for running user code in the current

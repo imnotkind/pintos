@@ -13,7 +13,6 @@
 #include "threads/synch.h"
 
 struct lock filesys_lock;
-struct lock load_lock;
 
 static int fd_next = 3;
 
@@ -26,7 +25,6 @@ syscall_init (void)
 {
   intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
   lock_init(&filesys_lock);
-  lock_init(&load_lock);
 }
 
 static void
@@ -61,6 +59,7 @@ syscall_handler (struct intr_frame *f)
       check_addr_safe(p+1);
       check_addr_safe((void *)*(p+1));
       char *cmd_line = *(char **)(p+1);
+      int tid;
 
       char *file_name = malloc(strlen(cmd_line)+1); //pure file name to put in filesys_open
       strlcpy(file_name,cmd_line,strlen(cmd_line)+1);
@@ -76,7 +75,27 @@ syscall_handler (struct intr_frame *f)
       else
       {
         file_close(fp);
-        f->eax = process_execute(cmd_line);
+        tid = process_execute(cmd_line);
+        if(tid == TID_ERROR)
+          return TID_ERROR;
+        struct thread * child;
+        struct thread * t;
+        struct list_elem * e;
+        for (e = list_begin (&thread_current()->child_list); e != list_end (&thread_current()->child_list);
+        e = list_next (e))
+        {
+          t = list_entry (e, struct thread, child_elem);
+          if(t->tid == tid)
+          {
+            child = t;
+            break;
+          }
+        }
+        ASSERT(child);
+        sema_down(&child->load);
+        if(child->load_succeed == false)
+          return TID_ERROR;
+        f->eax = tid;
       }
       lock_release(&filesys_lock);
       free(file_name);
@@ -126,10 +145,9 @@ syscall_handler (struct intr_frame *f)
 
       lock_acquire(&filesys_lock);
       struct file* fp = filesys_open (file_name);
-      lock_release(&filesys_lock);
+      
       if(!fp){
         f->eax = -1;
-        break;
       }
       else{
         struct flist_pack *fe = (struct flist_pack*)malloc(sizeof(struct flist_pack));
@@ -138,6 +156,7 @@ syscall_handler (struct intr_frame *f)
         list_push_back(&thread_current()->file_list, &fe->elem);
         f->eax = fe->fd;
       }
+      lock_release(&filesys_lock);
       break;
     }
       
