@@ -177,8 +177,6 @@ process_wait (tid_t child_tid)
   ret = child->exit_code;
   sema_up(&child->destroy);
   
-  
-
   return ret;
 }
 
