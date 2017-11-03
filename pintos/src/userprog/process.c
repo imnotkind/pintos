@@ -34,7 +34,7 @@ process_execute (const char *file_name)
 {
   char *fn_copy, *fn_pure, *save_ptr;
   tid_t tid;
-  printf("JJJJ\n");
+
   /* Make a copy of FILE_NAME.
      Otherwise there's a race between the caller and load(). */
   fn_copy = malloc(sizeof(char) * (strlen(file_name)+1));
@@ -47,9 +47,10 @@ process_execute (const char *file_name)
   strlcpy (fn_pure, file_name, sizeof(char) * (strlen(file_name)+1));
   fn_pure = strtok_r(fn_pure, " " ,&save_ptr);
 
+  printf("JJJJ\n");
   /* Create a new thread to execute FILE_NAME. */
   tid = thread_create (fn_pure, PRI_DEFAULT, start_process, fn_copy);
-  
+  printf("OOOO\n");
   free(fn_pure);
   //fn_copy is already freed in start_process
   if(tid == TID_ERROR)
