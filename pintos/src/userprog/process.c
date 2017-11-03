@@ -195,7 +195,7 @@ process_exit (void)
   lock_acquire(&filesys_lock);
 
   file_close(cur->run_file);
-  while (!ist_empty(&cur->file_list))
+  while (!list_empty(&cur->file_list))
   {
     e = list_pop_front(&cur->file_list);
     fe = list_entry (e, struct flist_pack, elem);
