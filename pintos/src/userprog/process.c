@@ -156,7 +156,7 @@ process_wait (tid_t child_tid)
   struct thread *t;
   struct thread *child = NULL;
   int ret = -1;
-  intr_disable();
+  
   for (e = list_begin (&thread_current()->child_list); e != list_end (&thread_current()->child_list);
   e = list_next (e))
   {
@@ -174,7 +174,7 @@ process_wait (tid_t child_tid)
     ret = child->exit_code;
     return ret;
   }
-  intr_enable();
+  
   sema_down(&child->wait);
   thread_unblock(child);
   list_remove(&child->child_elem);
@@ -192,7 +192,7 @@ process_exit (void)
   struct list_elem *e;
   struct flist_pack *fe;
 
-  intr_disable();
+  
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
   pd = cur->pagedir;
@@ -209,7 +209,7 @@ process_exit (void)
       pagedir_activate (NULL);
       pagedir_destroy (pd);
     }
-    
+  
   list_remove(&cur->child_elem);
   lock_acquire(&filesys_lock);
   file_close(cur->run_file);
@@ -220,7 +220,7 @@ process_exit (void)
     e = list_next(e);
     free(fe);
   }
-  
+  intr_disable();
   sema_up(&cur->wait);
   thread_block();
   intr_enable();
