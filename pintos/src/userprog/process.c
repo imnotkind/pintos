@@ -175,7 +175,7 @@ process_wait (tid_t child_tid)
   sema_down(&child->wait);
   list_remove(&child->child_elem);
   ret = child->exit_code;
-  //sema_up(&child->destroy);
+  sema_up(&child->destroy);
   
   return ret;
 }
@@ -205,11 +205,11 @@ process_exit (void)
   {
     struct thread *t = list_entry(e, struct thread, child_elem);
     e = list_remove(e);
-    //sema_up(&t->destroy);
+    sema_up(&t->destroy);
   }
 
   sema_up(&cur->wait);
-  //sema_down(&cur->destroy);
+  sema_down(&cur->destroy);
 
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
