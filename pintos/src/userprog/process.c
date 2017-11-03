@@ -34,7 +34,6 @@ process_execute (const char *file_name)
 {
   char *fn_copy, *fn_pure, *save_ptr;
   tid_t tid;
-  struct file *fp = NULL;
 
   /* Make a copy of FILE_NAME.
      Otherwise there's a race between the caller and load(). */
@@ -83,7 +82,7 @@ start_process (void *file_name_)
   if_.eflags = FLAG_IF | FLAG_MBS;
 
   success = load (file_name, &if_.eip, &if_.esp);
-  t->load_succeed = success;
+  thread_current()->load_succeed = success;
 
   sema_up(&thread_current()->load);
   
