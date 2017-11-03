@@ -25,6 +25,7 @@ static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
 
 extern struct lock filesys_lock;
+extern struct lock load_lock;
 /* Starts a new thread running a user program loaded from
    FILENAME.  The new thread may be scheduled (and may even exit)
    before process_execute() returns.  Returns the new process's
@@ -48,7 +49,9 @@ process_execute (const char *file_name)
   fn_pure = strtok_r(fn_pure, " " ,&save_ptr);
 
   /* Create a new thread to execute FILE_NAME. */
+  lock_acquire(&load_lock);
   tid = thread_create (fn_pure, PRI_DEFAULT, start_process, fn_copy);
+  lock_release(&load_lock);
   free(fn_pure);
   //fn_copy is already freed in start_process
   if(tid == TID_ERROR)
