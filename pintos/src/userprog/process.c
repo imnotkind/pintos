@@ -36,7 +36,7 @@ process_execute (const char *file_name)
   tid_t tid;
   struct file *fp = NULL;
 
-  sema_down(&thread_current()->load);
+  //sema_down(&thread_current()->load);
   /* Make a copy of FILE_NAME.
      Otherwise there's a race between the caller and load(). */
   fn_copy = malloc(sizeof(char) * (strlen(file_name)+1));
@@ -89,7 +89,7 @@ start_process (void *file_name_)
   }
 
   success = load (file_name, &if_.eip, &if_.esp);
-  sema_up(&thread_current()->load);
+  //sema_up(&thread_current()->load);
   if (!success){
     free (file_name);
     thread_exit ();
