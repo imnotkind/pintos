@@ -52,10 +52,12 @@ process_execute (const char *file_name)
   lock_acquire(&load_lock);
   tid = thread_create (fn_pure, PRI_DEFAULT, start_process, fn_copy);
   lock_release(&load_lock);
-  free(fn_pure);
   //fn_copy is already freed in start_process
   if(tid == TID_ERROR)
     free(fn_copy);
+  free(fn_pure);
+  
+  
   return tid;
 }
 
@@ -191,15 +193,17 @@ process_exit (void)
 
   
   lock_acquire(&filesys_lock);
-  
-  for (e = list_begin(&cur->file_list); e != list_end(&cur->file_list); )
+
+  file_close(cur->run_file);
+  while (!ist_empty(&cur->file_list))
   {
+    e = list_pop_front(&cur->file_list);
     fe = list_entry (e, struct flist_pack, elem);
-    e = list_next(e);
+    file_close(fe->fp);
     free(fe);
   }
 
-  file_close(cur->run_file);
+  
   lock_release(&filesys_lock);
 
   /* Destroy the current process's page directory and switch back
