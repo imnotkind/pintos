@@ -37,7 +37,7 @@ process_execute (const char *file_name)
   tid_t tid;
   struct file *fp = NULL;
   
-  //sema_down(&thread_current()->load);
+  lock_acquire(&load_lock);
   /* Make a copy of FILE_NAME.
      Otherwise there's a race between the caller and load(). */
   fn_copy = malloc(sizeof(char) * (strlen(file_name)+1));

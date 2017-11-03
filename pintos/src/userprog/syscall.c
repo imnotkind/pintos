@@ -76,7 +76,6 @@ syscall_handler (struct intr_frame *f)
       else
       {
         file_close(fp);
-        lock_acquire(&load_lock);
         f->eax = process_execute(cmd_line);
       }
       lock_release(&filesys_lock);
