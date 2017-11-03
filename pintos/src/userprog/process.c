@@ -36,7 +36,7 @@ process_execute (const char *file_name)
   char *fn_copy, *fn_pure, *save_ptr;
   tid_t tid;
   struct file *fp = NULL;
-  
+
   lock_acquire(&load_lock);
   /* Make a copy of FILE_NAME.
      Otherwise there's a race between the caller and load(). */
@@ -194,7 +194,7 @@ process_exit (void)
   struct list_elem *e;
   struct flist_pack *fe;
 
-  
+  lock_acquire(&filesys_lock);
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
   pd = cur->pagedir;
@@ -213,7 +213,7 @@ process_exit (void)
     }
   
   list_remove(&cur->child_elem);
-  lock_acquire(&filesys_lock);
+  
   file_close(cur->run_file);
   lock_release(&filesys_lock);
   for (e = list_begin(&cur->file_list); e != list_end(&cur->file_list); )
