@@ -43,7 +43,7 @@ void *alloc_page_frame(enum palloc_flags flags)
     frmae->tid = thread_current()->tid;
     frame->fno = 0;
     frame->page = page;
-    frmae->uv_addr = 0; //How can we get uv_addr from kv_adrr?
+    frmae->uv_addr = 0; //pagedir_set_page에서 초기화
     frmae->can_alloc = false;
     list_push_back(&frmae_list, &frmae->elem);
 
