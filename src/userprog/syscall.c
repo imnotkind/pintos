@@ -299,8 +299,13 @@ syscall_handler (struct intr_frame *f)
 
     /* Project 3 and optionally project 4. */
     case SYS_MMAP:                   /* Map a file into memory. */
+    {
+      break;
+    }
     case SYS_MUNMAP:                 /* Remove a memory mapping. */
-
+    {
+      break;
+    }
     /* Project 4 only. */
     case SYS_CHDIR:                  /* Change the current directory. */
     case SYS_MKDIR:                  /* Create a directory. */
