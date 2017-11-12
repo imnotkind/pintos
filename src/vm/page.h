@@ -3,10 +3,10 @@
 
 #include <list.h>
 
-struct sptable_pack
+struct sp_table_pack //sup page table
 {
     void *upage;
-    bool can_write;
+    bool is_loaded;
     struct list_elem elem;
 };
 
