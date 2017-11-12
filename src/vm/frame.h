@@ -11,7 +11,7 @@ struct ftable_pack
     void *page;   //kernel vaddr
     bool can_alloc; //availability of allocation
     struct list_elem elem;
-}
+};
 
 void* alloc_page_frame(enum palloc_flags flags);
 void free_page_frame(void *page);
