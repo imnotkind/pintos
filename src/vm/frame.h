@@ -8,12 +8,12 @@ struct ftable_pack
 {
     struct thread* t;    //thread id
     int fno;    //frame number
-    void *page;   //kernel vaddr
+    void *kpage;   //kernel vaddr
     bool can_alloc; //availability of allocation
     struct list_elem elem;
 };
 
 void* alloc_page_frame(enum palloc_flags flags);
-void free_page_frame(void *page);
+void free_page_frame(void *kpage);
 void init_frame_table();
 #endif
