@@ -21,9 +21,9 @@ struct ftable_pack
 
 void init_frame_table()
 {
-    list_init(frame_list);
-    lock_init(eviction_lock);
-    lock_init(ftable_lock);
+    list_init(&frame_list);
+    lock_init(&eviction_lock);
+    lock_init(&ftable_lock);
 }
 
 
@@ -43,9 +43,9 @@ void *alloc_page_frame(enum palloc_flags flags)
     frame->fno = 0;
     frame->page = page;
     frame->can_alloc = false;
-    lock_acquire(ftable_lock);
+    lock_acquire(&ftable_lock);
     list_push_back(&frame_list, &frame->elem);
-    lock_release(ftable_lock);
+    lock_release(&ftable_lock);
 
     return page;
 }
@@ -65,9 +65,9 @@ void free_page_frame(void *page) // page is kv_adrr
     }
     ASSERT(frame);
 
-    lock_acquire(ftable_lock);
+    lock_acquire(&ftable_lock);
     list_remove(&frame->elem);
-    lock_release(ftable_lock);
+    lock_release(&ftable_lock);
         
     palloc_free_page(page);
     free(frame);
