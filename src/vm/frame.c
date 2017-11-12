@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <debug.h>
 #include "threads/synch.h"
-#include "therads/thread.h"
+#include "threads/thread.h"
 #include "threads/malloc.h"
 
 struct list frame_list;
