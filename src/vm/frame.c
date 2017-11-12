@@ -1,21 +1,19 @@
 #include "vm/frame.h"
 #include <stdio.h>
 #include <debug.h>
-#include "threads/palloc.h"
 #include "threads/synch.h"
 #include "therads/thread.h"
 #include "threads/malloc.h"
 
 struct list frame_list;
 struct lock eviction_lock;
-
+struct lock ftable_lock;
 /*
 struct ftable_pack
 {
-    int tid;    //thread id
+    struct thread* t;    //thread id
     int fno;    //frame number
     void *page
-    unsigned uv_addr; //user virtual adress
     bool can_alloc; //availability of allocation
     struct list_elem elem;
 }
@@ -25,6 +23,7 @@ void init_frame_table()
 {
     list_init(frame_list);
     lock_init(eviction_lock);
+    lock_init(ftable_lock);
 }
 
 
@@ -40,21 +39,41 @@ void *alloc_page_frame(enum palloc_flags flags)
     ASSERT(page != NULL);
 
     frame = (struct ftable_pack *) malloc(sizeof(struct ftable_pack));
-    frmae->tid = thread_current()->tid;
+    frame->t = thread_current();
     frame->fno = 0;
     frame->page = page;
-    frmae->uv_addr = 0; //pagedir_set_page에서 초기화
-    frmae->can_alloc = false;
-    list_push_back(&frmae_list, &frmae->elem);
+    frame->can_alloc = false;
+    lock_acquire(ftable_lock);
+    list_push_back(&frame_list, &frame->elem);
+    lock_release(ftable_lock);
 
     return page;
 }
 
-void free_page_frame(void *kv_addr)
+void free_page_frame(void *page) // page is kv_adrr
 {
-    palloc_free_page(kv_addr);
+    struct list_elem *e;
+    struct ftable_pack *f;
+    struct ftable_pack *frame = NULL;
+    for(e = list_begin(&frame_list); e != list_end(&frame_list); e = list_next(e))
+    {
+        f = list_entry(e, struct ftable_pack, elem);
+        if (f->page == page){
+            frame = f;
+            break;
+        }
+    }
+    ASSERT(frame);
+
+    lock_acquire(ftable_lock);
+    list_remove(&frame->elem);
+    lock_release(ftable_lock);
+        
+    palloc_free_page(page);
+    free(frame);
 }
 
+/*
 void evict_frame()
 {
     struct thread *cur = thread_current();
@@ -63,7 +82,8 @@ void evict_frame()
     lock_release(eviction_lock);
 }
 
-void * find_evict_frmae()
+void * find_evict_frame()
 {
 
 }
+*/
