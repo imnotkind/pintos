@@ -11,8 +11,18 @@ struct lock sp_table_lock;
 /*
 struct sp_table_pack //sup page table
 {
+    struct thread * owner;
     void *upage;
     bool is_loaded;
+    
+    struct file * file;
+    off_t offset;
+    size_t length;
+    bool writable;
+
+    
+    enum page_type type;
+
     struct list_elem elem;
 };
 */
@@ -28,8 +38,17 @@ void add_to_spage_table(void *upage, bool is_loaded)
 {
    struct sp_table_pack *spt;
    spt = (struct sp_table_pack *) malloc(sizeof(struct sp_table_pack));
+   spt->owner = thread_current();
    spt->upage = upage;
    spt->is_loaded = is_loaded;
+   
+   spt->file = NULL;
+   spt->offset = 0;
+   spt->length = 0;
+   spt->writable = false;
+
+    
+    enum page_type type;
    
    lock_acquire(&sp_table_lock);
    list_push_back(&spt->elem);
