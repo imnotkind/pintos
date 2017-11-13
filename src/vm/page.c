@@ -71,7 +71,7 @@ struct sp_table_pack * upage_to_sp_table_pack(void * upage)
     for(e = list_begin(&cur->sp_table); e != list_end(&cur->sp_table); e = list_next(e))
     {
         spt = list_entry(e, struct sp_table_pack, elem);
-        if (f->kpage == kpage){
+        if (spt->upage == upage){
             return spt;
         }
     }
