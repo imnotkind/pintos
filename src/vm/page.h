@@ -2,6 +2,8 @@
 #define VM_PAGE_H
 
 #include <list.h>
+#include <stdint.h>
+#include "filesys/file.h"
 
 enum page_type
 {
@@ -15,6 +17,10 @@ struct sp_table_pack //sup page table
     bool is_loaded;
     
     struct file * file;
+    off_t offset;
+    size_t length;
+    bool writable;
+
     
     enum page_type type;
 
