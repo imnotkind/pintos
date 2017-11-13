@@ -27,4 +27,8 @@ struct sp_table_pack //sup page table
     struct list_elem elem;
 };
 
+void add_to_spage_table(void *upage, bool is_loaded);
+void free_page_frame(void *upage);
+struct sp_table_pack * upage_to_sp_table_pack(void * upage);
+
 #endif

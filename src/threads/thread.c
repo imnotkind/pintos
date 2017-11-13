@@ -102,6 +102,7 @@ thread_init (void)
   list_init (&sleep_list);
   list_init (&all_list);
   
+  
   init_frame_table();
 
   /* Set up a thread structure for the running thread. */
@@ -733,6 +734,8 @@ init_thread (struct thread *t, const char *name, int priority)
     list_init(&t->file_list);
     t->exit_code = EXIT_CODE_DEFAULT;
   #endif
+    list_init(&t->sp_table);
+    lock_init(&t->sp_table_lock);
   list_push_back (&all_list, &t->allelem);
 }
 
