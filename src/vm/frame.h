@@ -7,8 +7,8 @@
 struct ftable_pack
 {
     struct thread* owner;    //owner thread
-    int fno;    //frame number
-    void *kpage;   //kernel vaddr
+    void *kpage;    //kernel vaddr
+    void *phy;      //physical addr
     bool can_alloc; //availability of allocation
     struct list_elem elem;
 };

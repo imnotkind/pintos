@@ -4,6 +4,7 @@
 #include "threads/synch.h"
 #include "threads/thread.h"
 #include "threads/malloc.h"
+#include "threads/vaddr.h"
 
 struct list frame_list;
 struct lock eviction_lock;
@@ -40,9 +41,8 @@ void *alloc_page_frame(enum palloc_flags flags)
 
     frame = (struct ftable_pack *) malloc(sizeof(struct ftable_pack));
     frame->owner = thread_current();
-    frame->fno = 0;
     frame->kpage = kpage;
-    frame->phy = ;
+    frame->phy = vtop(kpage);
     frame->can_alloc = false;
     lock_acquire(&ftable_lock);
     list_push_back(&frame_list, &frame->elem);
