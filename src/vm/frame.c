@@ -39,7 +39,7 @@ void *alloc_page_frame(enum palloc_flags flags)
     ASSERT(kpage != NULL);
 
     frame = (struct ftable_pack *) malloc(sizeof(struct ftable_pack));
-    frame->t = thread_current();
+    frame->owner = thread_current();
     frame->fno = 0;
     frame->kpage = kpage;
     frame->can_alloc = false;
@@ -69,7 +69,7 @@ void free_page_frame(void *kpage) // page is kv_adrr
     list_remove(&frame->elem);
     lock_release(&ftable_lock);
         
-    palloc_free_page(page);
+    palloc_free_page(kpage);
     free(frame);
 }
 
