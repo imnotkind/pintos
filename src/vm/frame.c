@@ -12,8 +12,8 @@ struct lock ftable_lock;
 struct ftable_pack
 {
     struct thread* t;    //thread id
-    int fno;    //frame number
-    void *kpage
+    void *kpage     //kernel vaddr
+    void *phy;      //physical addr
     bool can_alloc; //availability of allocation
     struct list_elem elem;
 }
@@ -40,8 +40,8 @@ void *alloc_page_frame(enum palloc_flags flags)
 
     frame = (struct ftable_pack *) malloc(sizeof(struct ftable_pack));
     frame->t = thread_current();
-    frame->fno = 0;
     frame->kpage = kpage;
+    frame->phy = ;
     frame->can_alloc = false;
     lock_acquire(&ftable_lock);
     list_push_back(&frame_list, &frame->elem);
