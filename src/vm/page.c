@@ -5,8 +5,6 @@
 #include "threads/thread.h"
 #include "threads/malloc.h"
 
-struct list sp_list;
-struct lock sp_table_lock;
 
 /*
 struct sp_table_pack //sup page table
