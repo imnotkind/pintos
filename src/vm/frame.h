@@ -6,9 +6,9 @@
 
 struct ftable_pack
 {
-    struct thread* t;    //thread id
-    void *kpage;    //kernel vaddr
-    void *phy;      //physical addr
+    struct thread* owner;    //owner thread
+    int fno;    //frame number
+    void *kpage;   //kernel vaddr
     bool can_alloc; //availability of allocation
     struct list_elem elem;
 };
