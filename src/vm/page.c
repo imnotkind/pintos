@@ -26,12 +26,13 @@ struct sp_table_pack //sup page table
 */
 
 
-void add_file_to_spage_table(void *upage,struct file * file, off_t offset, uint32_t read_bytes, uint32_t zero_bytes, bool writable)
+bool add_file_to_spage_table(void *upage,struct file * file, off_t offset, uint32_t read_bytes, uint32_t zero_bytes, bool writable)
 {
    struct thread *cur = thread_current(); 
    struct sp_table_pack *spt;
    spt = (struct sp_table_pack *) malloc(sizeof(struct sp_table_pack));
-   ASSERT(spt != NULL);
+   if(spt == NULL)
+    return false;
 
    spt->owner = cur;
    spt->upage = upage;
@@ -47,6 +48,7 @@ void add_file_to_spage_table(void *upage,struct file * file, off_t offset, uint3
    lock_acquire(&cur->sp_table_lock);
    list_push_back(&cur->sp_table, &spt->elem);
    lock_release(&cur->sp_table_lock);
+   return true;
 
 }
 
