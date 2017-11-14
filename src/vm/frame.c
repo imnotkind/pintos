@@ -12,12 +12,12 @@ struct lock ftable_lock;
 /*
 struct ftable_pack
 {
-    struct thread* t;    //thread id
-    void *kpage     //kernel vaddr
+    struct thread* owner;    //owner thread
+    void *kpage;    //kernel vaddr
     void *phy;      //physical addr
     bool can_alloc; //availability of allocation
     struct list_elem elem;
-}
+};
 */
 
 void init_frame_table()
@@ -26,7 +26,6 @@ void init_frame_table()
     lock_init(&eviction_lock);
     lock_init(&ftable_lock);
 }
-
 
 
 void *alloc_page_frame(enum palloc_flags flags)

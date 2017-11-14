@@ -7,6 +7,7 @@
 
 enum page_type
 {
+    PAGE_NULL,
     PAGE_FILE
 };
 
@@ -18,7 +19,8 @@ struct sp_table_pack //sup page table
     
     struct file * file;
     off_t offset;
-    size_t length;
+    uint32_t read_bytes;
+    uint32_t zero_bytes;
     bool writable;
 
     

@@ -15,9 +15,9 @@ struct sp_table_pack //sup page table
     
     struct file * file;
     off_t offset;
-    size_t length;
+    uint32_t read_bytes;
+    uint32_t zero_bytes;
     bool writable;
-
     
     enum page_type type;
 
@@ -36,15 +36,36 @@ void add_to_spage_table(void *upage, bool is_loaded)
    
    spt->file = NULL;
    spt->offset = 0;
-   spt->length = 0;
+   spt->read_bytes = 0;
+   spt->zero_bytes = 0;
    spt->writable = false;
+   spt->type = PAGE_NULL;
 
-    
-    enum page_type type;
-   
    lock_acquire(&cur->sp_table_lock);
    list_push_back(&cur->sp_table, &spt->elem);
    lock_release(&cur->sp_table_lock);
+}
+
+void add_file_to_spage_table(void *upage, bool is_loaded, struct file * file, off_t offset, uint32_t read_bytes, uint32_t zero_bytes, bool writable)
+{
+   struct thread *cur = thread_current(); 
+   struct sp_table_pack *spt;
+   spt = (struct sp_table_pack *) malloc(sizeof(struct sp_table_pack));
+   spt->owner = cur;
+   spt->upage = upage;
+   spt->is_loaded = is_loaded;
+   
+   spt->file = file;
+   spt->offset = offset;
+   spt->read_bytes = read_bytes;
+   spt->zero_bytes = zero_bytes;
+   spt->writable = writable;
+   spt->type = PAGE_FILE;
+
+   lock_acquire(&cur->sp_table_lock);
+   list_push_back(&cur->sp_table, &spt->elem);
+   lock_release(&cur->sp_table_lock);
+
 }
 
 void free_page_frame(void *upage) // page is kv_adrr
