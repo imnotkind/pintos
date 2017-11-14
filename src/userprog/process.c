@@ -21,6 +21,7 @@
 #include "threads/malloc.h"
 #include "userprog/syscall.h"
 #include "vm/frame.h"
+#include "vm/page.h"
 
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
@@ -522,7 +523,20 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       size_t page_read_bytes = read_bytes < PGSIZE ? read_bytes : PGSIZE;
       size_t page_zero_bytes = PGSIZE - page_read_bytes;
 
-      /* Get a page of memory. */
+      add_file_to_spage_table(upage, file, ofs, read_bytes, zero_bytes, writable);
+
+      /* Advance. */
+      read_bytes -= page_read_bytes;
+      zero_bytes -= page_zero_bytes;
+      upage += PGSIZE;
+      ofs += page_read_bytes;
+    }
+  return true;
+}
+
+void haebinSucks()
+{
+        /* Get a page of memory. */
       uint8_t *kpage = alloc_page_frame (PAL_USER);
       if (kpage == NULL)
         return false;
@@ -541,13 +555,6 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
           free_page_frame (kpage);
           return false; 
         }
-
-      /* Advance. */
-      read_bytes -= page_read_bytes;
-      zero_bytes -= page_zero_bytes;
-      upage += PGSIZE;
-    }
-  return true;
 }
 
 /* Create a minimal stack by mapping a zeroed page at the top of
