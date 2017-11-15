@@ -17,7 +17,7 @@ struct lock load_lock;
 static int fd_next = 3;
 
 static void syscall_handler (struct intr_frame *); //don't move this to header
-void check_addr_safe(const void *vaddr);
+bool check_addr_safe(const void *vaddr,int mode);
 void sys_exit(int status);
 
 void
@@ -33,7 +33,7 @@ syscall_handler (struct intr_frame *f)
 {
   int *p = f->esp;
   //address safty check with is_user_vaddr() and pagedir_get_page()
-  check_addr_safe(p);
+  check_addr_safe(p,0);
 
   int sysno = *p;
   
@@ -46,7 +46,7 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_EXIT:                   /* Terminate this process. */
     {
-      check_addr_safe(p+1);
+      check_addr_safe(p+1,0);
       int status = *(int *)(p+1);
       //we must close all files opened by process! LATER
       //OR we must interact with parents MAYBE
@@ -57,8 +57,8 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_EXEC:                   /* Start another process. */
     {
-      check_addr_safe(p+1);
-      check_addr_safe((void *)*(p+1));
+      check_addr_safe(p+1,0);
+      check_addr_safe((void *)*(p+1),0);
       char *cmd_line = *(char **)(p+1);
       int tid;
 
@@ -108,7 +108,7 @@ syscall_handler (struct intr_frame *f)
       
     case SYS_WAIT:                   /* Wait for a child process to die. */
     {
-      check_addr_safe(p+1);
+      check_addr_safe(p+1,0);
       int pid = *(int *)(p+1);
       f->eax = process_wait(pid);
       break;
@@ -116,9 +116,9 @@ syscall_handler (struct intr_frame *f)
       
     case SYS_CREATE:                 /* Create a file. */
     {
-      check_addr_safe(p+1);
-      check_addr_safe((void *)*(p+1));
-      check_addr_safe(p+2);
+      check_addr_safe(p+1,0);
+      check_addr_safe((void *)*(p+1),0);
+      check_addr_safe(p+2,0);
       char *file = *(char **)(p+1);
       unsigned initial_size = *(unsigned *)(p+2);
 
@@ -131,8 +131,8 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_REMOVE:                 /* Delete a file. */
     {
-      check_addr_safe(p+1);
-      check_addr_safe((void *)*(p+1));
+      check_addr_safe(p+1,0);
+      check_addr_safe((void *)*(p+1),0);
       char *file = *(char **)(p+1);
 
       lock_acquire(&filesys_lock);
@@ -143,8 +143,8 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_OPEN:                   /* Open a file. */
     {
-      check_addr_safe(p+1);
-      check_addr_safe((void *)*(p+1));
+      check_addr_safe(p+1,0);
+      check_addr_safe((void *)*(p+1),0);
       char * file_name = *(char **)(p+1);
 
       lock_acquire(&filesys_lock);
@@ -167,7 +167,7 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_FILESIZE:               /* Obtain a file's size. */
     {
-      check_addr_safe(p+1);
+      check_addr_safe(p+1,0);
       int fd = *(int *)(p+1);
       f->eax = (uint32_t)file_length(fd_to_flist_pack(fd)->fp);
       break;
@@ -175,10 +175,10 @@ syscall_handler (struct intr_frame *f)
       
     case SYS_READ:                   /* Read from a file. */
     {
-      check_addr_safe(p+1);
-      check_addr_safe(p+2);
-      check_addr_safe((void *)*(p+2));
-      check_addr_safe(p+3);
+      check_addr_safe(p+1,0);
+      check_addr_safe(p+2,0);
+      check_addr_safe((void *)*(p+2),0);
+      check_addr_safe(p+3,0);
       int fd = *(int *)(p+1);
       void *buffer = *(void **)(p+2);
       unsigned size = *(unsigned *)(p+3);
@@ -211,10 +211,10 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_WRITE:                  /* Write to a file. */
     {
-      check_addr_safe(p+1);
-      check_addr_safe(p+2);
-      check_addr_safe((void *)*(p+2));
-      check_addr_safe(p+3);
+      check_addr_safe(p+1,0);
+      check_addr_safe(p+2,0);
+      check_addr_safe((void *)*(p+2),0);
+      check_addr_safe(p+3,0);
       int fd = *(int *)(p+1);
       void * buffer = *(void **)(p+2);
       unsigned size = *(unsigned *)(p+3);
@@ -240,8 +240,8 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_SEEK:                   /* Change position in a file. */
     {
-      check_addr_safe(p+1);
-      check_addr_safe(p+2);
+      check_addr_safe(p+1,0);
+      check_addr_safe(p+2,0);
       int fd = *(int *)(p+1);
       unsigned position = *(unsigned *)(p+2);
 
@@ -259,7 +259,7 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_TELL:                   /* Report current position in a file. */
     {
-      check_addr_safe(p+1);
+      check_addr_safe(p+1,0);
       int fd = *(int *)(p+1);
 
       struct flist_pack *fe = fd_to_flist_pack(fd);
@@ -277,7 +277,7 @@ syscall_handler (struct intr_frame *f)
       
     case SYS_CLOSE:                  /* Close a file. */
     {
-      check_addr_safe(p+1);
+      check_addr_safe(p+1,0);
       int fd = *(int *)(p+1);
 
       struct flist_pack *fe = fd_to_flist_pack(fd);
@@ -318,12 +318,23 @@ syscall_handler (struct intr_frame *f)
   }
 }
 
-void check_addr_safe(const void *vaddr)
+bool check_addr_safe(const void *vaddr,int mode)
 {
-  if (!vaddr || !is_user_vaddr(vaddr) || !pagedir_get_page(thread_current()->pagedir, vaddr))
+  if(mode==0)
   {
-    sys_exit(-1);
+    if (!vaddr || !is_user_vaddr(vaddr) || !pagedir_get_page(thread_current()->pagedir, vaddr))
+      sys_exit(-1);
   }
+  if(mode==1)
+  {
+    if (!vaddr || !is_user_vaddr(vaddr) || !pagedir_get_page(thread_current()->pagedir, vaddr))
+    {
+      return false;
+    }
+    else 
+      return true;
+  }
+  
 }
 
 struct flist_pack* fd_to_flist_pack(int fd)
