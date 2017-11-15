@@ -68,18 +68,20 @@ void free_page_frame(void *upage) // page is kv_adrr
     free(sp_table);
 }
 
+
 struct sp_table_pack * upage_to_sp_table_pack(void * upage)
 {
     struct list_elem *e;
-    struct sp_table_pack *spt;
+    struct sp_table_pack *sptp;
     struct thread *cur = thread_current(); 
     for(e = list_begin(&cur->sp_table); e != list_end(&cur->sp_table); e = list_next(e))
     {
-        spt = list_entry(e, struct sp_table_pack, elem);
-        if (spt->upage == upage){
-            return spt;
+        sptp = list_entry(e, struct sp_table_pack, elem);
+        if (sptp->upage == upage){
+            return sptp;
         }
     }
     
     return NULL;
 }
+

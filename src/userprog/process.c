@@ -523,13 +523,14 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       size_t page_read_bytes = read_bytes < PGSIZE ? read_bytes : PGSIZE;
       size_t page_zero_bytes = PGSIZE - page_read_bytes;
 
-      add_file_to_spage_table(upage, file, ofs, read_bytes, zero_bytes, writable);
+      if(!add_file_to_spage_table(upage, file, ofs, read_bytes, zero_bytes, writable))
+        return false;
 
       /* Advance. */
       read_bytes -= page_read_bytes;
       zero_bytes -= page_zero_bytes;
       upage += PGSIZE;
-      ofs += page_read_bytes;
+      ofs += page_read_bytes; //orginally, file_read iterated file pos, but not now
     }
   return true;
 }

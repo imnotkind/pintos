@@ -54,23 +54,23 @@ void free_page_frame(void *kpage) // page is kv_adrr
 {
     struct list_elem *e;
     struct ftable_pack *f;
-    struct ftable_pack *frame = NULL;
+    struct ftable_pack *ftp = NULL;
     for(e = list_begin(&frame_list); e != list_end(&frame_list); e = list_next(e))
     {
         f = list_entry(e, struct ftable_pack, elem);
         if (f->kpage == kpage){
-            frame = f;
+            ftp = f;
             break;
         }
     }
-    ASSERT(frame);
+    ASSERT(ftp);
 
     lock_acquire(&ftable_lock);
-    list_remove(&frame->elem);
+    list_remove(&ftp->elem);
     lock_release(&ftable_lock);
         
     palloc_free_page(kpage);
-    free(frame);
+    free(ftp);
 }
 
 /*
