@@ -57,7 +57,7 @@ bool add_file_to_spage_table(void *upage,struct file * file, off_t offset, uint3
 
 }
 
-void free_page_frame(void *upage) // page is kv_adrr
+void free_spage_table(void *upage) // page is uv_addr
 {
     struct sp_table_pack *sp_table;
     struct thread *cur = thread_current();
