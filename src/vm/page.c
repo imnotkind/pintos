@@ -4,6 +4,7 @@
 #include "threads/synch.h"
 #include "threads/thread.h"
 #include "threads/malloc.h"
+#include "threads/palloc.h"
 
 
 /*
@@ -87,13 +88,8 @@ struct sp_table_pack * upage_to_sp_table_pack(void * upage)
 
 bool load_file(struct sp_table_pack * sptp)
 {
-
-}
-
-
-void haebinSucks() // This is temporary function for save ex-load_segment code
-{
-        /* Get a page of memory. */
+    
+    /* Get a page of memory. */
       uint8_t *kpage = alloc_page_frame (PAL_USER);
       if (kpage == NULL)
         return false;
