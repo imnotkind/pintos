@@ -99,7 +99,7 @@ bool load_file(struct sp_table_pack * sptp)
     return false;
 
   /* Load this page. */
-  if (file_read (sptp->file, kpage, sptp->page_read_bytes) != (int) sptp->page_read_bytes)
+  if (file_read_at (sptp->file, kpage, sptp->page_read_bytes,sptp->offset) != (int) sptp->page_read_bytes)
     {
       free_page_frame (kpage);
       return false;
