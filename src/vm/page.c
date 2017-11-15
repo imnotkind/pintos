@@ -113,4 +113,6 @@ bool load_file(struct sp_table_pack * sptp)
       free_page_frame (kpage);
       return false;
     }
+
+    return true;
 }
