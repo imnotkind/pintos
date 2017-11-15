@@ -85,3 +85,31 @@ struct sp_table_pack * upage_to_sp_table_pack(void * upage)
     return NULL;
 }
 
+bool load_file(struct sp_table_pack * sptp)
+{
+
+}
+
+
+void haebinSucks() // This is temporary function for save ex-load_segment code
+{
+        /* Get a page of memory. */
+      uint8_t *kpage = alloc_page_frame (PAL_USER);
+      if (kpage == NULL)
+        return false;
+
+      /* Load this page. */
+      if (file_read (file, kpage, page_read_bytes) != (int) page_read_bytes)
+        {
+          free_page_frame (kpage);
+          return false;
+        }
+      memset (kpage + page_read_bytes, 0, page_zero_bytes);
+
+      /* Add the page to the process's address space. */
+      if (!install_page (upage, kpage, writable))
+        {
+          free_page_frame (kpage);
+          return false;
+        }
+}

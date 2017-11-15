@@ -523,7 +523,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       size_t page_read_bytes = read_bytes < PGSIZE ? read_bytes : PGSIZE;
       size_t page_zero_bytes = PGSIZE - page_read_bytes;
 
-      if(!add_file_to_spage_table(upage, file, ofs, read_bytes, zero_bytes, writable))
+      if(!add_file_to_spage_table(upage, file, ofs, read_bytes, zero_bytes, writable)) //load later, just only add info to spt for now
         return false;
 
       /* Advance. */
@@ -535,28 +535,6 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
   return true;
 }
 
-void haebinSucks() // This is temporary function for save ex-load_segment code
-{
-        /* Get a page of memory. */
-      uint8_t *kpage = alloc_page_frame (PAL_USER);
-      if (kpage == NULL)
-        return false;
-
-      /* Load this page. */
-      if (file_read (file, kpage, page_read_bytes) != (int) page_read_bytes)
-        {
-          free_page_frame (kpage);
-          return false;
-        }
-      memset (kpage + page_read_bytes, 0, page_zero_bytes);
-
-      /* Add the page to the process's address space. */
-      if (!install_page (upage, kpage, writable))
-        {
-          free_page_frame (kpage);
-          return false;
-        }
-}
 
 /* Create a minimal stack by mapping a zeroed page at the top of
    user virtual memory. */

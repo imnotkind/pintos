@@ -166,14 +166,11 @@ page_fault (struct intr_frame *f)
   }
   else
   {
-    if(sptp->type == PAGE_NULL)
-    {
-      page_load_success = false; //totally not intended, probably?
-      NOT_REACHED();
-    }
+    ASSERT(sptp->type != PAGE_NULL);
+
     if(sptp->type == PAGE_FILE)
     {
-
+      page_load_success = load_file(sptp);
     }
     
   }
