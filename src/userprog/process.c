@@ -520,7 +520,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       size_t page_read_bytes = read_bytes < PGSIZE ? read_bytes : PGSIZE;
       size_t page_zero_bytes = PGSIZE - page_read_bytes;
 
-      if(!add_file_to_spage_table(upage, file, ofs, read_bytes, zero_bytes, writable)) //load later, just only add info to spt for now
+      if(!add_file_to_spage_table(upage, file, ofs, page_read_bytes, page_zero_bytes, writable)) //load later, just only add info to spt for now
         return false;
 
       /* Advance. */

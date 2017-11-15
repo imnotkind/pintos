@@ -31,7 +31,7 @@ struct sp_table_pack //sup page table
 */
 
 
-bool add_file_to_spage_table(void *upage,struct file * file, off_t offset, uint32_t read_bytes, uint32_t zero_bytes, bool writable)
+bool add_file_to_spage_table(void *upage,struct file * file, off_t offset, size_t page_read_bytes, size_t page_zero_bytes, bool writable)
 {
    struct thread *cur = thread_current();
    struct sp_table_pack *spt;
