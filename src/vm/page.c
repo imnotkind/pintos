@@ -92,7 +92,7 @@ struct sp_table_pack * upage_to_sp_table_pack(void * upage)
 
 bool load_file(struct sp_table_pack * sptp)
 {
-  size_t page_read_bytes = sptp->read_bytes < PGSIZE ? read_bytes : PGSIZE;
+  size_t page_read_bytes = sptp->read_bytes < PGSIZE ? sptp->read_bytes : PGSIZE;
   size_t page_zero_bytes = PGSIZE - page_read_bytes;
   /* Get a page of memory. */
   uint8_t *kpage = alloc_page_frame (PAL_USER);
@@ -108,7 +108,7 @@ bool load_file(struct sp_table_pack * sptp)
   memset (kpage + page_read_bytes, 0, page_zero_bytes);
 
   /* Add the page to the process's address space. */
-  if (!install_page (upage, kpage, writable))
+  if (!install_page (sptp->upage, kpage, sptp->writable))
     {
       free_page_frame (kpage);
       return false;
