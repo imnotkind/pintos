@@ -19,8 +19,8 @@ struct sp_table_pack //sup page table
 
     struct file * file;
     off_t offset;
-    uint32_t read_bytes;
-    uint32_t zero_bytes;
+    size_t page_read_bytes;
+    size_t page_zero_bytes;
     bool writable;
 
 
