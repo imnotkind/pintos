@@ -163,6 +163,7 @@ page_fault (struct intr_frame *f)
   if(sptp == NULL) //stack growth situation!, but later...
   {
     page_load_success = false;
+    ASSERT(0);
   }
   else
   {
