@@ -154,8 +154,7 @@ page_fault (struct intr_frame *f)
 
   if(!check_addr_safe(fault_addr,1))
   {
-    printf("SEX : %x\n",fault_addr);
-    sys_exit(-13);
+    sys_exit(-1);
   }
     
 
