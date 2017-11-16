@@ -153,7 +153,11 @@ page_fault (struct intr_frame *f)
   user = (f->error_code & PF_U) != 0;
 
   if(!check_addr_safe(fault_addr,1))
+  {
+    printf("SEX : %x\n",fault_addr);
     sys_exit(-1);
+  }
+    
 
   /* To implement virtual memory, delete the rest of the function
      body, and replace it with code that brings in the page to
