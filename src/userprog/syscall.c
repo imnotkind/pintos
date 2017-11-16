@@ -18,7 +18,7 @@ struct lock load_lock;
 static int fd_next = 3;
 
 static void syscall_handler (struct intr_frame *); //don't move this to header
-void sys_exit(int status);
+
 
 void
 syscall_init (void) 

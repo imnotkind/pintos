@@ -12,7 +12,7 @@ struct flist_pack
 };
 
 void syscall_init (void);
-
+void sys_exit(int status);
 struct flist_pack* fd_to_flist_pack(int fd);
 
 #endif /* userprog/syscall.h */

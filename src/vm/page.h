@@ -33,4 +33,5 @@ bool add_file_to_spage_table(void *upage, struct file * file, off_t offset, uint
 void free_spage_table(void *upage);
 struct sp_table_pack * upage_to_sp_table_pack(void * upage);
 bool check_addr_safe(const void *vaddr,int mode);
+bool load_file(struct sp_table_pack * sptp);
 #endif
