@@ -306,6 +306,7 @@ syscall_handler (struct intr_frame *f)
     {
       break;
     }
+    
     /* Project 4 only. */
     case SYS_CHDIR:                  /* Change the current directory. */
     {
