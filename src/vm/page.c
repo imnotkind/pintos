@@ -124,11 +124,12 @@ bool grow_stack (void *upage)
   struct sp_table_pack *sptp;
   struct ftable_pack *ftp;
   struct thread *cur = thread_current();
+  //Should Check MAX STACK SIZE
   sptp = (struct sp_table_pack *) malloc(sizeof(struct sp_table_pack));
   if (!sptp){
       return false;
     }
-    
+  //Maybe sptp need more init
   sptp->upage = pg_round_down(upage);
   sptp->is_loaded = true;
   sptp->writable = true;
