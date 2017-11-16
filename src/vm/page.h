@@ -18,7 +18,7 @@ struct sp_table_pack //sup page table
     bool is_loaded;
 
     struct file * file;
-    off_t offset;
+    off_t offset;      //file offset
     size_t page_read_bytes;
     size_t page_zero_bytes;
     bool writable;
@@ -32,5 +32,5 @@ struct sp_table_pack //sup page table
 bool add_file_to_spage_table(void *upage, struct file * file, off_t offset, uint32_t read_bytes, uint32_t zero_bytes, bool writable);
 void free_spage_table(void *upage);
 struct sp_table_pack * upage_to_sp_table_pack(void * upage);
-
+bool check_addr_safe(const void *vaddr,int mode);
 #endif

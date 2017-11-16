@@ -118,3 +118,23 @@ bool load_file(struct sp_table_pack * sptp)
 
     return true;
 }
+
+
+bool check_addr_safe(const void *vaddr,int mode) //moved this from syscall.c to page.c
+{
+  if(mode==0)
+  {
+    if (!vaddr || !is_user_vaddr(vaddr) || !pagedir_get_page(thread_current()->pagedir, vaddr))
+      sys_exit(-1);
+  }
+  if(mode==1)
+  {
+    if (!vaddr || !is_user_vaddr(vaddr) || !pagedir_get_page(thread_current()->pagedir, vaddr))
+    {
+      return false;
+    }
+    else 
+      return true;
+  }
+  
+}

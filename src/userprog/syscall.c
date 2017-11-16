@@ -11,13 +11,13 @@
 #include "userprog/process.h"
 #include <string.h>
 #include "threads/synch.h"
+#include "vm/page.h"
 
 struct lock filesys_lock;
 struct lock load_lock;
 static int fd_next = 3;
 
 static void syscall_handler (struct intr_frame *); //don't move this to header
-bool check_addr_safe(const void *vaddr,int mode);
 void sys_exit(int status);
 
 void
@@ -318,24 +318,6 @@ syscall_handler (struct intr_frame *f)
   }
 }
 
-bool check_addr_safe(const void *vaddr,int mode)
-{
-  if(mode==0)
-  {
-    if (!vaddr || !is_user_vaddr(vaddr) || !pagedir_get_page(thread_current()->pagedir, vaddr))
-      sys_exit(-1);
-  }
-  if(mode==1)
-  {
-    if (!vaddr || !is_user_vaddr(vaddr) || !pagedir_get_page(thread_current()->pagedir, vaddr))
-    {
-      return false;
-    }
-    else 
-      return true;
-  }
-  
-}
 
 struct flist_pack* fd_to_flist_pack(int fd)
 {
