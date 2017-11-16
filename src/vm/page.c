@@ -80,7 +80,8 @@ struct sp_table_pack * upage_to_sp_table_pack(void * upage)
     struct sp_table_pack *sptp;
     struct thread *cur = thread_current();
     
-    upage = pg_round_down(upage);
+    upage = pg_round_down(upage); //to know what page the address is in!
+
     for(e = list_begin(&cur->sp_table); e != list_end(&cur->sp_table); e = list_next(e))
     {
         sptp = list_entry(e, struct sp_table_pack, elem);
