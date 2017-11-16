@@ -40,7 +40,7 @@ bool add_file_to_spage_table(void *upage,struct file * file, off_t offset, size_
     return false;
 
    spt->owner = cur;
-   spt->upage = upage;
+   spt->upage = pg_round_down(upage);
    spt->is_loaded = false;
 
    spt->file = file;
@@ -119,6 +119,39 @@ bool load_file(struct sp_table_pack * sptp)
     return true;
 }
 
+bool grow_stack (void *upage)
+{
+  struct sp_table_pack *sptp;
+  struct ftable_pack *ftp;
+  struct thread *cur = thread_current();
+  sptp = (struct sp_table_pack *) malloc(sizeof(struct sp_table_pack));
+  if (!sptp){
+      return false;
+    }
+    
+  sptp->upage = pg_round_down(upage);
+  sptp->is_loaded = true;
+  sptp->writable = true;
+  sptp->type = PAGE_NULL;
+
+  ftp = alloc_page_frame(PAL_USER);
+  if (!ftp){
+    free(sptp);
+    return false;
+  }
+
+  if(pagedir_get_page (cur->pagedir, sptp->upage) || !pagedir_set_page (cur->pagedir, sptp->upage, ftp, sptp->writable)){
+    free(sptp);
+    free(ftp);
+    return false;
+  }
+
+  lock_acquire(&cur->sp_table_lock);
+  list_push_back(&cur->sp_table, &sptp->elem);
+  lock_release(&cur->sp_table_lock);
+
+  return true;
+}
 
 bool check_addr_safe(const void *vaddr,int mode) //moved this from syscall.c to page.c
 {
