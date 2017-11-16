@@ -136,6 +136,13 @@ bool check_addr_safe(const void *vaddr,int mode) //moved this from syscall.c to 
     }
     else 
       return true;
+    }
+  if(mode==2) //sys_read
+  {
+    if (!vaddr || !is_user_vaddr(vaddr) || !upage_to_sp_table_pack(vaddr))
+    {
+      sys_exit(-1);
+    }
   }
   
 }
