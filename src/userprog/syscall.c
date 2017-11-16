@@ -198,7 +198,7 @@ syscall_handler (struct intr_frame *f)
         lock_acquire(&filesys_lock);
         struct flist_pack *fe = fd_to_flist_pack(fd);
         if (!fe){
-          f->eax = -99;
+          f->eax = -1;
         }          
         else{
           f->eax = file_read(fe->fp, buffer, (off_t)size);
