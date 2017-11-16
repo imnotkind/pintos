@@ -126,9 +126,10 @@ bool check_addr_safe(const void *vaddr,int mode) //moved this from syscall.c to 
   {
     if (!vaddr || !is_user_vaddr(vaddr) || !pagedir_get_page(thread_current()->pagedir, vaddr))
       sys_exit(-1);
-  }
-  if(mode==1)
-  {
+    }
+    
+  if(mode==1) //page_fault()
+  {//do we have to check user vaddr bottom too?
     if (!vaddr || !is_user_vaddr(vaddr) || !pagedir_get_page(thread_current()->pagedir, vaddr))
     {
       return false;

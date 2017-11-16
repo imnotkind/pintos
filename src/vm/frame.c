@@ -31,20 +31,20 @@ void init_frame_table()
 void *alloc_page_frame(enum palloc_flags flags)
 {
     void *kpage = NULL;
-    struct ftable_pack *frame = NULL;
+    struct ftable_pack *ftp = NULL;
 
     ASSERT(flags & PAL_USER);
 
     kpage = palloc_get_page(flags);
     ASSERT(kpage != NULL);
 
-    frame = (struct ftable_pack *) malloc(sizeof(struct ftable_pack));
-    frame->owner = thread_current();
-    frame->kpage = kpage;
-    frame->phy = vtop(kpage);
-    frame->can_alloc = false;
+    ftp = (struct ftable_pack *) malloc(sizeof(struct ftable_pack));
+    ftp->owner = thread_current();
+    ftp->kpage = kpage;
+    ftp->phy = vtop(kpage);
+    ftp->can_alloc = false;
     lock_acquire(&ftable_lock);
-    list_push_back(&frame_list, &frame->elem);
+    list_push_back(&frame_list, &ftp->elem);
     lock_release(&ftable_lock);
 
     return kpage;
