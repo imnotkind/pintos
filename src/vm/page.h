@@ -34,4 +34,5 @@ void free_spage_table(void *upage);
 struct sp_table_pack * upage_to_sp_table_pack(void * upage);
 bool check_addr_safe(const void *vaddr,int mode);
 bool load_file(struct sp_table_pack * sptp);
+bool grow_stack (void *upage);
 #endif

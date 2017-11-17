@@ -10,6 +10,7 @@
 #include "filesys/file.h"
 #include "userprog/process.h"
 #include "vm/frame.h"
+#include "userprog/syscall.h"
 
 /*
 struct sp_table_pack //sup page table
@@ -165,7 +166,7 @@ bool check_addr_safe(const void *vaddr,int mode) //moved this from syscall.c to 
   {
     if (!vaddr || !is_user_vaddr(vaddr) || !pagedir_get_page(thread_current()->pagedir, vaddr))
       sys_exit(-1);
-    }
+  }
     
   if(mode==1) //page_fault()
   {//do we have to check user vaddr bottom too?
@@ -175,7 +176,8 @@ bool check_addr_safe(const void *vaddr,int mode) //moved this from syscall.c to 
     }
     else 
       return true;
-    }
+  }
+
   if(mode==2) //sys_read ?? 
   {
     if (!vaddr || !is_user_vaddr(vaddr) || !upage_to_sp_table_pack(vaddr))
