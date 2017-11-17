@@ -168,7 +168,7 @@ page_fault (struct intr_frame *f)
 
   if(sptp == NULL) //stack growth situation!, but later...
   {
-    if(fault_addr >= f->esp - 32)
+    if(fault_addr >= f->esp - (void*)32)
       page_load_success = grow_stack(fault_addr);
   }
   else
