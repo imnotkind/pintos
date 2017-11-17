@@ -170,7 +170,7 @@ bool check_addr_safe(const void *vaddr,int mode) //moved this from syscall.c to 
     
   if(mode==1) //page_fault()
   {
-    if (!vaddr || !is_user_vaddr(vaddr) || ((void*)0x08048000 < vaddr) )  //stack should be higher than 0x8048000
+    if (!vaddr || !is_user_vaddr(vaddr)  )  //stack should be higher than 0x8048000
     {
       return false;
     }
