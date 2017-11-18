@@ -152,7 +152,7 @@ page_fault (struct intr_frame *f)
   write = (f->error_code & PF_W) != 0;
   user = (f->error_code & PF_U) != 0;
 
-  if(!check_addr_safe(fault_addr,1) || !not_present)
+  if(!check_addr_safe(fault_addr,1) || !not_present) //not present check : pt-write-code test
   {
     sys_exit(-1);
   }
@@ -168,7 +168,7 @@ page_fault (struct intr_frame *f)
 
   if(sptp == NULL) //stack growth situation!, but later...
   {
-    if(((void*)0x08048000 > fault_addr) || (fault_addr < f->esp - (void*)32))
+    if(((void*)0x08048000 > fault_addr) || (fault_addr < f->esp - (void*)32)) 
       sys_exit(-1);
     page_load_success = grow_stack(fault_addr);
   }
