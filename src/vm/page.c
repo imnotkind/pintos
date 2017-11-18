@@ -149,7 +149,7 @@ bool grow_stack (void *upage)
 
   if(pagedir_get_page (cur->pagedir, sptp->upage) || !pagedir_set_page (cur->pagedir, sptp->upage, ftp, sptp->writable)){
     free(sptp);
-    free(ftp);
+    free_page_frame(ftp);
     return false;
   }
 
