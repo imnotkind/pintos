@@ -166,9 +166,9 @@ page_fault (struct intr_frame *f)
   page_load_success = false;
 
 
-  if(sptp == NULL) //stack growth situation!, but later...
+  if(sptp == NULL) //stack growth situation!
   {
-    if(((void*)0x08048000 > fault_addr) || (fault_addr < f->esp - (void*)32)) 
+    if(!check_addr_safe(fault_addr,2,f->esp)) //stack verification
       sys_exit(-1);
     page_load_success = grow_stack(fault_addr);
   }

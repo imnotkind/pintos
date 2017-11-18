@@ -160,7 +160,7 @@ bool grow_stack (void *upage)
   return true;
 }
 
-bool check_addr_safe(const void *vaddr,int mode, void * aux) 
+bool check_addr_safe(const void *vaddr,int mode, void * esp) 
 {
   if(mode==0)
   {
@@ -168,7 +168,7 @@ bool check_addr_safe(const void *vaddr,int mode, void * aux)
       sys_exit(-1);
   }
     
-  if(mode==1) //verifying STACK
+  if(mode==1) //page_fault()
   {
     if (!vaddr || !is_user_vaddr(vaddr) )  
     {
@@ -178,9 +178,9 @@ bool check_addr_safe(const void *vaddr,int mode, void * aux)
       return true;
   }
 
-  if(mode==2) //sys read ,write ??
+  if(mode==2) //verify stack
   {
-    if (!vaddr || !is_user_vaddr(vaddr) || !upage_to_sp_table_pack(vaddr))
+    if (!vaddr || !is_user_vaddr(vaddr) || vaddr < esp - 32 || vaddr < 0xc0000000 - 8*1024*1024 || vaddr <  0x08048000)
     {
       sys_exit(-1);
     }
