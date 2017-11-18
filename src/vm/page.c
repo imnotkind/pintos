@@ -178,9 +178,9 @@ bool check_addr_safe(const void *vaddr,int mode, void * esp)
       return true;
   }
 
-  if(mode==2) //verify stack
+  if(mode==2) //verify stack , stack heruistic access, stack size 8MB, stack addr upper than code seg
   {
-    if (!vaddr || !is_user_vaddr(vaddr) || vaddr < esp - 32 || vaddr < 0xc0000000 - 8*1024*1024 || vaddr <  0x08048000)
+    if (!vaddr || !is_user_vaddr(vaddr) || vaddr < esp - 32 || vaddr < 0xc0000000 - 8*1024*1024 || vaddr <  0x08048000) 
     {
       sys_exit(-1);
     }
