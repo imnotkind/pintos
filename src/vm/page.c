@@ -128,7 +128,7 @@ bool grow_stack (void *upage)
   struct sp_table_pack *sptp;
   struct ftable_pack *ftp;
   struct thread *cur = thread_current();
-  //Should Check MAX STACK SIZE
+  //Should Check MAX STACK SIZE 8MB
 
 
   sptp = (struct sp_table_pack *) malloc(sizeof(struct sp_table_pack));
@@ -160,7 +160,7 @@ bool grow_stack (void *upage)
   return true;
 }
 
-bool check_addr_safe(const void *vaddr,int mode) //moved this from syscall.c to page.c
+bool check_addr_safe(const void *vaddr,int mode, void * aux) 
 {
   if(mode==0)
   {
@@ -168,9 +168,9 @@ bool check_addr_safe(const void *vaddr,int mode) //moved this from syscall.c to 
       sys_exit(-1);
   }
     
-  if(mode==1) //page_fault()
+  if(mode==1) //verifying STACK
   {
-    if (!vaddr || !is_user_vaddr(vaddr)  )  
+    if (!vaddr || !is_user_vaddr(vaddr) )  
     {
       return false;
     }
@@ -178,7 +178,7 @@ bool check_addr_safe(const void *vaddr,int mode) //moved this from syscall.c to 
       return true;
   }
 
-  if(mode==2) //sys_read ?? 
+  if(mode==2) //sys read ,write ??
   {
     if (!vaddr || !is_user_vaddr(vaddr) || !upage_to_sp_table_pack(vaddr))
     {
