@@ -152,7 +152,7 @@ page_fault (struct intr_frame *f)
   write = (f->error_code & PF_W) != 0;
   user = (f->error_code & PF_U) != 0;
 
-  if(!check_addr_safe(fault_addr,1,f->esp) || !not_present) //not present check : pt-write-code test
+  if(!not_present) //not present check : pt-write-code test
   {
     sys_exit(-1);
   }

@@ -182,8 +182,10 @@ bool check_addr_safe(const void *vaddr,int mode, void * esp)
   {
     if (!vaddr || !is_user_vaddr(vaddr) || vaddr < esp - 32 || vaddr < 0xc0000000 - 8*1024*1024 || vaddr <  0x08048000) 
     {
-      sys_exit(-1);
+      return false;
     }
+    else
+      return true;
   }
   
 }
