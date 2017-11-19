@@ -181,7 +181,7 @@ page_fault (struct intr_frame *f)
     }
     else if(sptp->type == PAGE_MMAP)
     {
-       page_load_success = load_mmap(sptp);
+      page_load_success = load_mmap(sptp);
     }
 
   }
