@@ -119,9 +119,35 @@ bool load_file(struct sp_table_pack * sptp)
       return false;
     }
 
-
     sptp->is_loaded = true;
     return true;
+ }
+  
+bool load_mmap(struct sp_table_pack * sptp)
+{
+  ASSERT(sptp->is_loaded == false);
+
+  /* Get a page of memory. */
+  uint8_t *kpage = alloc_page_frame (PAL_USER);
+  if (kpage == NULL)
+    return false;
+
+  /* Load this page. */
+  if (file_read_at (sptp->file, kpage, sptp->page_read_bytes, sptp->offset) != (int) sptp->page_read_bytes){
+    free_page_frame (kpage);
+    return false;
+  }
+  
+  memset (kpage + sptp->page_read_bytes, 0, sptp->page_zero_bytes);
+
+  /* Add the page to the process's address space. */
+  if (!install_page (sptp->upage, kpage, sptp->writable)){
+      free_page_frame (kpage);
+      return false;
+  }
+
+  sptp->is_loaded = true;
+  return true;
 }
 
 bool grow_stack (void *upage)

@@ -407,6 +407,7 @@ syscall_handler (struct intr_frame *f)
 
         sptp->owner = cur;
         sptp->upage = upage;
+        sptp->is_loaded = false;
 
         sptp->file = fe->fp;
         sptp->offset = ofs;

@@ -179,6 +179,10 @@ page_fault (struct intr_frame *f)
     {
       page_load_success = load_file(sptp);
     }
+    else if(sptp->type == PAGE_MMAP)
+    {
+       page_load_success = load_mmap(sptp);
+    }
 
   }
 
