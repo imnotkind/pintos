@@ -11,6 +11,7 @@
 #include "userprog/process.h"
 #include "vm/frame.h"
 #include "userprog/syscall.h"
+#include "userprog/pagedir.h"
 
 /*
 struct sp_table_pack //sup page table
