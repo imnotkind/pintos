@@ -184,7 +184,7 @@ syscall_handler (struct intr_frame *f)
       unsigned size = *(unsigned *)(p+3);
 
 
-      void *test = buffer;
+      void *test = buffer; //read_boundary
       int sizetest = size;
       while(sizetest--)
       {
@@ -250,6 +250,7 @@ syscall_handler (struct intr_frame *f)
           if(!check_addr_safe(test,2,f->esp))
             sys_exit(-1);
           grow_stack(test);
+          ASSERT(0);
         }
         test++;
         
