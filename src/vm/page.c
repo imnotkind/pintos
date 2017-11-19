@@ -165,24 +165,22 @@ bool check_addr_safe(const void *vaddr,int mode, void * esp)
   {
     if (!vaddr || !is_user_vaddr(vaddr) || !pagedir_get_page(thread_current()->pagedir, vaddr))
       sys_exit(-1);
+    else
+      return true;
   }
     
   if(mode==1) // lazy loading is ok, formerly used in page_fault()
   {
     if (!vaddr || !is_user_vaddr(vaddr) || vaddr < 0x08048000 )  
-    {
       return false;
-    }
-    else 
+    else
       return true;
   }
 
   if(mode==2) //verify stack , stack heruistic access, stack size 8MB, stack addr upper than code seg
   {
     if (!vaddr || !is_user_vaddr(vaddr)  || vaddr <  0x08048000  || vaddr < esp - 32 || vaddr < 0xc0000000 - 8*1024*1024) 
-    {
       return false;
-    }
     else
       return true;
   }

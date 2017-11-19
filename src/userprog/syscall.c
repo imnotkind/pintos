@@ -12,6 +12,7 @@
 #include <string.h>
 #include "threads/synch.h"
 #include "vm/page.h"
+#include "devices/input.h"
 
 struct lock filesys_lock;
 struct lock load_lock;
@@ -80,7 +81,7 @@ syscall_handler (struct intr_frame *f)
           f->eax = TID_ERROR;
           break;
         }
-        struct thread * child;
+        struct thread * child = NULL;
         struct thread * t;
         struct list_elem * e;
         for (e = list_begin (&thread_current()->child_list); e != list_end (&thread_current()->child_list);
@@ -208,7 +209,7 @@ syscall_handler (struct intr_frame *f)
 
       if (fd == 0)
       {
-        int i;
+        unsigned i;
         uint8_t* local_buffer = (uint8_t *)buffer;
         for(i = 0; i < size; i++)
         {
