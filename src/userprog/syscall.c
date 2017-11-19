@@ -250,7 +250,6 @@ syscall_handler (struct intr_frame *f)
           if(!check_addr_safe(test,2,f->esp))
             sys_exit(-1);
           grow_stack(test);
-          ASSERT(0);
         }
         test++;
         
