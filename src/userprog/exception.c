@@ -196,7 +196,7 @@ page_fault (struct intr_frame *f)
           user ? "user" : "kernel");
     kill (f);
     */
-    sys_exit(-88);
+    sys_exit(-1);
   }
 
 }
