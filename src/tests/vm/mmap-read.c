@@ -26,7 +26,9 @@ test_main (void)
     if (actual[i] != 0)
       fail ("byte %zu of mmap'd region has value %02hhx (should be 0)",
             i, actual[i]);
-
+  printf("Test Before MUNMAP");
   munmap (map);
+  printf("Test After MUNMAP");
+
   close (handle);
 }
