@@ -199,7 +199,7 @@ syscall_handler (struct intr_frame *f)
         }
         else
         {
-          if(!sptp->writable)
+          if(!sptp->writable)  //only needed in sys read
             sys_exit(-1);
         }
         test++;
