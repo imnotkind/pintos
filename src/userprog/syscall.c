@@ -197,6 +197,11 @@ syscall_handler (struct intr_frame *f)
             sys_exit(-1);
           grow_stack(test);
         }
+        else
+        {
+          if(!sptp->writable)
+            sys_exit(-1);
+        }
         test++;
         
       }
