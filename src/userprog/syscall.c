@@ -383,7 +383,7 @@ syscall_handler (struct intr_frame *f)
           break;
         }
       }
-      if(escape){ //we need break_2 :(
+      if(escape){
         printf("----MMAP END----\n");
         break;
       }
@@ -447,7 +447,7 @@ syscall_handler (struct intr_frame *f)
       }
       printf("DBG 05\n");
       f->eax = map_id;
-      printf("----MMAP END----\n");
+      printf("----MMAP END----\nMAP ID : %d\n", map_id);
       break;
     }
 
