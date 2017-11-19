@@ -162,13 +162,13 @@ bool grow_stack (void *upage)
 
 bool check_addr_safe(const void *vaddr,int mode, void * esp) 
 {
-  if(mode==0)
+  if(mode==0) // expecting it is part of page, used widely
   {
     if (!vaddr || !is_user_vaddr(vaddr) || !pagedir_get_page(thread_current()->pagedir, vaddr))
       sys_exit(-1);
   }
     
-  if(mode==1) //page_fault()
+  if(mode==1) // lazy loading is ok, formerly used in page_fault()
   {
     if (!vaddr || !is_user_vaddr(vaddr) )  
     {
