@@ -156,7 +156,7 @@ page_fault (struct intr_frame *f)
   {
     sys_exit(-3267);
   }
-    
+
   ASSERT(0);
   /* To implement virtual memory, delete the rest of the function
      body, and replace it with code that brings in the page to
