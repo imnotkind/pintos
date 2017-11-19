@@ -130,14 +130,12 @@ bool load_mmap(struct sp_table_pack * sptp)
   /* Get a page of memory. */
   uint8_t *kpage = alloc_page_frame (PAL_USER|PAL_ZERO);
   if (kpage == NULL){
-    printf("Fail Case 1\n");
     return false;
   }
 
   /* Load this page.*/ 
   if (file_read_at (sptp->file, kpage, sptp->page_read_bytes, sptp->offset) != (int) sptp->page_read_bytes){
     free_page_frame(kpage);
-    printf("Fail Case 2\n");
     return false;
   }
 
@@ -146,7 +144,6 @@ bool load_mmap(struct sp_table_pack * sptp)
   /* Add the page to the process's address space. */
   if (!install_page (sptp->upage, kpage, sptp->writable)){
       free_page_frame(kpage);
-      printf("Fail Case 3\n");
       return false;
   }
 
