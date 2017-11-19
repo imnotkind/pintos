@@ -345,16 +345,16 @@ syscall_handler (struct intr_frame *f)
     /* Project 3 and optionally project 4. */
     case SYS_MMAP:                   /* Map a file into memory. */     
     {
-      check_addr_safe(p+1,0);
-      check_addr_safe(p+2,0);
+      check_addr_safe(p+1,0,NULL);
+      check_addr_safe(p+2,0,NULL);
       int fd = *(int *)(p+1);
       void *buffer = *(void **)(p+2);
       
       void *upage = buffer;
       struct thread *cur = thread_current();
       off_t flen, ofs = 0;
-      unsigned page_num;
-      int i, map_id;
+      unsigned page_num, i;
+      int map_id;
       struct flist_pack *fe = fd_to_flist_pack(fd);
       //printf("----MMAP START----\n");
       if (!fe){
@@ -449,7 +449,7 @@ syscall_handler (struct intr_frame *f)
 
     case SYS_MUNMAP:                 /* Remove a memory mapping. */
     {
-      check_addr_safe(p+1,0);
+      check_addr_safe(p+1,0,NULL);
       int map_id = *(int *)(p+1);
       struct mmap_file_pack *mmfp;
       struct sp_table_pack *sptp = NULL;

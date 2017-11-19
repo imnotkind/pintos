@@ -8,7 +8,8 @@
 enum page_type
 {
     PAGE_NULL,
-    PAGE_FILE
+    PAGE_FILE,
+    PAGE_MMAP
 };
 
 struct sp_table_pack //sup page table
