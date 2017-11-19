@@ -356,6 +356,7 @@ syscall_handler (struct intr_frame *f)
       unsigned page_num, i;
       int map_id;
       struct flist_pack *fe = fd_to_flist_pack(fd);
+      bool escape = false;
       //printf("----MMAP START----\n");
       if (!fe){
         //printf("----BAD_FD... Process exit----\n");
@@ -378,10 +379,11 @@ syscall_handler (struct intr_frame *f)
       {
         if(upage_to_sp_table_pack(upage + PGSIZE*i)) {
           f->eax = -1;
+          escape = true;
           break;
         }
       }
-      if(f->eax == -1){ //we need break_2 :(
+      if(escape){ //we need break_2 :(
         //printf("----MMAP END----\n");
         break;
       }
@@ -398,6 +400,7 @@ syscall_handler (struct intr_frame *f)
         if (!sptp) {
           cur->map_id--;
           f->eax = -1;
+          escape = true;
           break;
         }
         //printf("DBG 04-1\n");
@@ -423,6 +426,7 @@ syscall_handler (struct intr_frame *f)
           free(sptp);
           cur->map_id--;
           f->eax = -1;
+          escape = true;
           break;
         }
         //printf("DBG 04-2\n");
@@ -437,7 +441,7 @@ syscall_handler (struct intr_frame *f)
         upage += PGSIZE;
         ofs += PGSIZE;
       }
-      if(f->eax == -1){
+      if(escape){
         //printf("----MMAP END----\n");
         break;
       }
