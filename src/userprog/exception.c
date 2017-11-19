@@ -129,7 +129,7 @@ page_fault (struct intr_frame *f)
   bool user;         /* True: access by user, false: access by kernel. */
   void *fault_addr;  /* Fault address. */
   struct sp_table_pack *sptp;
-  bool page_load_success = false;
+  bool page_load_success;
 
   /* Obtain faulting address, the virtual address that was
      accessed to cause the fault.  It may point to code or to
@@ -167,7 +167,7 @@ page_fault (struct intr_frame *f)
 
   if(sptp == NULL) //stack growth situation!
   {
-    if(check_addr_safe(fault_addr,2,f->esp)) //stack verification
+    if(!check_addr_safe(fault_addr,2,f->esp)) //stack verification
       sys_exit(-88);
     page_load_success = grow_stack(fault_addr);
   }
