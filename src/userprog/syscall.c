@@ -41,9 +41,12 @@ syscall_handler (struct intr_frame *f)
   switch(sysno)
   {
     case SYS_HALT:                   /* Halt the operating system. */
+    {
       shutdown_power_off();
       NOT_REACHED();
       break;
+    }
+      
 
     case SYS_EXIT:                   /* Terminate this process. */
     {
