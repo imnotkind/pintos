@@ -157,7 +157,7 @@ page_fault (struct intr_frame *f)
     sys_exit(-3267);
   }
     
-
+printf("heywdafawgaga\n");
   /* To implement virtual memory, delete the rest of the function
      body, and replace it with code that brings in the page to
      which fault_addr refers. */
