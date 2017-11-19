@@ -152,9 +152,9 @@ page_fault (struct intr_frame *f)
   write = (f->error_code & PF_W) != 0;
   user = (f->error_code & PF_U) != 0;
 
-  if(!not_present) //not present check : pt-write-code test
+  if(!not_present && write) //not present check : pt-write-code test
   {
-    sys_exit(-3267);
+    sys_exit(-1);
   }
 
   /* To implement virtual memory, delete the rest of the function
@@ -168,7 +168,7 @@ page_fault (struct intr_frame *f)
   if(sptp == NULL) //stack growth situation!
   {
     if(!check_addr_safe(fault_addr,2,f->esp)) //stack verification
-      sys_exit(-869);
+      sys_exit(-1);
     page_load_success = grow_stack(fault_addr);
   }
   else
