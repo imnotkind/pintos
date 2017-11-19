@@ -185,7 +185,8 @@ syscall_handler (struct intr_frame *f)
 
 
       void *test = buffer;
-      while(size--)
+      int sizetest = size;
+      while(sizetest--)
       {
         if(!check_addr_safe(test,1,NULL))
           sys_exit(-1);
@@ -194,8 +195,9 @@ syscall_handler (struct intr_frame *f)
         {
           if(!check_addr_safe(test,2,f->esp))
             sys_exit(-1);
-          grow_stack(buffer);
+          grow_stack(test);
         }
+        test++;
         
       }
 
