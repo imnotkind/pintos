@@ -115,6 +115,10 @@ struct thread      //pintos manual 67
     bool load_succeed;                  /* whether child proc load succeeded*/
     struct file *run_file;              /* running file, needed for rox test*/
 
+    int map_id;
+    struct list mmap_file_list;
+    struct lock mmap_lock;
+
     struct list sp_table;                /* supplementary page table(list)*/
     struct lock sp_table_lock;          /* supplementary page table(list) lock */
     /* Owned by thread.c. */

@@ -343,12 +343,162 @@ syscall_handler (struct intr_frame *f)
     }
 
     /* Project 3 and optionally project 4. */
-    case SYS_MMAP:                   /* Map a file into memory. */
+    case SYS_MMAP:                   /* Map a file into memory. */     
     {
+      check_addr_safe(p+1,0);
+      check_addr_safe(p+2,0);
+      int fd = *(int *)(p+1);
+      void *buffer = *(void **)(p+2);
+      
+      void *upage = buffer;
+      struct thread *cur = thread_current();
+      off_t flen, ofs = 0;
+      unsigned page_num;
+      int i, map_id;
+      struct flist_pack *fe = fd_to_flist_pack(fd);
+      //printf("----MMAP START----\n");
+      if (!fe){
+        //printf("----BAD_FD... Process exit----\n");
+        sys_exit(-1);
+        break;
+      }
+      //printf("DBG 01\n");
+
+      flen = file_length (fe->fp);
+      if (flen <= 0){
+        f->eax = -1;
+        //printf("----MMAP END----\n");
+        break;
+      }
+      //printf("DBG 02\n");
+
+      page_num = flen / PGSIZE + 1;
+
+      for(i = 0; i < page_num; i++)
+      {
+        if(upage_to_sp_table_pack(upage + PGSIZE*i)) {
+          f->eax = -1;
+          break;
+        }
+      }
+      if(f->eax == -1){ //we need break_2 :(
+        //printf("----MMAP END----\n");
+        break;
+      }
+      //printf("DBG 03\n");
+
+      map_id = ++(cur->map_id);
+
+      while (flen > 0)
+      {
+        size_t page_read_bytes = flen < PGSIZE ? flen : PGSIZE;
+        size_t page_zero_bytes = PGSIZE - page_read_bytes;
+        struct mmap_file_pack * mmfp;
+        struct sp_table_pack *sptp = (struct sp_table_pack *) malloc(sizeof(struct sp_table_pack));
+        if (!sptp) {
+          cur->map_id--;
+          f->eax = -1;
+          break;
+        }
+        //printf("DBG 04-1\n");
+
+        sptp->owner = cur;
+        sptp->upage = upage;
+
+        sptp->file = fe->fp;
+        sptp->offset = ofs;
+        sptp->page_read_bytes = page_read_bytes;
+        sptp->page_zero_bytes = page_zero_bytes;
+        sptp->writable = true;
+
+        sptp->type = PAGE_MMAP;
+
+        lock_acquire(&cur->sp_table_lock);
+        list_push_back(&cur->sp_table, &sptp->elem);
+        lock_release(&cur->sp_table_lock);
+
+        mmfp = (struct mmap_file_pack *) malloc(sizeof(struct mmap_file_pack));
+        if(!mmfp){
+          list_remove(&sptp->elem);
+          free(sptp);
+          cur->map_id--;
+          f->eax = -1;
+          break;
+        }
+        //printf("DBG 04-2\n");
+
+        mmfp->sptp = sptp;
+        mmfp->map_id = cur->map_id;
+        lock_acquire(&cur->mmap_lock);
+        list_push_back(&cur->mmap_file_list, &mmfp->elem);
+        lock_release(&cur->mmap_lock);
+
+        flen -= page_read_bytes;
+        upage += PGSIZE;
+        ofs += PGSIZE;
+      }
+      if(f->eax == -1){
+        //printf("----MMAP END----\n");
+        break;
+      }
+      //printf("DBG 05\n");
+      f->eax = map_id;
+      //printf("----MMAP END----\n");
       break;
     }
+
     case SYS_MUNMAP:                 /* Remove a memory mapping. */
     {
+      check_addr_safe(p+1,0);
+      int map_id = *(int *)(p+1);
+      struct mmap_file_pack *mmfp;
+      struct sp_table_pack *sptp = NULL;
+      struct thread *cur = thread_current();
+      struct list_elem *e;
+      //printf("----MUNMAP START----\n");
+
+      if(map_id <= 0){
+        //printf("----MUNMAP END----\n");
+        break;
+      }
+      //printf("DBG 01\n");
+
+      for(e = list_begin(&cur->mmap_file_list); e != list_end(&cur->mmap_file_list); e = list_next(e))
+      {
+        mmfp = list_entry(e, struct mmap_file_pack, elem);
+        if(mmfp->map_id == map_id){
+          sptp = mmfp->sptp;
+          break;
+        }
+      }
+      if(!sptp){
+        //printf("----MUNMAP END----\n");
+        break;
+      }
+      //printf("DBG 02\n");
+      lock_acquire(&filesys_lock);
+      file_seek(sptp->file, 0);
+      lock_release(&filesys_lock);
+
+      if (pagedir_is_dirty(cur->pagedir, sptp->upage)){
+        lock_acquire(&filesys_lock);
+        file_write_at(sptp->file, sptp->upage, sptp->page_read_bytes, sptp->offset);
+        lock_release(&filesys_lock);
+        //printf("DBG DIRTY\n");
+      }
+      //printf("DBG 03\n");
+
+      lock_acquire(&cur->sp_table_lock);
+      list_remove(&sptp->elem);
+      lock_release(&cur->sp_table_lock);
+      free(sptp);
+      lock_acquire(&cur->mmap_lock);
+      list_remove(&mmfp->elem);
+      lock_release(&cur->mmap_lock);
+      free(mmfp);
+      //printf("DBG 04\n");
+
+      //printf("----MUNMAP END----\n");
       break;
     }
 

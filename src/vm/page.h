@@ -29,6 +29,13 @@ struct sp_table_pack //sup page table
     struct list_elem elem;
 };
 
+struct mmap_file_pack
+{
+    struct sp_table_pack *sptp;
+    int map_id;
+    struct list_elem elem;
+};
+
 bool add_file_to_spage_table(void *upage, struct file * file, off_t offset, uint32_t read_bytes, uint32_t zero_bytes, bool writable);
 void free_spage_table(void *upage);
 struct sp_table_pack * upage_to_sp_table_pack(void * upage);

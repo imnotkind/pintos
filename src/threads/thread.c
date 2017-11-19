@@ -736,6 +736,9 @@ init_thread (struct thread *t, const char *name, int priority)
   #endif
     list_init(&t->sp_table);
     lock_init(&t->sp_table_lock);
+    t->map_id = 0;
+    list_init(&t->mmap_file_list);
+    lock_init(&t->mmap_lock);
   list_push_back (&all_list, &t->allelem);
 }
 
