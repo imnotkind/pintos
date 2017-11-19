@@ -154,7 +154,7 @@ page_fault (struct intr_frame *f)
 
   if(!not_present) //not present check : pt-write-code test
   {
-    sys_exit(-1);
+    sys_exit(-3267);
   }
     
 
@@ -193,7 +193,7 @@ page_fault (struct intr_frame *f)
           user ? "user" : "kernel");
     kill (f);
     */
-    sys_exit(-1);
+    sys_exit(-88);
   }
 
 }
