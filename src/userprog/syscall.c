@@ -357,21 +357,21 @@ syscall_handler (struct intr_frame *f)
       int map_id;
       struct flist_pack *fe = fd_to_flist_pack(fd);
       bool escape = false;
-      printf("----MMAP START----\n");
+      //printf("----MMAP START----\n");
       if (!fe){
-        printf("----BAD_FD... Process exit----\n");
+        //printf("----BAD_FD... Process exit----\n");
         sys_exit(-1);
         break;
       }
-      printf("DBG 01\n");
+     // printf("DBG 01\n");
 
       flen = file_length (fe->fp);
       if (flen <= 0){
         f->eax = -1;
-        printf("----MMAP END----\n");
+        //printf("----MMAP END----\n");
         break;
       }
-      printf("DBG 02\n");
+      //printf("DBG 02\n");
 
       page_num = flen / PGSIZE + 1;
 
@@ -384,10 +384,10 @@ syscall_handler (struct intr_frame *f)
         }
       }
       if(escape){
-        printf("----MMAP END----\n");
+        //printf("----MMAP END----\n");
         break;
       }
-      printf("DBG 03\n");
+      //printf("DBG 03\n");
 
       map_id = ++(cur->map_id);
 
@@ -403,7 +403,7 @@ syscall_handler (struct intr_frame *f)
           escape = true;
           break;
         }
-        printf("DBG 04-1\n");
+        //printf("DBG 04-1\n");
 
         sptp->owner = cur;
         sptp->upage = upage;
@@ -430,7 +430,7 @@ syscall_handler (struct intr_frame *f)
           escape = true;
           break;
         }
-        printf("DBG 04-2\n");
+        //printf("DBG 04-2\n");
 
         mmfp->sptp = sptp;
         mmfp->map_id = cur->map_id;
@@ -443,12 +443,12 @@ syscall_handler (struct intr_frame *f)
         ofs += PGSIZE;
       }
       if(escape){
-        printf("----MMAP END----\n");
+        //printf("----MMAP END----\n");
         break;
       }
-      printf("DBG 05\n");
+      //printf("DBG 05\n");
       f->eax = map_id;
-      printf("----MMAP END----\nMAP ID : %d\n", map_id);
+      //printf("----MMAP END----\nMAP ID : %d\n", map_id);
       break;
     }
 
@@ -460,13 +460,13 @@ syscall_handler (struct intr_frame *f)
       struct sp_table_pack *sptp = NULL;
       struct thread *cur = thread_current();
       struct list_elem *e;
-      printf("----MUNMAP START----\n");
+      //printf("----MUNMAP START----\n");
 
       if(map_id <= 0){
-        printf("----MUNMAP END----\n");
+        //printf("----MUNMAP END----\n");
         break;
       }
-      printf("DBG 01\n");
+      //printf("DBG 01\n");
 
       for(e = list_begin(&cur->mmap_file_list); e != list_end(&cur->mmap_file_list); e = list_next(e))
       {
@@ -477,10 +477,10 @@ syscall_handler (struct intr_frame *f)
         }
       }
       if(!sptp){
-        printf("----MUNMAP END----\n");
+        //printf("----MUNMAP END----\n");
         break;
       }
-      printf("DBG 02\n");
+      //printf("DBG 02\n");
       lock_acquire(&filesys_lock);
       file_seek(sptp->file, 0);
       lock_release(&filesys_lock);
@@ -489,9 +489,9 @@ syscall_handler (struct intr_frame *f)
         lock_acquire(&filesys_lock);
         file_write_at(sptp->file, sptp->upage, sptp->page_read_bytes, sptp->offset);
         lock_release(&filesys_lock);
-        printf("DBG DIRTY\n");
+        //printf("DBG DIRTY\n");
       }
-      printf("DBG 03\n");
+      //printf("DBG 03\n");
 
       lock_acquire(&cur->sp_table_lock);
       list_remove(&sptp->elem);
@@ -501,9 +501,9 @@ syscall_handler (struct intr_frame *f)
       list_remove(&mmfp->elem);
       lock_release(&cur->mmap_lock);
       free(mmfp);
-      printf("DBG 04\n");
+      //printf("DBG 04\n");
 
-      printf("----MUNMAP END----\n");
+      //printf("----MUNMAP END----\n");
       break;
     }
 

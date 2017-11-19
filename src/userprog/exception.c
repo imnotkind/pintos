@@ -129,7 +129,7 @@ page_fault (struct intr_frame *f)
   bool user;         /* True: access by user, false: access by kernel. */
   void *fault_addr;  /* Fault address. */
   struct sp_table_pack *sptp;
-  bool page_load_success;
+  bool page_load_success = false;
 
   /* Obtain faulting address, the virtual address that was
      accessed to cause the fault.  It may point to code or to
