@@ -237,6 +237,24 @@ syscall_handler (struct intr_frame *f)
       void * buffer = *(void **)(p+2);
       unsigned size = *(unsigned *)(p+3);
 
+
+      void *test = buffer;
+      int sizetest = size;
+      while(sizetest--)
+      {
+        if(!check_addr_safe(test,1,NULL))
+          sys_exit(-1);
+        struct sp_table_pack * sptp =  upage_to_sp_table_pack(test);
+        if(!sptp)
+        {
+          if(!check_addr_safe(test,2,f->esp))
+            sys_exit(-1);
+          grow_stack(test);
+        }
+        test++;
+        
+      }
+
       if(fd == 1){
         putbuf((char *)buffer,(size_t)size); //too big size may be a problem, but i wont care for now. LATER
         f->eax = size;
