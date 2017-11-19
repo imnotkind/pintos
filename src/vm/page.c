@@ -146,7 +146,7 @@ bool grow_stack (void *upage)
     return false;
   }
 
-  if(pagedir_get_page (cur->pagedir, sptp->upage) || !pagedir_set_page (cur->pagedir, sptp->upage, kpage, sptp->writable)){
+  if(!install_page(cur->pagedir, sptp->upage, kpage, sptp->writable)){
     free(sptp);
     free_page_frame(kpage);
     return false;
