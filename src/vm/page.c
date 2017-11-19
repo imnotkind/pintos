@@ -138,7 +138,6 @@ bool load_mmap(struct sp_table_pack * sptp)
     free_page_frame(kpage);
     return false;
   }
-
   memset (kpage + sptp->page_read_bytes, 0, sptp->page_zero_bytes);
 
   /* Add the page to the process's address space. */
