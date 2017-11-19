@@ -183,13 +183,22 @@ syscall_handler (struct intr_frame *f)
       void *buffer = *(void **)(p+2);
       unsigned size = *(unsigned *)(p+3);
 
-/*
+
       void *test = buffer;
       while(size--)
       {
-
+        if(!check_addr_safe(test,1,NULL))
+          sys_exit(-1);
+        struct sp_table_pack * sptp =  upage_to_sp_table_pack(test);
+        if(!sptp)
+        {
+          if(!check_addr_safe(test,2,f->esp))
+            sys_exit(-1);
+          grow_stack(buffer);
+        }
+        
       }
-*/
+
       if (fd == 0)
       {
         int i;
