@@ -134,7 +134,7 @@ bool load_mmap(struct sp_table_pack * sptp)
     return false;
   }
 
-  /* Load this page. */
+  /* Load this page. 
   if (file_read_at (sptp->file, kpage, sptp->page_read_bytes, sptp->offset) != (int) sptp->page_read_bytes){
     free_page_frame(kpage);
     printf("Fail Case 2\n");
