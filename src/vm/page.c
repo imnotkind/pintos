@@ -126,9 +126,8 @@ bool load_file(struct sp_table_pack * sptp)
 bool grow_stack (void *upage)
 {
   struct sp_table_pack *sptp;
-  struct ftable_pack *ftp;
+  void *kpage;
   struct thread *cur = thread_current();
-  //Should Check MAX STACK SIZE 8MB
 
 
   sptp = (struct sp_table_pack *) malloc(sizeof(struct sp_table_pack));
@@ -141,15 +140,15 @@ bool grow_stack (void *upage)
   sptp->writable = true;
   sptp->type = PAGE_NULL;
 
-  ftp = alloc_page_frame(PAL_USER);
-  if (!ftp){
+  kpage = alloc_page_frame(PAL_USER);
+  if (!kpage){
     free(sptp);
     return false;
   }
 
-  if(pagedir_get_page (cur->pagedir, sptp->upage) || !pagedir_set_page (cur->pagedir, sptp->upage, ftp, sptp->writable)){
+  if(pagedir_get_page (cur->pagedir, sptp->upage) || !pagedir_set_page (cur->pagedir, sptp->upage, kpage, sptp->writable)){
     free(sptp);
-    free_page_frame(ftp);
+    free_page_frame(kpage);
     return false;
   }
 
