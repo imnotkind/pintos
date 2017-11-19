@@ -167,8 +167,8 @@ page_fault (struct intr_frame *f)
 
   if(sptp == NULL) //stack growth situation!
   {
-    if(!check_addr_safe(fault_addr,2,f->esp)) //stack verification
-      sys_exit(-1);
+    if(check_addr_safe(fault_addr,2,f->esp)) //stack verification
+      sys_exit(-88);
     page_load_success = grow_stack(fault_addr);
   }
   else
@@ -188,15 +188,12 @@ page_fault (struct intr_frame *f)
 
   if(page_load_success == false)
   {
-    /*
     printf ("Page fault at %p: %s error %s page in %s context.\n",
           fault_addr,
           not_present ? "not present" : "rights violation",
           write ? "writing" : "reading",
           user ? "user" : "kernel");
     kill (f);
-    */
-    sys_exit(-88);
   }
 
 }
