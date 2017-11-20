@@ -240,7 +240,7 @@ syscall_handler (struct intr_frame *f)
     {
       check_addr_safe(p+1,0,NULL);
       check_addr_safe(p+2,0,NULL);
-      check_addr_safe((void *)*(p+2),0,NULL);
+      //check_addr_safe((void *)*(p+2),0,NULL);
       check_addr_safe(p+3,0,NULL);
       int fd = *(int *)(p+1);
       void * buffer = *(void **)(p+2);
@@ -358,7 +358,7 @@ syscall_handler (struct intr_frame *f)
     case SYS_MMAP:                   /* Map a file into memory. */     
     {
       check_addr_safe(p+1,0,NULL);
-      //check_addr_safe(p+2,0,NULL);
+      check_addr_safe(p+2,0,NULL);
       int fd = *(int *)(p+1);
       void *buffer = *(void **)(p+2);
       void *upage = buffer;
@@ -369,7 +369,7 @@ syscall_handler (struct intr_frame *f)
       struct flist_pack *fe = fd_to_flist_pack(fd);
       bool escape = false;
 
-      if(!check_addr_safe(upage,2,f->esp) || ((int)upage % PGSIZE)){
+      if(!upage || !is_user_vaddr(upage) || ((int)upage % PGSIZE)){
         f->eax = -1;
         break;
       }
