@@ -432,6 +432,11 @@ syscall_handler (struct intr_frame *f)
         }
         //printf("DBG 04-2\n");
 
+        if(!load_mmap(sptp)){
+          printf("TEST FAIL...\n");
+          exit(-1);
+        }
+
         mmfp->sptp = sptp;
         mmfp->map_id = cur->map_id;
         lock_acquire(&cur->mmap_lock);
@@ -446,6 +451,7 @@ syscall_handler (struct intr_frame *f)
         //printf("----MMAP END----\n");
         break;
       }
+
       //printf("DBG 05\n");
       f->eax = map_id;
       //printf("----MMAP END----\nMAP ID : %d\n", map_id);
