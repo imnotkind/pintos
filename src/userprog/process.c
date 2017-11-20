@@ -194,7 +194,7 @@ process_exit (void)
 
   for(e = list_begin(&cur->mmap_file_list); e != list_end(&cur->mmap_file_list); ){
     mmfp = list_entry(e, struct mmap_file_pack, elem);
-    e = list_remove(e);
+    e = list_next(e);
     sys_munmap(mmfp->map_id);
   }
 
