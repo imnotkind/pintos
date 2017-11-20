@@ -326,7 +326,7 @@ syscall_handler (struct intr_frame *f)
       int fd = *(int *)(p+1);
 
       struct list_elem *e;
-      struct sp_table_pack *sptp
+      struct sp_table_pack *sptp;
       struct thread *cur = thread_current();
       struct flist_pack *fe = fd_to_flist_pack(fd);
 
@@ -340,7 +340,7 @@ syscall_handler (struct intr_frame *f)
         {
           sptp = list_entry(e, struct sp_table_pack, elem);
           if(sptp->file == fe->fp && !sptp->is_loaded){
-            if(!load_mmap (sptp);)
+            if(!load_mmap(sptp))
               exit(-11);
           }
         }
