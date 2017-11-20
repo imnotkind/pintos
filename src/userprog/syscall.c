@@ -359,6 +359,7 @@ syscall_handler (struct intr_frame *f)
     {
       check_addr_safe(p+1,0,NULL);
       check_addr_safe(p+2,0,NULL);
+      check_addr_safe((void *)*(p+2),0,NULL);
       int fd = *(int *)(p+1);
       void *buffer = *(void **)(p+2);
       
