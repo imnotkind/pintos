@@ -369,7 +369,7 @@ syscall_handler (struct intr_frame *f)
       struct flist_pack *fe = fd_to_flist_pack(fd);
       bool escape = false;
 
-      if(!upage || !is_user_vaddr(upage) || ((int)upage % PGSIZE)){
+      if(!check_addr_safe(upage,2,f->esp) || ((int)upage % PGSIZE)){
         f->eax = -1;
         break;
       }
