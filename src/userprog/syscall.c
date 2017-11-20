@@ -359,10 +359,8 @@ syscall_handler (struct intr_frame *f)
     {
       check_addr_safe(p+1,0,NULL);
       check_addr_safe(p+2,0,NULL);
-      check_addr_safe((void *)*(p+2),0,NULL);
       int fd = *(int *)(p+1);
       void *buffer = *(void **)(p+2);
-      
       void *upage = buffer;
       struct thread *cur = thread_current();
       off_t flen, ofs = 0;
@@ -370,6 +368,10 @@ syscall_handler (struct intr_frame *f)
       int map_id;
       struct flist_pack *fe = fd_to_flist_pack(fd);
       bool escape = false;
+
+      if(!upage || !is_user_vaddr(upage)){
+        sys_exit(-1);
+      }
       //printf("----MMAP START----\n");
       if (!fe){
         //printf("----BAD_FD... Process exit----\n");
