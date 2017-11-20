@@ -341,7 +341,7 @@ syscall_handler (struct intr_frame *f)
           sptp = list_entry(e, struct sp_table_pack, elem);
           if(sptp->file == fe->fp && !sptp->is_loaded){
             if(!load_mmap(sptp))
-              exit(-11);
+              sys_exit(-11);
           }
         }
         list_remove(&fe->elem);
