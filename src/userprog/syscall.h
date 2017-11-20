@@ -13,6 +13,7 @@ struct flist_pack
 
 void syscall_init (void);
 void sys_exit(int status);
+void sys_munmap(int map_id);
 struct flist_pack* fd_to_flist_pack(int fd);
 
 #endif /* userprog/syscall.h */

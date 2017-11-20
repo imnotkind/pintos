@@ -190,7 +190,13 @@ process_exit (void)
   uint32_t *pd;
   struct list_elem *e;
   struct flist_pack *fe;
+  struct mmap_file_pack *mmfp;
 
+  while (!list_empty(&cur->mmap_file_list)) {
+    e = list_pop_front(&cur->mmap_file_list);
+    mmfp = list_entry(e, struct mmap_file_pack, elem);
+    sys_munmap(mmfp->map_id);
+  }
 
   lock_acquire(&filesys_lock);
   file_close(cur->run_file);

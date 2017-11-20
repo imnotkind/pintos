@@ -469,54 +469,7 @@ syscall_handler (struct intr_frame *f)
     {
       check_addr_safe(p+1,0,NULL);
       int map_id = *(int *)(p+1);
-      struct mmap_file_pack *mmfp;
-      struct sp_table_pack *sptp = NULL;
-      struct thread *cur = thread_current();
-      struct list_elem *e;
-      //printf("----MUNMAP START----\n");
-
-      if(map_id <= 0){
-        //printf("----MUNMAP END----\n");
-        break;
-      }
-      //printf("DBG 01\n");
-
-      for(e = list_begin(&cur->mmap_file_list); e != list_end(&cur->mmap_file_list); e = list_next(e))
-      {
-        mmfp = list_entry(e, struct mmap_file_pack, elem);
-        if(mmfp->map_id == map_id){
-          sptp = mmfp->sptp;
-          break;
-        }
-      }
-      if(!sptp){
-        //printf("----MUNMAP END----\n");
-        break;
-      }
-      //printf("DBG 02\n");
-      lock_acquire(&filesys_lock);
-      file_seek(sptp->file, 0);
-      lock_release(&filesys_lock);
-
-      if (pagedir_is_dirty(cur->pagedir, sptp->upage)){
-        lock_acquire(&filesys_lock);
-        file_write_at(sptp->file, sptp->upage, sptp->page_read_bytes, sptp->offset);
-        lock_release(&filesys_lock);
-        //printf("DBG DIRTY\n");
-      }
-      //printf("DBG 03\n");
-
-      lock_acquire(&cur->sp_table_lock);
-      list_remove(&sptp->elem);
-      lock_release(&cur->sp_table_lock);
-      free(sptp);
-      lock_acquire(&cur->mmap_lock);
-      list_remove(&mmfp->elem);
-      lock_release(&cur->mmap_lock);
-      free(mmfp);
-      //printf("DBG 04\n");
-
-      //printf("----MUNMAP END----\n");
+      sys_munmap(map_id);
       break;
     }
 
@@ -569,4 +522,46 @@ void sys_exit(int status)
   printf("%s: exit(%d)\n",thread_current()->name, status);
   thread_exit();
   NOT_REACHED();
+}
+
+void sys_munmap(int map_id)
+{
+  struct mmap_file_pack *mmfp;
+  struct sp_table_pack *sptp = NULL;
+  struct thread *cur = thread_current();
+  struct list_elem *e;
+
+  if(map_id <= 0){
+    return;
+  }
+
+  for(e = list_begin(&cur->mmap_file_list); e != list_end(&cur->mmap_file_list); e = list_next(e))
+  {
+    mmfp = list_entry(e, struct mmap_file_pack, elem);
+    if(mmfp->map_id == map_id){
+      sptp = mmfp->sptp;
+      break;
+    }
+  }
+  if(!sptp){
+    return;
+  }
+  lock_acquire(&filesys_lock);
+  file_seek(sptp->file, 0);
+  lock_release(&filesys_lock);
+
+  if (pagedir_is_dirty(cur->pagedir, sptp->upage)){
+    lock_acquire(&filesys_lock);
+    file_write_at(sptp->file, sptp->upage, sptp->page_read_bytes, sptp->offset);
+    lock_release(&filesys_lock);
+  }
+
+  lock_acquire(&cur->sp_table_lock);
+  list_remove(&sptp->elem);
+  lock_release(&cur->sp_table_lock);
+  free(sptp);
+  lock_acquire(&cur->mmap_lock);
+  list_remove(&mmfp->elem);
+  lock_release(&cur->mmap_lock);
+  free(mmfp);
 }
