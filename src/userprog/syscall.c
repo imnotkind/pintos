@@ -325,13 +325,25 @@ syscall_handler (struct intr_frame *f)
       check_addr_safe(p+1,0,NULL);
       int fd = *(int *)(p+1);
 
+      struct list_elem *e;
+      struct sp_table_pack *sptp
+      struct thread *cur = thread_current();
       struct flist_pack *fe = fd_to_flist_pack(fd);
+
       if(!fe)
       {
         sys_exit(-1);
       }
       else
       {
+        for(e = list_begin(&cur->sp_table); e != list_end(&cur->sp_table); e = list_next(e))
+        {
+          sptp = list_entry(e, struct sp_table_pack, elem);
+          if(sptp->file == fe->fp && !sptp->is_loaded){
+            if(!load_mmap (sptp);)
+              exit(-11);
+          }
+        }
         list_remove(&fe->elem);
         
         lock_acquire(&filesys_lock);
@@ -431,15 +443,6 @@ syscall_handler (struct intr_frame *f)
           break;
         }
         //printf("DBG 04-2\n");
-
-        if(!load_mmap(sptp)){
-          list_remove(&sptp->elem);
-          free(sptp);
-          cur->map_id--;
-          f->eax = -1;
-          escape = true;
-          break;
-        }
 
         mmfp->sptp = sptp;
         mmfp->map_id = cur->map_id;
