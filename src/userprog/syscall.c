@@ -433,8 +433,12 @@ syscall_handler (struct intr_frame *f)
         //printf("DBG 04-2\n");
 
         if(!load_mmap(sptp)){
-          printf("TEST FAIL...\n");
-          sys_exit(-1);
+          list_remove(&sptp->elem);
+          free(sptp);
+          cur->map_id--;
+          f->eax = -1;
+          escape = true;
+          break;
         }
 
         mmfp->sptp = sptp;
