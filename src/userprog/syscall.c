@@ -434,7 +434,7 @@ syscall_handler (struct intr_frame *f)
 
         if(!load_mmap(sptp)){
           printf("TEST FAIL...\n");
-          exit(-1);
+          sys_exit(-1);
         }
 
         mmfp->sptp = sptp;
