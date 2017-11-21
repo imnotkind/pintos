@@ -81,7 +81,7 @@ struct sp_table_pack * upage_to_sp_table_pack(void * upage)
     struct list_elem *e;
     struct sp_table_pack *sptp;
     struct thread *cur = thread_current();
-    
+
     upage = pg_round_down(upage); //to know what page the address is in!
 
     for(e = list_begin(&cur->sp_table); e != list_end(&cur->sp_table); e = list_next(e))
@@ -122,7 +122,7 @@ bool load_file(struct sp_table_pack * sptp)
     sptp->is_loaded = true;
     return true;
  }
-  
+
 bool load_mmap(struct sp_table_pack * sptp)
 {
   ASSERT(sptp->is_loaded == false);
@@ -133,7 +133,7 @@ bool load_mmap(struct sp_table_pack * sptp)
     return false;
   }
 
-  /* Load this page.*/ 
+  /* Load this page.*/
   if (sptp->page_read_bytes > 0){
     if (file_read_at (sptp->file, kpage, sptp->page_read_bytes, sptp->offset) != (int) sptp->page_read_bytes){
       free_page_frame(kpage);
@@ -188,7 +188,7 @@ bool grow_stack (void *upage)
   return true;
 }
 
-bool check_addr_safe(const void *vaddr,int mode, void * esp) 
+bool check_addr_safe(const void *vaddr,int mode, void * esp)
 {
   if(mode==0) // expecting it is part of page, used widely
   {
@@ -197,10 +197,10 @@ bool check_addr_safe(const void *vaddr,int mode, void * esp)
     else
       return true;
   }
-    
+
   if(mode==1) // lazy loading is ok, formerly used in page_fault()
   {
-    if (!vaddr || !is_user_vaddr(vaddr) || vaddr < 0x08048000 )  
+    if (!vaddr || !is_user_vaddr(vaddr) || vaddr < 0x08048000 )
       return false;
     else
       return true;
@@ -208,10 +208,17 @@ bool check_addr_safe(const void *vaddr,int mode, void * esp)
 
   if(mode==2) //verify stack , stack heruistic access, stack size 8MB, stack addr upper than code seg
   {
-    if (!vaddr || !is_user_vaddr(vaddr)  || vaddr <  0x08048000  || vaddr < esp - 32 || vaddr < 0xc0000000 - 8*1024*1024) 
+    if (!vaddr || !is_user_vaddr(vaddr)  || vaddr <  0x08048000  || vaddr < esp - 32 || vaddr < PHYS_BASE - 8*1024*1024)
       return false;
     else
       return true;
   }
-  
+  if(mode==3) //check vaddr over the data, code, stack segment.
+  {
+    if (!vaddr || !is_user_vaddr(vaddr)  || vaddr <  0x08048000  || vaddr > PHYS_BASE - 8*1024*1024)
+      return false;
+    else
+      return true;
+  }
+
 }
