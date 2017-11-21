@@ -213,7 +213,7 @@ bool check_addr_safe(const void *vaddr,int mode, void * esp)
     else
       return true;
   }
-  if(mode==3) //check vaddr over the data, code, stack segment.
+  if(mode==3) //mmap should NOT be in stack segment
   {
     if (!vaddr || !is_user_vaddr(vaddr)  || vaddr <  0x08048000  || vaddr > PHYS_BASE - 8*1024*1024)
       return false;
