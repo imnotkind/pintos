@@ -285,15 +285,18 @@ lock_release (struct lock *lock)
     }
   }
   //remove this lock from cur -> lock_list
-  intr_disable();
+ 
   if(!list_empty(&cur->lock_list))
   { // max is the lock with highest priority front waiter
+    intr_disable();
     struct lock *max = NULL;
-    for(e = list_begin(&cur->lock_list); e != list_end(&cur->lock_list); e = list_next(e)){
+    for(e = list_begin(&cur->lock_list); e != list_end(&cur->lock_list); e = list_next(e))
+    {
       struct lock *L = list_entry(e, struct lock, lock_elem);
       if(list_empty(&(L->semaphore.waiters)))
         continue;
-      if( max == NULL){
+      if( max == NULL)
+      {
         max = L;
         continue;
       }  
@@ -304,6 +307,7 @@ lock_release (struct lock *lock)
         max = L; 
       }
     }
+    intr_enable();
 
     if(max != NULL){
     //  printf("<%s>\n",list_entry(list_begin(&max->semaphore.waiters), struct thread, elem)->name);
@@ -314,7 +318,7 @@ lock_release (struct lock *lock)
   else{
     thread_set_priority_for_release(thread_current()->priority_orig);
   }
-  intr_enable();
+  
 
 
 }
