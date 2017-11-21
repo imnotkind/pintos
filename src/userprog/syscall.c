@@ -22,7 +22,7 @@ static void syscall_handler (struct intr_frame *); //don't move this to header
 
 
 void
-syscall_init (void) 
+syscall_init (void)
 {
   intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
   lock_init(&filesys_lock);
@@ -30,14 +30,14 @@ syscall_init (void)
 }
 
 static void
-syscall_handler (struct intr_frame *f) 
+syscall_handler (struct intr_frame *f)
 {
   int *p = f->esp;
   //address safty check with is_user_vaddr() and pagedir_get_page()
   check_addr_safe(p,0,NULL);
 
   int sysno = *p;
-  
+
   switch(sysno)
   {
     case SYS_HALT:                   /* Halt the operating system. */
@@ -46,7 +46,7 @@ syscall_handler (struct intr_frame *f)
       NOT_REACHED();
       break;
     }
-      
+
 
     case SYS_EXIT:                   /* Terminate this process. */
     {
@@ -104,12 +104,12 @@ syscall_handler (struct intr_frame *f)
         {
           f->eax = TID_ERROR;
         }
-        
+
       }
       free(file_name);
       break;
     }
-      
+
     case SYS_WAIT:                   /* Wait for a child process to die. */
     {
       check_addr_safe(p+1,0,NULL);
@@ -117,7 +117,7 @@ syscall_handler (struct intr_frame *f)
       f->eax = process_wait(pid);
       break;
     }
-      
+
     case SYS_CREATE:                 /* Create a file. */
     {
       check_addr_safe(p+1,0,NULL);
@@ -130,7 +130,7 @@ syscall_handler (struct intr_frame *f)
       f->eax = filesys_create(file, initial_size);
       lock_release(&filesys_lock);
       break;
-      
+
     }
 
     case SYS_REMOVE:                 /* Delete a file. */
@@ -153,7 +153,7 @@ syscall_handler (struct intr_frame *f)
 
       lock_acquire(&filesys_lock);
       struct file* fp = filesys_open (file_name);
-      
+
       if(!fp){
         f->eax = -1;
       }
@@ -167,7 +167,7 @@ syscall_handler (struct intr_frame *f)
       lock_release(&filesys_lock);
       break;
     }
-      
+
 
     case SYS_FILESIZE:               /* Obtain a file's size. */
     {
@@ -176,7 +176,7 @@ syscall_handler (struct intr_frame *f)
       f->eax = (uint32_t)file_length(fd_to_flist_pack(fd)->fp);
       break;
     }
-      
+
     case SYS_READ:                   /* Read from a file. */
     {
       check_addr_safe(p+1,0,NULL);
@@ -207,7 +207,7 @@ syscall_handler (struct intr_frame *f)
             sys_exit(-1);
         }
         test++;
-        
+
       }
 
       if (fd == 0)
@@ -226,13 +226,13 @@ syscall_handler (struct intr_frame *f)
         struct flist_pack *fe = fd_to_flist_pack(fd);
         if (!fe){
           f->eax = -1;
-        }          
+        }
         else{
           f->eax = file_read(fe->fp, buffer, (off_t)size);
         }
         lock_release(&filesys_lock);
       }
-      
+
       break;
     }
 
@@ -261,7 +261,7 @@ syscall_handler (struct intr_frame *f)
           grow_stack(test);
         }
         test++;
-        
+
       }
 
       if(fd == 1){
@@ -272,7 +272,7 @@ syscall_handler (struct intr_frame *f)
         struct flist_pack *fe = fd_to_flist_pack(fd);
         if (!fe){
           f->eax = -1;
-        }          
+        }
         else{
           lock_acquire(&filesys_lock);
           f->eax = file_write(fe->fp, buffer, (off_t)size);
@@ -319,7 +319,7 @@ syscall_handler (struct intr_frame *f)
       }
       break;
     }
-      
+
     case SYS_CLOSE:                  /* Close a file. */
     {
       check_addr_safe(p+1,0,NULL);
@@ -345,7 +345,7 @@ syscall_handler (struct intr_frame *f)
           }
         }
         list_remove(&fe->elem);
-        
+
         lock_acquire(&filesys_lock);
         file_close(fe->fp);
         lock_release(&filesys_lock);
@@ -355,7 +355,7 @@ syscall_handler (struct intr_frame *f)
     }
 
     /* Project 3 and optionally project 4. */
-    case SYS_MMAP:                   /* Map a file into memory. */     
+    case SYS_MMAP:                   /* Map a file into memory. */
     {
       check_addr_safe(p+1,0,NULL);
       check_addr_safe(p+2,0,NULL);
@@ -369,7 +369,7 @@ syscall_handler (struct intr_frame *f)
       struct flist_pack *fe = fd_to_flist_pack(fd);
       bool escape = false;
 
-      if(!upage || !is_user_vaddr(upage) || upage < 0x08048000 || pg_ofs(upage) != 0){
+      if(!upage || !is_user_vaddr(upage) || upage < 0x08048000 || upage < PHYS_BASE - 8*1024*1024 || pg_ofs(upage) != 0){
         f->eax = -1;
         break;
       }
@@ -498,7 +498,7 @@ syscall_handler (struct intr_frame *f)
     {
       break;
     }
-    
+
     default:
       break;
   }
@@ -510,7 +510,7 @@ struct flist_pack* fd_to_flist_pack(int fd)
   struct flist_pack *fe;
   struct thread *cur = thread_current();
   struct list_elem *e;
-  
+
   for (e = list_begin(&cur->file_list); e != list_end(&cur->file_list); e = list_next(e))
   {
     fe = list_entry (e, struct flist_pack, elem);
