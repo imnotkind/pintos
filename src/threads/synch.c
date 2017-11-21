@@ -285,8 +285,9 @@ lock_release (struct lock *lock)
     }
   }
   //remove this lock from cur -> lock_list
-
-  if(!list_empty(&cur->lock_list)){ // max is the lock with highest priority front waiter
+  intr_disable();
+  if(!list_empty(&cur->lock_list))
+  { // max is the lock with highest priority front waiter
     struct lock *max = NULL;
     for(e = list_begin(&cur->lock_list); e != list_end(&cur->lock_list); e = list_next(e)){
       struct lock *L = list_entry(e, struct lock, lock_elem);
@@ -313,6 +314,7 @@ lock_release (struct lock *lock)
   else{
     thread_set_priority_for_release(thread_current()->priority_orig);
   }
+  intr_enable();
 
 
 }

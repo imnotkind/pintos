@@ -190,7 +190,18 @@ process_exit (void)
   uint32_t *pd;
   struct list_elem *e;
   struct flist_pack *fe;
-  struct mmap_file_pack *mmfp;
+  struct mmap_file_pack *mmfp;  
+
+
+  for(e = list_begin(&cur->child_list); e != list_end(&cur->child_list); )
+  {
+    struct thread *t = list_entry(e, struct thread, child_elem);
+    e = list_remove(e);
+    sema_up(&t->destroy);
+  }
+
+  sema_up(&cur->wait);
+  sema_down(&cur->destroy);
 
   
 
@@ -228,18 +239,6 @@ process_exit (void)
       pagedir_destroy (pd);
     }
 
-
-
-
-  for(e = list_begin(&cur->child_list); e != list_end(&cur->child_list); )
-  {
-    struct thread *t = list_entry(e, struct thread, child_elem);
-    e = list_remove(e);
-    sema_up(&t->destroy);
-  }
-
-  sema_up(&cur->wait);
-  sema_down(&cur->destroy);
 
 }
 
