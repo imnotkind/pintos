@@ -193,8 +193,14 @@ process_exit (void)
   struct mmap_file_pack *mmfp;  
 
 
+  for(e = list_begin(&cur->mmap_file_list); e != list_end(&cur->mmap_file_list); ){
+    mmfp = list_entry(e, struct mmap_file_pack, elem);
+    e = list_next(e);
+    sys_munmap(mmfp->map_id);
+  }
   
-  //lock_acquire(&filesys_lock);
+  
+  lock_acquire(&filesys_lock);
   file_close(cur->run_file);
   while (!list_empty(&cur->file_list))
   {
@@ -203,15 +209,9 @@ process_exit (void)
     file_close(fe->fp);
     free(fe);
   }
-  //lock_release(&filesys_lock);
+  lock_release(&filesys_lock);
 
 
-  for(e = list_begin(&cur->mmap_file_list); e != list_end(&cur->mmap_file_list); ){
-    mmfp = list_entry(e, struct mmap_file_pack, elem);
-    e = list_next(e);
-    sys_munmap(mmfp->map_id);
-  }
-  
   
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
