@@ -288,7 +288,7 @@ lock_release (struct lock *lock)
  
   if(!list_empty(&cur->lock_list))
   { // max is the lock with highest priority front waiter
-    intr_disable();
+    //intr_disable();
     struct lock *max = NULL;
     for(e = list_begin(&cur->lock_list); e != list_end(&cur->lock_list); e = list_next(e))
     {
@@ -307,7 +307,7 @@ lock_release (struct lock *lock)
         max = L; 
       }
     }
-    intr_enable();
+    //intr_enable();
 
     if(max != NULL){
     //  printf("<%s>\n",list_entry(list_begin(&max->semaphore.waiters), struct thread, elem)->name);
