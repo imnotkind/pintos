@@ -373,21 +373,16 @@ syscall_handler (struct intr_frame *f)
         f->eax = -1;
         break;
       }
-      //printf("----MMAP START----\n");
       if (!fe){
-        //printf("----BAD_FD... Process exit----\n");
         sys_exit(-1);
         break;
       }
-     // printf("DBG 01\n");
 
       flen = file_length (fe->fp);
       if (flen <= 0){
         f->eax = -1;
-        //printf("----MMAP END----\n");
         break;
       }
-      //printf("DBG 02\n");
 
       page_num = flen / PGSIZE + 1;
 
@@ -400,10 +395,8 @@ syscall_handler (struct intr_frame *f)
         }
       }
       if(escape){
-        //printf("----MMAP END----\n");
         break;
       }
-      //printf("DBG 03\n");
 
       map_id = ++(cur->map_id);
 
@@ -419,7 +412,6 @@ syscall_handler (struct intr_frame *f)
           escape = true;
           break;
         }
-        //printf("DBG 04-1\n");
 
         sptp->owner = cur;
         sptp->upage = upage;
@@ -446,7 +438,6 @@ syscall_handler (struct intr_frame *f)
           escape = true;
           break;
         }
-        //printf("DBG 04-2\n");
 
         mmfp->sptp = sptp;
         mmfp->map_id = cur->map_id;
@@ -459,13 +450,10 @@ syscall_handler (struct intr_frame *f)
         ofs += PGSIZE;
       }
       if(escape){
-        //printf("----MMAP END----\n");
         break;
       }
 
-      //printf("DBG 05\n");
       f->eax = map_id;
-      //printf("----MMAP END----\nMAP ID : %d\n", map_id);
       break;
     }
 
