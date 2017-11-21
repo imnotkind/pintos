@@ -189,15 +189,12 @@ page_fault (struct intr_frame *f)
 
   if(page_load_success == false)
   {
-    /*
     printf ("Page fault at %p: %s error %s page in %s context.\n",
           fault_addr,
           not_present ? "not present" : "rights violation",
           write ? "writing" : "reading",
           user ? "user" : "kernel");
     kill (f);
-    */
-    sys_exit(-1);
   }
 
 }
