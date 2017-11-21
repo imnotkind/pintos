@@ -192,13 +192,15 @@ process_exit (void)
   struct flist_pack *fe;
   struct mmap_file_pack *mmfp;
 
+  lock_acquire(&filesys_lock);
+  
   for(e = list_begin(&cur->mmap_file_list); e != list_end(&cur->mmap_file_list); ){
     mmfp = list_entry(e, struct mmap_file_pack, elem);
     e = list_next(e);
     sys_munmap(mmfp->map_id);
   }
 
-  lock_acquire(&filesys_lock);
+  
   file_close(cur->run_file);
   while (!list_empty(&cur->file_list))
   {
