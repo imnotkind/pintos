@@ -153,7 +153,7 @@ page_fault (struct intr_frame *f)
   write = (f->error_code & PF_W) != 0;
   user = (f->error_code & PF_U) != 0;
 
-  if(!not_present || !is_user_vaddr(fault_addr) || fault_addr < 0x08048000 + 1) //not present check : pt-write-code test
+  if(!not_present || !check_addr_safe(fault_addr,1,NULL)) //not present check : pt-write-code test
   {
     sys_exit(-1);
   }
