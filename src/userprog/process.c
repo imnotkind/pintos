@@ -192,20 +192,8 @@ process_exit (void)
   struct flist_pack *fe;
   struct mmap_file_pack *mmfp;
 
-  for(e = list_begin(&cur->child_list); e != list_end(&cur->child_list); )
-  {
-    struct thread *t = list_entry(e, struct thread, child_elem);
-    e = list_remove(e);
-    sema_up(&t->destroy);
-  }
-
-  for(e = list_begin(&cur->mmap_file_list); e != list_end(&cur->mmap_file_list); ){
-    mmfp = list_entry(e, struct mmap_file_pack, elem);
-    e = list_next(e);
-    sys_munmap(mmfp->map_id);
-  }
-
   
+
   lock_acquire(&filesys_lock);
   file_close(cur->run_file);
   while (!list_empty(&cur->file_list))
@@ -217,13 +205,12 @@ process_exit (void)
   }
   lock_release(&filesys_lock);
 
+  for(e = list_begin(&cur->mmap_file_list); e != list_end(&cur->mmap_file_list); ){
+    mmfp = list_entry(e, struct mmap_file_pack, elem);
+    e = list_next(e);
+    sys_munmap(mmfp->map_id);
+  }
   
-
-  sema_up(&cur->wait);
-  sema_down(&cur->destroy);
-
-
-
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
   pd = cur->pagedir;
@@ -243,6 +230,16 @@ process_exit (void)
 
 
 
+
+  for(e = list_begin(&cur->child_list); e != list_end(&cur->child_list); )
+  {
+    struct thread *t = list_entry(e, struct thread, child_elem);
+    e = list_remove(e);
+    sema_up(&t->destroy);
+  }
+
+  sema_up(&cur->wait);
+  sema_down(&cur->destroy);
 
 }
 
