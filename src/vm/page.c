@@ -36,27 +36,71 @@ struct sp_table_pack //sup page table
 bool add_file_to_spage_table(void *upage,struct file * file, off_t offset, size_t page_read_bytes, size_t page_zero_bytes, bool writable)
 {
    struct thread *cur = thread_current();
-   struct sp_table_pack *spt;
-   spt = (struct sp_table_pack *) malloc(sizeof(struct sp_table_pack));
-   if(spt == NULL)
+   struct sp_table_pack *sptp;
+   sptp = (struct sp_table_pack *) malloc(sizeof(struct sp_table_pack));
+   if(sptp == NULL)
     return false;
 
-   spt->owner = cur;
-   spt->upage = pg_round_down(upage);
-   spt->is_loaded = false;
+   sptp->owner = cur;
+   sptp->upage = pg_round_down(upage);
+   sptp->is_loaded = false;
 
-   spt->file = file;
-   spt->offset = offset;
-   spt->page_read_bytes = page_read_bytes;
-   spt->page_zero_bytes = page_zero_bytes;
-   spt->writable = writable;
-   spt->type = PAGE_FILE;
+   sptp->file = file;
+   sptp->offset = offset;
+   sptp->page_read_bytes = page_read_bytes;
+   sptp->page_zero_bytes = page_zero_bytes;
+   sptp->writable = writable;
+   sptp->type = PAGE_FILE;
 
    lock_acquire(&cur->sp_table_lock);
-   list_push_back(&cur->sp_table, &spt->elem);
+   list_push_back(&cur->sp_table, &sptp->elem);
    lock_release(&cur->sp_table_lock);
    return true;
 
+}
+
+bool add_mmap_to_spage_table(void *upage,struct file * file, off_t offset, size_t page_read_bytes, size_t page_zero_bytes)
+{
+  struct thread * cur = thread_current();
+  struct mmap_file_pack * mmfp;
+  struct sp_table_pack *sptp = (struct sp_table_pack *) malloc(sizeof(struct sp_table_pack));
+  if (!sptp) 
+  {
+    return false;
+  }
+
+  sptp->owner = cur;
+  sptp->upage = upage;
+  sptp->is_loaded = false;
+
+  sptp->file = file;
+  sptp->offset = offset;
+  sptp->page_read_bytes = page_read_bytes;
+  sptp->page_zero_bytes = page_zero_bytes;
+  sptp->writable = true;
+
+  sptp->type = PAGE_MMAP;
+
+  lock_acquire(&cur->sp_table_lock);
+  list_push_back(&cur->sp_table, &sptp->elem);
+  lock_release(&cur->sp_table_lock);
+
+  mmfp = (struct mmap_file_pack *) malloc(sizeof(struct mmap_file_pack));
+  if(!mmfp){
+    list_remove(&sptp->elem);
+    free(sptp);
+    return false;
+  }
+
+  mmfp->sptp = sptp;
+  mmfp->map_id = cur->map_id;
+
+  lock_acquire(&cur->mmap_lock);
+  list_push_back(&cur->mmap_file_list, &mmfp->elem);
+  lock_release(&cur->mmap_lock);
+
+  return true;
+  
 }
 
 void free_spage_table(void *upage) // page is uv_addr
@@ -198,7 +242,7 @@ bool check_addr_safe(const void *vaddr,int mode, void * esp)
       return true;
   }
 
-  if(mode==1) // lazy loading is ok, formerly used in page_fault()
+  if(mode==1) // lazy loading is ok, used in page_fault(), virtual address minimal checking
   {
     if (!vaddr || !is_user_vaddr(vaddr) || vaddr < 0x08048000 )
       return false;

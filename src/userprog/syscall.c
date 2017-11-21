@@ -404,46 +404,14 @@ syscall_handler (struct intr_frame *f)
       {
         size_t page_read_bytes = flen < PGSIZE ? flen : PGSIZE;
         size_t page_zero_bytes = PGSIZE - page_read_bytes;
-        struct mmap_file_pack * mmfp;
-        struct sp_table_pack *sptp = (struct sp_table_pack *) malloc(sizeof(struct sp_table_pack));
-        if (!sptp) {
+
+        if(!add_mmap_to_spage_table(upage,fe->fp,ofs,page_read_bytes,page_zero_bytes))
+        {
           cur->map_id--;
           f->eax = -1;
           escape = true;
           break;
         }
-
-        sptp->owner = cur;
-        sptp->upage = upage;
-        sptp->is_loaded = false;
-
-        sptp->file = fe->fp;
-        sptp->offset = ofs;
-        sptp->page_read_bytes = page_read_bytes;
-        sptp->page_zero_bytes = page_zero_bytes;
-        sptp->writable = true;
-
-        sptp->type = PAGE_MMAP;
-
-        lock_acquire(&cur->sp_table_lock);
-        list_push_back(&cur->sp_table, &sptp->elem);
-        lock_release(&cur->sp_table_lock);
-
-        mmfp = (struct mmap_file_pack *) malloc(sizeof(struct mmap_file_pack));
-        if(!mmfp){
-          list_remove(&sptp->elem);
-          free(sptp);
-          cur->map_id--;
-          f->eax = -1;
-          escape = true;
-          break;
-        }
-
-        mmfp->sptp = sptp;
-        mmfp->map_id = cur->map_id;
-        lock_acquire(&cur->mmap_lock);
-        list_push_back(&cur->mmap_file_list, &mmfp->elem);
-        lock_release(&cur->mmap_lock);
 
         flen -= page_read_bytes;
         upage += PGSIZE;
