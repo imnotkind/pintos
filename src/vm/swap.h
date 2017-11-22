@@ -15,7 +15,7 @@ enum swap_type
 struct list swap_table;
 struct block *swap_block;
 struct lock swap_lock;
-struct list_elem *lru_pos;
+struct list_elem *lru_pos; //pointer for saving where we find lru
 
 struct swap_table_pack
 {
@@ -26,6 +26,6 @@ struct swap_table_pack
 };
 
 void init_swap_table();
-
+struct swap_table_pack *find_lru_stp();
 
 #endif
