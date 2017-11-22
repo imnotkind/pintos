@@ -1,5 +1,9 @@
 #include "vm/swap.h"
+#include "userprog/syscall.h"
 #include <stdio.h>
+#include "threads/vaddr.h"
+
+extern struct lock filesys_lock;
 
 void init_swap_table()
 {
@@ -8,13 +12,19 @@ void init_swap_table()
         return;
     }
 
+    int i=0;
+    for(i; i < block_size(swap_block)*BLOCK_SECTOR_SIZE/PGSIZE; i++)
+    {
+        struct swap_table_pack * stp = malloc(sizeof(struct swap_table_pack));
+    }
+
     list_init(&swap_table);
     lock_init(&swap_lock);
     lru_pos = list_begin(&swap_table);
 }
 
 //check swap table twice.
-struct swap_table_pack *find_lru_stp()
+struct swap_table_pack * find_lru_stp()
 {
     struct list_elem *e;
     struct swap_table_pack *stp;
