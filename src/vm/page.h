@@ -24,6 +24,7 @@ struct sp_table_pack //sup page table
     size_t page_zero_bytes;
     bool writable;
 
+    bool pinned;
 
     enum page_type type;
 
