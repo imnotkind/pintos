@@ -16,6 +16,7 @@ void init_swap_table()
     for(i; i < block_size(swap_block)*BLOCK_SECTOR_SIZE/PGSIZE; i++)
     {
         struct swap_table_pack * stp = malloc(sizeof(struct swap_table_pack));
+        //additional init
     }
 
     list_init(&swap_table);
