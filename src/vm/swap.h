@@ -21,6 +21,7 @@ struct swap_table_pack
 {
     struct sp_table_pack *sptp;
     bool recent_used;
+    struct size_t idx;
 
     struct list_elem elem;
 };
