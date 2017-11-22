@@ -12,7 +12,7 @@ enum swap_type
     SWAP_USED
 };
 
-struct list swap_list;
+struct list swap_table;
 struct block *swap_block;
 struct lock swap_lock;
 struct list_elem *lru_pos;

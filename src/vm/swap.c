@@ -8,7 +8,8 @@ void init_swap_table()
         return;
     }
 
-    list_init(&swap_list);
+    list_init(&swap_table);
     lock_init(&swap_lock);
 }
 
+struct swap_table_pack *find_lru_stp()
