@@ -14,11 +14,13 @@ enum swap_status
 };
 
 struct list swap_table;
+struct block *swap_block;
 struct lock swap_lock;
 struct list_elem *lru_pos; //pointer for saving where we find lru. it looks unstable.
 
 struct swap_table_pack
 {
+    struct sp_table_pack *sptp;
     int index;
     enum swap_status status;
     

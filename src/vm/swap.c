@@ -9,6 +9,10 @@ extern struct lock filesys_lock;
 void init_swap_table()
 {
     int i;
+    swap_block = block_get_role(BLOCK_SWAP);
+    if(!swap_block){
+        return;
+    }
 
     list_init(&swap_table);
     lock_init(&swap_lock);
@@ -20,7 +24,7 @@ void init_swap_table()
         stp->status = IN_BUFFER;
         stp->index = i;
         list_push_back(&swap_table,&stp->elem);
-    } //making 'bitmap' list
+    }
 
     
 }
@@ -28,7 +32,6 @@ void init_swap_table()
 //swap into memory with index, block -> buffer(page)
 bool swap_in(int index, void *upage)
 {
-    struct block *swap_block = block_get_role (BLOCK_SWAP);
     struct swap_table_pack *stp;
     int i;
 
@@ -40,12 +43,11 @@ bool swap_in(int index, void *upage)
 		return false;
 	}
 
-    
-
-	for (i = 0; i < 8; i++){
-		block_read (swap_block, index*8 + i, (uint8_t *) upage + i*BLOCK_SECTOR_SIZE);
-    }
     stp->status = IN_BUFFER;
+
+	for (i = 0; i < PGSIZE/BLOCK_SECTOR_SIZE; i++){
+		block_read (swap_block, index*PGSIZE/BLOCK_SECTOR_SIZE + i, (uint8_t *) upage + i*BLOCK_SECTOR_SIZE);
+	}
     lock_release(&swap_lock);
     return true;
 }
@@ -53,7 +55,6 @@ bool swap_in(int index, void *upage)
 //swap out from memory, buffer(page) -> block
 int swap_out(void *upage)
 {
-    struct block *swap_block = block_get_role (BLOCK_SWAP);
     struct list_elem *e;
     struct swap_table_pack *stp;
     int index = 0;
@@ -71,9 +72,14 @@ int swap_out(void *upage)
 			break;
 		}
 	}
-    //PGSIZE/BLOCK_SECTOR_SIZE = 8
-	for (i = 0; i < 8; i++) {
-		block_write (swap_block, index*8 + i, (uint8_t *) upage + i*BLOCK_SECTOR_SIZE);
+/*
+	if(index == list_size(&swap_table)){
+		lock_release(&swap_lock);
+		return -1;
+	}
+*/
+	for (i = 0; i < PGSIZE/BLOCK_SECTOR_SIZE; i++) {
+		block_write (swap_block, index*PGSIZE/BLOCK_SECTOR_SIZE + i, (uint8_t *) upage + i*BLOCK_SECTOR_SIZE);
     }
     stp->status = IN_BLOCK;
 	lock_release(&swap_lock);
