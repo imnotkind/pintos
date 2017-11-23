@@ -3,6 +3,7 @@
 #include "userprog/syscall.h"
 #include "threads/malloc.h"
 #include "threads/vaddr.h"
+#include "devices/block.h"
 
 extern struct lock filesys_lock;
 
