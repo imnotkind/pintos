@@ -226,8 +226,8 @@ bool load_swap(struct sp_table_pack * sptp)
     return false;
   }
 
-  int success = swap_in(sptp->index, sptp->upage);
-  if (success == NULL){
+  bool success = swap_in(sptp->index, sptp->upage);
+  if (success == false){
     return false;
   }
 

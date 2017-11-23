@@ -139,7 +139,7 @@ bool evict_frame()
     struct thread * owner = sptp->owner;
     
     int index = swap_out(sptp->upage);
-    pagedir_clear_page(&owner->pagedir,sptp->upage);
+    pagedir_clear_page(owner->pagedir,sptp->upage);
 
     list_remove(&ftp->elem);
     palloc_free_page(ftp->kpage);
