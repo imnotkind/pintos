@@ -560,7 +560,7 @@ setup_stack (void **esp)
         sptp->writable = true;
         sptp->is_loaded = true;
         *esp = PHYS_BASE;
-        list_push_back(&thread_current()->sp_table,elem);
+        list_push_back(&thread_current()->sp_table,&sptp->elem);
       }
       else
         free_page_frame (kpage);
