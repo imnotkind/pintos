@@ -52,16 +52,16 @@ size_t swap_out(void *upage)
 }
 
 //find swap table pack with index. return NULL when can't find
-struct swap_table_pack* index_to_swap_table_pack(index)
+struct swap_table_pack* index_to_swap_table_pack(size_t index)
 {
     struct list_elem *e;
     struct swap_table_pack *spt;
     
-	if(list_empty(&swap_list)){
+	if(list_empty(&swap_table)){
         return NULL;
     }
 	
-    for(e = list_begin(&swap_list); e != list_end(&swap_list); e = list_next(e)){
+    for(e = list_begin(&swap_table); e != list_end(&swap_table); e = list_next(e)){
 		spt = list_entry(e, struct swap_table_pack, elem);
 		if(spt->index == index){
             return spt;
@@ -71,7 +71,7 @@ struct swap_table_pack* index_to_swap_table_pack(index)
 }
 
 //check swap table twice.
-struct swap_table_pack * find_lru_stp()
+struct swap_table_pack* find_lru_stp()
 {
     struct list_elem *e;
     struct swap_table_pack *stp;

@@ -41,7 +41,7 @@ void *alloc_page_frame(enum palloc_flags flags)
     ftp = (struct ftable_pack *) malloc(sizeof(struct ftable_pack));
     ftp->owner = thread_current();
     ftp->kpage = kpage;
-    ftp->phy = vtop(kpage);
+    ftp->phy = (void *) vtop(kpage);
     ftp->can_alloc = false;
     lock_acquire(&ftable_lock);
     list_push_back(&frame_list, &ftp->elem);

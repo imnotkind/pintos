@@ -2,6 +2,7 @@
 #define VM_SWAP_H
 
 #include <list.h>
+#include <stdint.h>
 #include "vm/page.h"
 #include "threads/synch.h"
 #include "devices/block.h"
@@ -28,7 +29,7 @@ struct swap_table_pack
 };
 
 void init_swap_table();
-struct swap_table_pack *find_lru_stp();
+struct swap_table_pack* find_lru_stp();
 struct swap_table_pack* index_to_swap_table_pack(size_t index);
 void swap_in(size_t index, void *upage);
 size_t swap_out(void *upage);

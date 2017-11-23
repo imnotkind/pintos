@@ -244,7 +244,7 @@ bool check_addr_safe(const void *vaddr,int mode, void * esp)
 
   if(mode==1) // lazy loading is ok, used in page_fault(), virtual address minimal checking
   {
-    if (!vaddr || !is_user_vaddr(vaddr) || vaddr < 0x08048000 )
+    if (!vaddr || !is_user_vaddr(vaddr) || vaddr < (void *)0x08048000 )
       return false;
     else
       return true;
@@ -252,17 +252,17 @@ bool check_addr_safe(const void *vaddr,int mode, void * esp)
 
   if(mode==2) //verify stack , stack heruistic access, stack size 8MB, stack addr upper than code seg
   {
-    if (!vaddr || !is_user_vaddr(vaddr)  || vaddr <  0x08048000  || vaddr < esp - 32 || vaddr < PHYS_BASE - 8*1024*1024)
+    if (!vaddr || !is_user_vaddr(vaddr)  || vaddr < (void *)0x08048000  || vaddr < esp - 32 || vaddr < PHYS_BASE - 8*1024*1024)
       return false;
     else
       return true;
   }
   if(mode==3) //mmap should NOT be in stack segment
   {
-    if (!vaddr || !is_user_vaddr(vaddr)  || vaddr <  0x08048000  || vaddr > PHYS_BASE - 8*1024*1024)
+    if (!vaddr || !is_user_vaddr(vaddr)  || vaddr < (void *)0x08048000  || vaddr > PHYS_BASE - 8*1024*1024)
       return false;
     else
       return true;
-  }
-
+    }
+  NOT_REACHED();
 }
