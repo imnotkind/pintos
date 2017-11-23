@@ -146,7 +146,22 @@ struct ftable_pack * find_evict_frame(int mode)
 {
     if(mode==1)//random
     {
+        struct list_elem * e;
+        struct ftable_pack *victim_frame;
+        int list_len = list_size(&frame_table);
+        int rand = random_ulong() % list_length;
 
+        if(rand < 0){
+            rand = -rand;
+        }
+
+        for(e = list_begin(&frame_table); e != list_end(&frame_table); e = list_next(e)){
+            if(rand-- == 0){
+                victim_frame = list_entry(e, struct ftable_pack, elem);
+                return victim_frame;
+            }
+        }
+        NOT_REACHED();
     }
     if(mode==2)//lru
     {
