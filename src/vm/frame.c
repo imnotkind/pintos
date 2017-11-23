@@ -67,6 +67,7 @@ void *alloc_page_frame(enum palloc_flags flags)
         lock_acquire(&ftable_lock);
         list_push_back(&frame_table, &ftp->elem);
         lock_release(&ftable_lock);
+        return kpage;
     }
 
     
