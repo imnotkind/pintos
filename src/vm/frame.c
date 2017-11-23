@@ -7,9 +7,13 @@
 #include "threads/vaddr.h"
 #include "vm/page.h"
 #include "userprog/pagedir.h"
+<<<<<<< HEAD
 #include "vm/swap.h"
+=======
+#include <random.h>
+>>>>>>> 83fc29e1f60c249f51958d8dd01e27e70ea18945
 
-struct list frame_list;
+struct list frame_table;
 struct lock eviction_lock;
 struct lock ftable_lock;
 /*
@@ -25,7 +29,7 @@ struct ftable_pack
 
 void init_frame_table()
 {
-    list_init(&frame_list);
+    list_init(&frame_table);
     lock_init(&eviction_lock);
     lock_init(&ftable_lock);
 }
@@ -47,7 +51,7 @@ void *alloc_page_frame(enum palloc_flags flags)
         ftp->phy = (void *) vtop(kpage);
         ftp->can_alloc = false;
         lock_acquire(&ftable_lock);
-        list_push_back(&frame_list, &ftp->elem);
+        list_push_back(&frame_table, &ftp->elem);
         lock_release(&ftable_lock);
 
         return kpage;
@@ -64,7 +68,7 @@ void *alloc_page_frame(enum palloc_flags flags)
         ftp->phy = (void *) vtop(kpage);
         ftp->can_alloc = false;
         lock_acquire(&ftable_lock);
-        list_push_back(&frame_list, &ftp->elem);
+        list_push_back(&frame_table, &ftp->elem);
         lock_release(&ftable_lock);
     }
 
@@ -76,7 +80,7 @@ void free_page_frame(void *kpage) // page is kv_adrr
     struct list_elem *e;
     struct ftable_pack *f;
     struct ftable_pack *ftp = NULL;
-    for(e = list_begin(&frame_list); e != list_end(&frame_list); e = list_next(e))
+    for(e = list_begin(&frame_table); e != list_end(&frame_table); e = list_next(e))
     {
         f = list_entry(e, struct ftable_pack, elem);
         if (f->kpage == kpage){
@@ -101,7 +105,7 @@ struct ftable_pack * kpage_to_ftp(void * kpage)
 
     kpage = pg_round_down(kpage); //to know what page the address is in!
 
-    for(e = list_begin(&frame_list); e != list_end(&frame_list); e = list_next(e))
+    for(e = list_begin(&frame_table); e != list_end(&frame_table); e = list_next(e))
     {
         ftp = list_entry(e, struct ftable_pack, elem);
         if (ftp->kpage == kpage){
