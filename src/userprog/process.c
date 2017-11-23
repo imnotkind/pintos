@@ -551,7 +551,17 @@ setup_stack (void **esp)
     {
       success = install_page (((uint8_t *) PHYS_BASE) - PGSIZE, kpage, true);
       if (success)
+      {
+        struct sp_table_pack * sptp = malloc(sizeof(struct sp_table_pack));
+        if(!sptp)
+          return false;
+        sptp->type = PAGE_NULL;
+        sptp->upage = ((uint8_t *) PHYS_BASE) - PGSIZE;
+        sptp->writable = true;
+        sptp->is_loaded = true;
         *esp = PHYS_BASE;
+        list_push_back(&thread_current()->sp_table,elem);
+      }
       else
         free_page_frame (kpage);
     }
