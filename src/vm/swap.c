@@ -24,7 +24,7 @@ void init_swap_table()
         stp->status = IN_BUFFER;
         stp->index = i;
         list_push_back(&swap_table,&stp->elem);
-    }
+    } //making 'bitmap' list
 
     
 }
