@@ -13,8 +13,6 @@ enum swap_status
     IN_BLOCK
 };
 
-enum stable
-
 struct list swap_table;
 struct block *swap_block;
 struct lock swap_lock;
