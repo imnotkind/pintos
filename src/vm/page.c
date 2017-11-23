@@ -71,7 +71,7 @@ bool add_mmap_to_spage_table(void *upage,struct file * file, off_t offset, size_
   }
 
   sptp->owner = cur;
-  sptp->upage = upage;
+  sptp->upage = pg_round_down(upage);
   sptp->is_loaded = false;
 
   sptp->file = file;
@@ -225,7 +225,7 @@ bool load_swap(struct sp_table_pack * sptp)
   if (kpage == NULL){
     return false;
   }
-
+  ASSERT (pg_ofs (sptp->upage) == 0);
   bool success = swap_in(sptp->index, sptp->upage);
   if (success == false){
     return false;
