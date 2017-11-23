@@ -29,7 +29,6 @@ void init_swap_table()
 //swap into memory with index, block -> buffer(page)
 bool swap_in(int index, void *upage)
 {
-    swap_block = block_get_role (BLOCK_SWAP);
     struct swap_table_pack *stp;
     int i;
 
@@ -54,7 +53,6 @@ bool swap_in(int index, void *upage)
 //swap out from memory, buffer(page) -> block
 int swap_out(void *upage)
 {
-    swap_block = block_get_role (BLOCK_SWAP);
     struct list_elem *e;
     struct swap_table_pack *stp;
     int index = 0;
