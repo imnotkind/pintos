@@ -129,7 +129,7 @@ bool evict_frame()
         ASSERT(ftp != NULL);
         ASSERT(sptp != NULL);
 
-        if(sptp->pinned == true)
+        if(sptp->pinned == true || ftp->kpage == pagedir_get_page(thread_current()->pagedir,sptp->upage))
             continue;
         else
             break;
