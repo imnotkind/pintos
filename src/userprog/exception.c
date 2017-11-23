@@ -156,7 +156,7 @@ page_fault (struct intr_frame *f)
 
   if(!not_present || !check_addr_safe(fault_addr,1,NULL)) //not present check : pt-write-code test
   {
-    printf("fault_addr: %d = %x\n", fault_addr, fault_addr);
+    printf("fault_addr: %d = %x\n", fault_addr, f->eip);
     sys_exit(-12);
   }
 
