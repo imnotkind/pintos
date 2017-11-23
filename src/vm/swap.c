@@ -10,7 +10,7 @@ extern struct lock filesys_lock;
 void init_swap_table()
 {
     int i;
-    swap_block = block_get_role (BLOCK_SWAP);
+    struct block *swap_block = block_get_role (BLOCK_SWAP);
     list_init(&swap_table);
     lock_init(&swap_lock);
     lru_pos = list_begin(&swap_table);
@@ -29,7 +29,7 @@ void init_swap_table()
 //swap into memory with index, block -> buffer(page)
 bool swap_in(int index, void *upage)
 {
-    swap_block = block_get_role (BLOCK_SWAP);
+    struct block *swap_block = block_get_role (BLOCK_SWAP);
     struct swap_table_pack *stp;
     int i;
 
@@ -54,7 +54,7 @@ bool swap_in(int index, void *upage)
 //swap out from memory, buffer(page) -> block
 int swap_out(void *upage)
 {
-    swap_block = block_get_role (BLOCK_SWAP);
+    struct block *swap_block = block_get_role (BLOCK_SWAP);
     struct list_elem *e;
     struct swap_table_pack *stp;
     int index = 0;
