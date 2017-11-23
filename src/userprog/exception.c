@@ -156,7 +156,7 @@ page_fault (struct intr_frame *f)
 
   if(!not_present || !check_addr_safe(fault_addr,1,NULL)) //not present check : pt-write-code test
   {
-    printf("fault_addr: %8x\n", fault_addr);
+    printf("fault_addr: %d = %.8x\n", fault_addr, fault_addr);
     sys_exit(-112);
   }
 
