@@ -120,6 +120,7 @@ main (void)
   serial_init_queue ();
   timer_calibrate ();
 
+  init_swap_table();
 #ifdef FILESYS
   /* Initialize file system. */
   ide_init ();

@@ -72,12 +72,7 @@ int swap_out(void *upage)
 			break;
 		}
 	}
-/*
-	if(index == list_size(&swap_table)){
-		lock_release(&swap_lock);
-		return -1;
-	}
-*/
+
 	for (i = 0; i < PGSIZE/BLOCK_SECTOR_SIZE; i++) {
 		block_write (swap_block, index*PGSIZE/BLOCK_SECTOR_SIZE + i, (uint8_t *) upage + i*BLOCK_SECTOR_SIZE);
     }
