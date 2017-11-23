@@ -138,9 +138,18 @@ bool evict_frame()
     sptp->pinned = true;
     struct thread * owner = sptp->owner;
     
-    size_t index = swap_out(sptp->upage);
+    int index = swap_out(sptp->upage);
+    pagedir_clear_page(&owner->pagedir,sptp->upage);
 
+    list_remove(&ftp->elem);
+    palloc_free_page(ftp->kpage);
+
+    sptp->is_loaded = false;
+    sptp->index = index;
+    sptp->type = PAGE_SWAP;
+    sptp->pinned = false;
     lock_release(&eviction_lock);
+    return true;
 }
 
 struct ftable_pack * find_evict_frame(int mode)

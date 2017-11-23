@@ -31,7 +31,7 @@ struct swap_table_pack
 void init_swap_table();
 struct swap_table_pack* find_lru_stp();
 struct swap_table_pack* index_to_swap_table_pack(int index);
-void swap_in(int index, void *upage);
+bool swap_in(int index, void *upage);
 int swap_out(void *upage);
 
 #endif

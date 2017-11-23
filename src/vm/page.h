@@ -9,7 +9,8 @@ enum page_type
 {
     PAGE_NULL,
     PAGE_FILE,
-    PAGE_MMAP
+    PAGE_MMAP,
+    PAGE_SWAP
 };
 
 struct sp_table_pack //sup page table
@@ -25,6 +26,7 @@ struct sp_table_pack //sup page table
     bool writable;
 
     bool pinned;
+    int index; //swap table index
 
     enum page_type type;
 

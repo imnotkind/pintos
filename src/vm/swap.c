@@ -30,7 +30,7 @@ void init_swap_table()
 }
 
 //swap into memory with index, block -> buffer(page)
-void swap_in(int index, void *upage)
+bool swap_in(int index, void *upage)
 {
     int i;
     struct swap_table_pack *stp;
@@ -40,7 +40,7 @@ void swap_in(int index, void *upage)
     stp = index_to_swap_table_pack(index);
 	if (!stp || stp->can_alloc == true){ 
 		lock_release(&swap_lock);
-		return;
+		return false;
 	}
 
 	stp->can_alloc = true; 
@@ -49,6 +49,8 @@ void swap_in(int index, void *upage)
 		block_read (swap_block, index*PGSIZE/BLOCK_SECTOR_SIZE + i, (uint8_t *) upage + i*BLOCK_SECTOR_SIZE);
 	}
     lock_release(&swap_lock);
+    
+    return true;
 }
 
 //swap out from memory, buffer(page) -> block
