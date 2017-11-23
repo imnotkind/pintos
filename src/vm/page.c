@@ -52,6 +52,7 @@ bool add_file_to_spage_table(void *upage,struct file * file, off_t offset, size_
    sptp->page_zero_bytes = page_zero_bytes;
    sptp->writable = writable;
    sptp->type = PAGE_FILE;
+   sptp->pinned = false;
 
    lock_acquire(&cur->sp_table_lock);
    list_push_back(&cur->sp_table, &sptp->elem);
@@ -79,7 +80,7 @@ bool add_mmap_to_spage_table(void *upage,struct file * file, off_t offset, size_
   sptp->page_read_bytes = page_read_bytes;
   sptp->page_zero_bytes = page_zero_bytes;
   sptp->writable = true;
-
+  sptp->pinned = false;
   sptp->type = PAGE_MMAP;
 
   lock_acquire(&cur->sp_table_lock);
@@ -162,6 +163,7 @@ struct sp_table_pack * upage_to_sp_table_pack(void * upage)
 bool load_file(struct sp_table_pack * sptp)
 {
   ASSERT(sptp->is_loaded == false);
+  sptp->pinned = true;
 
   /* Get a page of memory. */
   uint8_t *kpage = alloc_page_frame (PAL_USER);
@@ -184,13 +186,14 @@ bool load_file(struct sp_table_pack * sptp)
     }
 
     sptp->is_loaded = true;
+    sptp->pinned = false;
     return true;
  }
 
 bool load_mmap(struct sp_table_pack * sptp)
 {
   ASSERT(sptp->is_loaded == false);
-
+  sptp->pinned = true;
   /* Get a page of memory. */
   uint8_t *kpage = alloc_page_frame (PAL_USER|PAL_ZERO);
   if (kpage == NULL){
@@ -213,6 +216,7 @@ bool load_mmap(struct sp_table_pack * sptp)
   }
 
   sptp->is_loaded = true;
+  sptp->pinned = false;
   return true;
 }
 
@@ -257,6 +261,7 @@ bool grow_stack (void *upage) //allocate new frame, get kpage, link upage-kpage
   sptp->upage = pg_round_down(upage);
   sptp->is_loaded = true;
   sptp->writable = true;
+  sptp->pinned = false;
   sptp->type = PAGE_NULL;
 
   kpage = alloc_page_frame(PAL_USER);
