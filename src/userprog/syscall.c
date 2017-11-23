@@ -214,10 +214,11 @@ syscall_handler (struct intr_frame *f)
       {
         unsigned i;
         uint8_t* local_buffer = (uint8_t *)buffer;
-        for(i = 0; i < size; i++)
-        {
+        lock_acquire(&filesys_lock);
+        for(i = 0; i < size; i++){
           local_buffer[i] = input_getc();
         }
+        lock_release(&filesys_lock);
         f->eax = size;
       }
       else
@@ -265,7 +266,9 @@ syscall_handler (struct intr_frame *f)
       }
 
       if(fd == 1){
+        lock_acquire(&filesys_lock);
         putbuf((char *)buffer,(size_t)size); //too big size may be a problem, but i wont care for now. LATER
+        lock_release(&filesys_lock);
         f->eax = size;
       }
       else{
@@ -336,17 +339,19 @@ syscall_handler (struct intr_frame *f)
       }
       else
       {
+        lock_acquire(&filesys_lock);
         for(e = list_begin(&cur->sp_table); e != list_end(&cur->sp_table); e = list_next(e))
         {
           sptp = list_entry(e, struct sp_table_pack, elem);
           if(sptp->file == fe->fp && !sptp->is_loaded){
-            if(!load_mmap(sptp))
+            if(!load_mmap(sptp)){
+              lock_release(&filesys_lock);
               sys_exit(-11);
+            }
           }
         }
         list_remove(&fe->elem);
 
-        lock_acquire(&filesys_lock);
         file_close(fe->fp);
         lock_release(&filesys_lock);
         free(fe);
