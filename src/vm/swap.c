@@ -1,20 +1,21 @@
 #include "vm/swap.h"
-#include "userprog/syscall.h"
 #include <stdio.h>
+#include "userprog/syscall.h"
+#include "threads/malloc.h"
 #include "threads/vaddr.h"
 
 extern struct lock filesys_lock;
 
 void init_swap_table()
 {
-    int i;
+    unsigned i;
     swap_block = block_get_role(BLOCK_SWAP);
     if(!swap_block){
         return;
     }
     
     for(i = 0; i < block_size(swap_block)* BLOCK_SECTOR_SIZE/PGSIZE; i++){
-        struct swap_table_pack * stp = malloc(sizeof(struct swap_table_pack));
+        struct swap_table_pack *stp = malloc(sizeof(struct swap_table_pack));
         //additional init
     }
 
@@ -75,7 +76,6 @@ struct swap_table_pack* find_lru_stp()
 {
     struct list_elem *e;
     struct swap_table_pack *stp;
-    struct swap_table_pack *lru_stp = NULL;
 
     //first loop : lru_pos -> end
     for(e = lru_pos; e != list_end(&swap_table); e = list_next(e)){

@@ -21,7 +21,7 @@ struct list_elem *lru_pos; //pointer for saving where we find lru. it looks unst
 struct swap_table_pack
 {
     struct sp_table_pack *sptp;
-    struct size_t index;
+    size_t index;
     enum swap_type type;
     bool recent_used;
     
