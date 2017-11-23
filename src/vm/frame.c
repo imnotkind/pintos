@@ -150,14 +150,14 @@ struct ftable_pack * find_evict_frame(int mode)
         struct list_elem * e;
         struct ftable_pack *victim_frame;
         int list_len = list_size(&frame_table);
-        int rand = random_ulong() % list_length;
+        int rand_no = random_ulong() % list_length;
 
-        if(rand < 0){
-            rand = -rand;
+        if(rand_no < 0){
+            rand_no = -rand_no;
         }
 
         for(e = list_begin(&frame_table); e != list_end(&frame_table); e = list_next(e)){
-            if(rand-- == 0){
+            if(rand_no-- == 0){
                 victim_frame = list_entry(e, struct ftable_pack, elem);
                 return victim_frame;
             }
