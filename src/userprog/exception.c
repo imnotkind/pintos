@@ -190,6 +190,7 @@ page_fault (struct intr_frame *f)
     {
       page_load_success = load_swap(sptp);
     }
+    sptp->pinned = false;
 
   }
 
