@@ -34,7 +34,7 @@ bool swap_in(int index, void *upage)
     struct swap_table_pack *stp;
     int i;
 
-    if(!lock_held_by_current_thread(&swap_lock))
+    //if(!lock_held_by_current_thread(&swap_lock))
 	    lock_acquire(&swap_lock);
     
     stp = index_to_swap_table_pack(index);
@@ -63,13 +63,14 @@ int swap_out(void *upage)
 		return -1;
 	}
 
-    if(!lock_held_by_current_thread(&swap_lock))
+    //if(!lock_held_by_current_thread(&swap_lock))
 	    lock_acquire(&swap_lock);
 
 	for(e = list_begin(&swap_table); e != list_end(&swap_table); e = list_next(e), index++){
 		stp = list_entry(e, struct swap_table_pack, elem);
 		if(stp->status == IN_BUFFER){
-			index = stp->index;
+            index = stp->index;
+            
 			break;
 		}
 	}
