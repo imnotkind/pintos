@@ -31,9 +31,9 @@ void swap_in(size_t index, void *upage)
     struct swap_table_pack *stp;
 
 	lock_acquire(&swap_lock);
-	stp = index_to_swap_table_pack(index);
-	
-	if (stp == NULL || stp->recent_used == true){ //it was 'available' in cctv. we need check
+    
+    stp = index_to_swap_table_pack(index);
+	if (!stp || stp->recent_used == true){ //it was 'available' in cctv. we need check
 		lock_release(&swap_lock);
 		return;
 	}
@@ -49,7 +49,35 @@ void swap_in(size_t index, void *upage)
 //swap out from memory
 size_t swap_out(void *upage)
 {
+    struct list_elem *e;
+    struct swap_table_pack *stp;
+    size_t index = 1;
+    int i;
+	if (!swap_block || &swap_table == NULL){
+		return -1;
+	}
 
+	lock_acquire(&swap_lock);
+
+	for(e = list_begin(&swap_table); e != list_end(&swap_table); e = list_next(e), index++){
+		stp = list_entry(e, struct swap_table_pack, elem);
+		if(stp->recent_used == true){
+			stp->recent_used = false;
+			index = stp->index;
+			break;
+		}
+	}
+
+	if(index == list_size(&swap_table)){
+		lock_release(&swap_lock);
+		return -1;
+	}
+
+	for (i = 0; i < PGSIZE/BLOCK_SECTOR_SIZE; i++) {
+		block_write (swap_block, index*PGSIZE/BLOCK_SECTOR_SIZE + i, (uint8_t *) upage + i*BLOCK_SECTOR_SIZE);
+	}
+	lock_release(&swap_lock);
+    return index;
 }
 
 //find swap table pack with index. return NULL when can't find
