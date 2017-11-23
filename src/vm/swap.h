@@ -7,11 +7,13 @@
 #include "threads/synch.h"
 #include "devices/block.h"
 
-enum swap_type
+enum swap_status
 {
-    SWAP_FREE,
-    SWAP_USED
+    IN_BUFFER,
+    IN_BLOCK
 };
+
+enum stable
 
 struct list swap_table;
 struct block *swap_block;
@@ -22,8 +24,7 @@ struct swap_table_pack
 {
     struct sp_table_pack *sptp;
     int index;
-    enum swap_type type;
-    bool can_alloc;
+    enum swap_status status;
     
     struct list_elem elem;
 };

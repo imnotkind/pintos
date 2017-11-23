@@ -8,7 +8,7 @@ extern struct lock filesys_lock;
 
 void init_swap_table()
 {
-    unsigned i;
+    int i;
     swap_block = block_get_role(BLOCK_SWAP);
     if(!swap_block){
         return;
@@ -21,7 +21,7 @@ void init_swap_table()
     for(i = 0; i < block_size(swap_block)* BLOCK_SECTOR_SIZE/PGSIZE; i++){
         struct swap_table_pack *stp = malloc(sizeof(struct swap_table_pack));
         ASSERT(stp != NULL);
-        stp->can_alloc =true;
+        stp->status = IN_BUFFER;
         stp->index = i+1;
         list_push_back(&swap_table,&stp->elem);
     }
@@ -32,24 +32,23 @@ void init_swap_table()
 //swap into memory with index, block -> buffer(page)
 bool swap_in(int index, void *upage)
 {
-    int i;
     struct swap_table_pack *stp;
+    int i;
 
 	lock_acquire(&swap_lock);
     
     stp = index_to_swap_table_pack(index);
-	if (!stp || stp->can_alloc == true){ 
+	if (!stp || stp->status = IN_BUFFER){ 
 		lock_release(&swap_lock);
 		return false;
 	}
 
-	stp->can_alloc = true; 
+    stp->status = IN_BUFFER;
 
 	for (i = 0; i < PGSIZE/BLOCK_SECTOR_SIZE; i++){
 		block_read (swap_block, index*PGSIZE/BLOCK_SECTOR_SIZE + i, (uint8_t *) upage + i*BLOCK_SECTOR_SIZE);
 	}
     lock_release(&swap_lock);
-    
     return true;
 }
 
@@ -68,8 +67,7 @@ int swap_out(void *upage)
 
 	for(e = list_begin(&swap_table); e != list_end(&swap_table); e = list_next(e), index++){
 		stp = list_entry(e, struct swap_table_pack, elem);
-		if(stp->can_alloc == true){
-			stp->can_alloc = false;
+		if(stp->status == IN_BUFFER){
 			index = stp->index;
 			break;
 		}
@@ -82,7 +80,8 @@ int swap_out(void *upage)
 
 	for (i = 0; i < PGSIZE/BLOCK_SECTOR_SIZE; i++) {
 		block_write (swap_block, index*PGSIZE/BLOCK_SECTOR_SIZE + i, (uint8_t *) upage + i*BLOCK_SECTOR_SIZE);
-	}
+    }
+    stp->status = IN_BLOCK;
 	lock_release(&swap_lock);
     return index;
 }
@@ -115,29 +114,29 @@ struct swap_table_pack* find_lru_stp()
     //first loop : lru_pos -> end
     for(e = lru_pos; e != list_end(&swap_table); e = list_next(e)){
         stp = list_entry(e, struct swap_table_pack, elem);
-        if(stp->can_alloc == false){
+        if(stp->status == false){
             lru_pos = list_next(e);
             return stp;
         }
-        stp->can_alloc = false;
+        stp->status = false;
     }
     //second loop : begin -> end
     for(e = list_begin(&swap_table); e != list_end(&swap_table); e = list_next(e)){
         stp = list_entry(e, struct swap_table_pack, elem);
-        if(stp->can_alloc == false){
+        if(stp->status == false){
             lru_pos = list_next(e);
             return stp;
         }
-        stp->can_alloc = false;
+        stp->status = false;
     }
     //third loop : begin -> lru_pos
     for(e = list_begin(&swap_table); e != lru_pos; e = list_next(e)){
         stp = list_entry(e, struct swap_table_pack, elem);
-        if(stp->can_alloc == false){
+        if(stp->status == false){
             lru_pos = list_next(e);
             return stp;
         }
-        stp->can_alloc = false;
+        stp->status = false;
     }
     return NULL;
 }
