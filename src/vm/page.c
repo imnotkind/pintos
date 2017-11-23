@@ -290,7 +290,7 @@ bool check_addr_safe(const void *vaddr,int mode, void * esp)
 
   if(mode==1) // lazy loading is ok, used in page_fault(), virtual address minimal checking
   {
-    if (!vaddr || !is_user_vaddr(vaddr) || vaddr < (void *)0x08048000 )
+    if (!vaddr || !is_user_vaddr(vaddr)) //|| vaddr < (void *)0x08048000 )
       return false;
     else
       return true;
