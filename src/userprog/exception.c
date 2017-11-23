@@ -154,8 +154,9 @@ page_fault (struct intr_frame *f)
   write = (f->error_code & PF_W) != 0;
   user = (f->error_code & PF_U) != 0;
 
-  if(!not_present ||  fault_addr < (void *)0x08048000)//!check_addr_safe(fault_addr,1,NULL)) //not present check : pt-write-code test
+  if(!not_present || !check_addr_safe(fault_addr,1,NULL)) //not present check : pt-write-code test
   {
+    printf("fault_addr: %x\n", fault_addr);
     sys_exit(-112);
   }
 
