@@ -49,5 +49,6 @@ struct sp_table_pack * upage_to_sp_table_pack(void * upage);
 bool check_addr_safe(const void *vaddr,int mode, void * esp);
 bool load_mmap(struct sp_table_pack * sptp);
 bool load_file(struct sp_table_pack * sptp);
+bool load_swap(struct sp_table_pack * sptp);
 bool grow_stack (void *upage);
 #endif

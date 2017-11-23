@@ -6,6 +6,7 @@
 #include "threads/thread.h"
 #include "userprog/syscall.h"
 #include "vm/page.h"
+#include "vm/swap.h"
 #include "threads/vaddr.h"
 
 /* Number of page faults processed. */
@@ -155,7 +156,7 @@ page_fault (struct intr_frame *f)
 
   if(!not_present || !check_addr_safe(fault_addr,1,NULL)) //not present check : pt-write-code test
   {
-    sys_exit(-1);
+    sys_exit(-11);
   }
 
   /* To implement virtual memory, delete the rest of the function
@@ -169,7 +170,7 @@ page_fault (struct intr_frame *f)
   if(sptp == NULL) //stack growth situation!
   {
     if(!check_addr_safe(fault_addr,2,f->esp)) //stack verification
-      sys_exit(-1);
+      sys_exit(-111);
     page_load_success = grow_stack(fault_addr);
   }
   else
@@ -183,6 +184,10 @@ page_fault (struct intr_frame *f)
     else if(sptp->type == PAGE_MMAP)
     {
       page_load_success = load_mmap(sptp);
+    }
+    else if(sptp->type == PAGE_SWAP)
+    {
+      page_load_success = load_swap(sptp);
     }
 
   }
