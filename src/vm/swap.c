@@ -10,7 +10,10 @@ void init_swap_table()
 {
     int i;
     swap_block = block_get_role(BLOCK_SWAP);
-    ASSERT(!swap_block);
+    if(!swap_block){
+        return;
+    }
+
     list_init(&swap_table);
     lock_init(&swap_lock);
     lru_pos = list_begin(&swap_table);
