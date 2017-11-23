@@ -15,6 +15,7 @@ enum swap_status
 
 struct list swap_table;
 struct lock swap_lock;
+struct block * swap_block;
 struct list_elem *lru_pos; //pointer for saving where we find lru. it looks unstable.
 
 struct swap_table_pack
