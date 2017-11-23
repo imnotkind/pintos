@@ -38,7 +38,7 @@ bool swap_in(int index, void *upage)
 	lock_acquire(&swap_lock);
     
     stp = index_to_swap_table_pack(index);
-	if (!stp || stp->status = IN_BUFFER){ 
+	if (!stp || stp->status == IN_BUFFER){ 
 		lock_release(&swap_lock);
 		return false;
 	}
