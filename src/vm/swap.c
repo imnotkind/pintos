@@ -22,7 +22,7 @@ void init_swap_table()
         struct swap_table_pack *stp = malloc(sizeof(struct swap_table_pack));
         ASSERT(stp != NULL);
         stp->status = IN_BUFFER;
-        stp->index = i+1;
+        stp->index = i;
         list_push_back(&swap_table,&stp->elem);
     }
 
@@ -57,7 +57,7 @@ int swap_out(void *upage)
 {
     struct list_elem *e;
     struct swap_table_pack *stp;
-    int index = 1;
+    int index = 0;
     int i;
 	if (swap_block == NULL || &swap_table == NULL){
 		return -1;
@@ -72,12 +72,12 @@ int swap_out(void *upage)
 			break;
 		}
 	}
-
+/*
 	if(index == list_size(&swap_table)){
 		lock_release(&swap_lock);
 		return -1;
 	}
-
+*/
 	for (i = 0; i < PGSIZE/BLOCK_SECTOR_SIZE; i++) {
 		block_write (swap_block, index*PGSIZE/BLOCK_SECTOR_SIZE + i, (uint8_t *) upage + i*BLOCK_SECTOR_SIZE);
     }
