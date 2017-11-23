@@ -21,7 +21,7 @@ struct list_elem *lru_pos; //pointer for saving where we find lru. it looks unst
 struct swap_table_pack
 {
     struct sp_table_pack *sptp;
-    size_t index;
+    int index;
     enum swap_type type;
     bool can_alloc;
     
@@ -30,8 +30,8 @@ struct swap_table_pack
 
 void init_swap_table();
 struct swap_table_pack* find_lru_stp();
-struct swap_table_pack* index_to_swap_table_pack(size_t index);
-void swap_in(size_t index, void *upage);
-size_t swap_out(void *upage);
+struct swap_table_pack* index_to_swap_table_pack(int index);
+void swap_in(int index, void *upage);
+int swap_out(void *upage);
 
 #endif
