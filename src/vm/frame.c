@@ -123,8 +123,8 @@ bool evict_frame()
 
     while(1)
     {
-        struct ftable_pack * ftp = find_evict_frame(1);
-        struct sp_table_pack * sptp = ftp_to_sptp(ftp);
+        ftp = find_evict_frame(1);
+        sptp = ftp_to_sptp(ftp);
         ASSERT(ftp != NULL);
         ASSERT(sptp != NULL);
 
