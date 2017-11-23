@@ -116,7 +116,6 @@ struct ftable_pack * kpage_to_ftp(void * kpage)
 
 bool evict_frame()
 {
-    struct thread *cur = thread_current();
     struct ftable_pack * ftp;
     struct sp_table_pack * sptp;
 
