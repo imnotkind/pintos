@@ -7,11 +7,8 @@
 #include "threads/vaddr.h"
 #include "vm/page.h"
 #include "userprog/pagedir.h"
-<<<<<<< HEAD
 #include "vm/swap.h"
-=======
 #include <random.h>
->>>>>>> 83fc29e1f60c249f51958d8dd01e27e70ea18945
 
 struct list frame_table;
 struct lock eviction_lock;
