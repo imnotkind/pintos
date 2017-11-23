@@ -29,8 +29,8 @@ void init_swap_table()
     
 }
 
-//swap into memory with index
-void swap_in(size_t index, void *upage)
+//swap into memory with index, block -> buffer(page)
+void swap_in(int index, void *upage)
 {
     int i;
     struct swap_table_pack *stp;
@@ -51,12 +51,12 @@ void swap_in(size_t index, void *upage)
     lock_release(&swap_lock);
 }
 
-//swap out from memory
-size_t swap_out(void *upage)
+//swap out from memory, buffer(page) -> block
+int swap_out(void *upage)
 {
     struct list_elem *e;
     struct swap_table_pack *stp;
-    size_t index = 1;
+    int index = 1;
     int i;
 	if (swap_block == NULL || &swap_table == NULL){
 		return -1;
@@ -86,7 +86,7 @@ size_t swap_out(void *upage)
 }
 
 //find swap table pack with index. return NULL when can't find
-struct swap_table_pack* index_to_swap_table_pack(size_t index)
+struct swap_table_pack* index_to_swap_table_pack(int index)
 {
     struct list_elem *e;
     struct swap_table_pack *spt;

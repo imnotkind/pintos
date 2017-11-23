@@ -7,6 +7,7 @@
 #include "threads/vaddr.h"
 #include "vm/page.h"
 #include "userprog/pagedir.h"
+#include "vm/swap.h"
 #include <random.h>
 
 struct list frame_table;
@@ -137,7 +138,7 @@ bool evict_frame()
     sptp->pinned = true;
     struct thread * owner = sptp->owner;
     
-
+    size_t index = swap_out(sptp->upage);
 
     lock_release(&eviction_lock);
 }
