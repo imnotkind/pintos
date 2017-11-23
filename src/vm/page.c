@@ -119,6 +119,25 @@ void free_spage_table(void *upage) // page is uv_addr
     free(sp_table);
 }
 
+struct sp_table_pack * ftp_to_sptp(struct ftable_pack * ftp)
+{
+    struct list_elem *e;
+    struct sp_table_pack *sptp;
+    struct thread * cur = thread_current();
+
+    for(e = list_begin(&cur->sp_table); e != list_end(&cur->sp_table); e = list_next(e))
+    {
+        sptp = list_entry(e, struct sp_table_pack, elem);
+        void * kpage = pagedir_get_page(&cur->pagedir,sptp->upage);
+        if(kpage == ftp->kpage)
+        {
+            return sptp;
+        }
+    }
+
+    return NULL;
+}
+
 
 struct sp_table_pack * upage_to_sp_table_pack(void * upage)
 {
@@ -196,7 +215,7 @@ bool load_mmap(struct sp_table_pack * sptp)
   return true;
 }
 
-bool grow_stack (void *upage)
+bool grow_stack (void *upage) //allocate new frame, get kpage, link upage-kpage
 {
   struct sp_table_pack *sptp;
   void *kpage;

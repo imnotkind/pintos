@@ -15,5 +15,8 @@ struct ftable_pack
 
 void* alloc_page_frame(enum palloc_flags flags);
 void free_page_frame(void *kpage);
+struct ftable_pack * kpage_to_ftp(void * kpage);
 void init_frame_table();
+bool evict_frame();
+struct ftable_pack * find_evict_frame(int mode);
 #endif

@@ -13,15 +13,20 @@ void init_swap_table()
     if(!swap_block){
         return;
     }
-    
-    for(i = 0; i < block_size(swap_block)* BLOCK_SECTOR_SIZE/PGSIZE; i++){
-        struct swap_table_pack *stp = malloc(sizeof(struct swap_table_pack));
-        //additional init
-    }
 
     list_init(&swap_table);
     lock_init(&swap_lock);
     lru_pos = list_begin(&swap_table);
+    
+    for(i = 0; i < block_size(swap_block)* BLOCK_SECTOR_SIZE/PGSIZE; i++){
+        struct swap_table_pack *stp = malloc(sizeof(struct swap_table_pack));
+        ASSERT(stp != NULL);
+        stp->can_alloc =true;
+        stp->index = i+1;
+        list_push_back(&swap_table,&stp->elem);
+    }
+
+    
 }
 
 //swap into memory with index
@@ -33,12 +38,12 @@ void swap_in(size_t index, void *upage)
 	lock_acquire(&swap_lock);
     
     stp = index_to_swap_table_pack(index);
-	if (!stp || stp->recent_used == true){ //it was 'available' in cctv. we need check
+	if (!stp || stp->can_alloc == true){ 
 		lock_release(&swap_lock);
 		return;
 	}
 
-	stp->recent_used = true; //this is same wih upper one.
+	stp->can_alloc = true; 
 
 	for (i = 0; i < PGSIZE/BLOCK_SECTOR_SIZE; i++){
 		block_read (swap_block, index*PGSIZE/BLOCK_SECTOR_SIZE + i, (uint8_t *) upage + i*BLOCK_SECTOR_SIZE);
@@ -53,7 +58,7 @@ size_t swap_out(void *upage)
     struct swap_table_pack *stp;
     size_t index = 1;
     int i;
-	if (!swap_block || &swap_table == NULL){
+	if (swap_block == NULL || &swap_table == NULL){
 		return -1;
 	}
 
@@ -61,8 +66,8 @@ size_t swap_out(void *upage)
 
 	for(e = list_begin(&swap_table); e != list_end(&swap_table); e = list_next(e), index++){
 		stp = list_entry(e, struct swap_table_pack, elem);
-		if(stp->recent_used == true){
-			stp->recent_used = false;
+		if(stp->can_alloc == true){
+			stp->can_alloc = false;
 			index = stp->index;
 			break;
 		}
@@ -108,29 +113,29 @@ struct swap_table_pack* find_lru_stp()
     //first loop : lru_pos -> end
     for(e = lru_pos; e != list_end(&swap_table); e = list_next(e)){
         stp = list_entry(e, struct swap_table_pack, elem);
-        if(stp->recent_used == false){
+        if(stp->can_alloc == false){
             lru_pos = list_next(e);
             return stp;
         }
-        stp->recent_used = false;
+        stp->can_alloc = false;
     }
     //second loop : begin -> end
     for(e = list_begin(&swap_table); e != list_end(&swap_table); e = list_next(e)){
         stp = list_entry(e, struct swap_table_pack, elem);
-        if(stp->recent_used == false){
+        if(stp->can_alloc == false){
             lru_pos = list_next(e);
             return stp;
         }
-        stp->recent_used = false;
+        stp->can_alloc = false;
     }
     //third loop : begin -> lru_pos
     for(e = list_begin(&swap_table); e != lru_pos; e = list_next(e)){
         stp = list_entry(e, struct swap_table_pack, elem);
-        if(stp->recent_used == false){
+        if(stp->can_alloc == false){
             lru_pos = list_next(e);
             return stp;
         }
-        stp->recent_used = false;
+        stp->can_alloc = false;
     }
     return NULL;
 }

@@ -5,6 +5,8 @@
 #include "threads/thread.h"
 #include "threads/malloc.h"
 #include "threads/vaddr.h"
+#include "vm/page.h"
+#include "userprog/pagedir.h"
 
 struct list frame_list;
 struct lock eviction_lock;
@@ -36,18 +38,36 @@ void *alloc_page_frame(enum palloc_flags flags)
     ASSERT(flags & PAL_USER);
 
     kpage = palloc_get_page(flags);
-    ASSERT(kpage != NULL);
+    if(kpage != NULL)
+    {
+        ftp = (struct ftable_pack *) malloc(sizeof(struct ftable_pack));
+        ftp->owner = thread_current();
+        ftp->kpage = kpage;
+        ftp->phy = (void *) vtop(kpage);
+        ftp->can_alloc = false;
+        lock_acquire(&ftable_lock);
+        list_push_back(&frame_list, &ftp->elem);
+        lock_release(&ftable_lock);
 
-    ftp = (struct ftable_pack *) malloc(sizeof(struct ftable_pack));
-    ftp->owner = thread_current();
-    ftp->kpage = kpage;
-    ftp->phy = (void *) vtop(kpage);
-    ftp->can_alloc = false;
-    lock_acquire(&ftable_lock);
-    list_push_back(&frame_list, &ftp->elem);
-    lock_release(&ftable_lock);
+        return kpage;
+    }
+    else //eviction!!
+    {
+        bool success = evict_frame();
+        ASSERT(success);
+    
+        kpage = palloc_get_page(flags);
+        ftp = (struct ftable_pack *) malloc(sizeof(struct ftable_pack));
+        ftp->owner = thread_current();
+        ftp->kpage = kpage;
+        ftp->phy = (void *) vtop(kpage);
+        ftp->can_alloc = false;
+        lock_acquire(&ftable_lock);
+        list_push_back(&frame_list, &ftp->elem);
+        lock_release(&ftable_lock);
+    }
 
-    return kpage;
+    
 }
 
 void free_page_frame(void *kpage) // page is kv_adrr
@@ -73,17 +93,63 @@ void free_page_frame(void *kpage) // page is kv_adrr
     free(ftp);
 }
 
-/*
-void evict_frame()
+struct ftable_pack * kpage_to_ftp(void * kpage)
+{
+    struct list_elem *e;
+    struct ftable_pack *ftp;
+
+    kpage = pg_round_down(kpage); //to know what page the address is in!
+
+    for(e = list_begin(&frame_list); e != list_end(&frame_list); e = list_next(e))
+    {
+        ftp = list_entry(e, struct ftable_pack, elem);
+        if (ftp->kpage == kpage){
+            return ftp;
+        }
+    }
+
+    return NULL;
+}
+
+
+bool evict_frame()
 {
     struct thread *cur = thread_current();
-    lock_acquire(eviction_lock);
+    struct ftable_pack * ftp;
+    struct sp_table_pack * sptp;
 
-    lock_release(eviction_lock);
+    lock_acquire(&eviction_lock);
+
+    while(1)
+    {
+        struct ftable_pack * ftp = find_evict_frame(1);
+        struct sp_table_pack * sptp = ftp_to_sptp(ftp);
+        ASSERT(ftp != NULL);
+        ASSERT(sptp != NULL);
+
+        if(sptp->pinned == true)
+            continue;
+        else
+            break;
+    }
+    
+    sptp->pinned = true;
+    struct thread * owner = sptp->owner;
+    
+
+
+    lock_release(&eviction_lock);
 }
 
-void * find_evict_frame()
+struct ftable_pack * find_evict_frame(int mode)
 {
+    if(mode==1)//random
+    {
+
+    }
+    if(mode==2)//lru
+    {
+
+    }
 
 }
-*/

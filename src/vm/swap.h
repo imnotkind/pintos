@@ -23,7 +23,7 @@ struct swap_table_pack
     struct sp_table_pack *sptp;
     size_t index;
     enum swap_type type;
-    bool recent_used;
+    bool can_alloc;
     
     struct list_elem elem;
 };
