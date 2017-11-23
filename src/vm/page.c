@@ -129,7 +129,7 @@ struct sp_table_pack * ftp_to_sptp(struct ftable_pack * ftp)
     for(e = list_begin(&cur->sp_table); e != list_end(&cur->sp_table); e = list_next(e))
     {
         sptp = list_entry(e, struct sp_table_pack, elem);
-        void * kpage = pagedir_get_page(&cur->pagedir,sptp->upage);
+        void * kpage = pagedir_get_page(cur->pagedir,sptp->upage);
         if(kpage == ftp->kpage)
         {
             return sptp;

@@ -4,6 +4,7 @@
 #include <list.h>
 #include <stdint.h>
 #include "filesys/file.h"
+#include "vm/frame.h"
 
 enum page_type
 {
