@@ -29,7 +29,7 @@ void init_swap_table()
     
 }
 
-//swap into memory with index
+//swap into memory with index, block -> buffer(page)
 void swap_in(size_t index, void *upage)
 {
     int i;
@@ -51,7 +51,7 @@ void swap_in(size_t index, void *upage)
     lock_release(&swap_lock);
 }
 
-//swap out from memory
+//swap out from memory, buffer(page) -> block
 size_t swap_out(void *upage)
 {
     struct list_elem *e;
