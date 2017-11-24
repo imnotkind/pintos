@@ -8,7 +8,6 @@ extern struct lock filesys_lock;
 
 void init_swap_table()
 {
-    
     int i;
     swap_block = block_get_role(BLOCK_SWAP);
     if(!swap_block){
@@ -25,9 +24,6 @@ void init_swap_table()
         stp->index = i+1;
         list_push_back(&swap_table,&stp->elem);
     }
-   
-
-    
 }
 
 //swap into memory with index, block -> buffer(page)
