@@ -230,8 +230,6 @@ bool load_swap(struct sp_table_pack * sptp)
     return false;
   }
 
-  
-
   /* Add the page to the process's address space. */
   if (!install_page (sptp->upage, kpage, true)){
       free_page_frame(kpage);

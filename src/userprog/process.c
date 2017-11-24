@@ -213,14 +213,15 @@ process_exit (void)
   }
   lock_release(&filesys_lock);
 
-
+  
   for(e = list_begin(&cur->sp_table); e != list_end(&cur->sp_table); ){
     sptp = list_entry(e, struct sp_table_pack, elem);
     e = list_next(e);
-    ASSERT(pagedir_get_page(cur->pagedir,sptp->upage));
+    //ASSERT(pagedir_get_page(cur->pagedir,sptp->upage));
     free_page_frame(pagedir_get_page(cur->pagedir,sptp->upage));
     pagedir_clear_page(cur->pagedir,sptp->upage);
   }
+  
 
   
   /* Destroy the current process's page directory and switch back
