@@ -40,8 +40,7 @@ void *alloc_page_frame(enum palloc_flags flags)
     ASSERT(flags & PAL_USER);
 
     kpage = palloc_get_page(flags);
-    if(kpage == NULL)
-    {
+    if(!kpage){
         bool success = evict_frame();
         ASSERT(success);
         kpage = palloc_get_page(flags);
