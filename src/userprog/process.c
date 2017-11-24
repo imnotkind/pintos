@@ -556,7 +556,11 @@ setup_stack (void **esp)
 {
   uint8_t *kpage;
   bool success = false;
-
+  bool success = grow_stack(((uint8_t *) PHYS_BASE) - PGSIZE);
+  if (success)
+    *esp = PHYS_BASE;
+    
+  /*
   kpage = alloc_page_frame (PAL_USER | PAL_ZERO);
   if (kpage != NULL)
     {
@@ -566,16 +570,18 @@ setup_stack (void **esp)
         struct sp_table_pack * sptp = malloc(sizeof(struct sp_table_pack));
         if(!sptp)
           return false;
-        sptp->type = PAGE_NULL;
+        sptp->type = PAGE_SWAP;
         sptp->upage = ((uint8_t *) PHYS_BASE) - PGSIZE;
         sptp->writable = true;
         sptp->is_loaded = true;
+        sptp->pinned = false;
         *esp = PHYS_BASE;
         list_push_back(&thread_current()->sp_table,&sptp->elem);
       }
       else
         free_page_frame (kpage);
-    }
+      }
+  */
   return success;
 }
 
