@@ -6,6 +6,7 @@
 #include "vm/page.h"
 #include "threads/synch.h"
 #include "devices/block.h"
+#define SECTORS_PER_PAGE (PGSIZE / BLOCK_SECTOR_SIZE)
 
 enum swap_status
 {
