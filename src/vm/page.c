@@ -105,20 +105,17 @@ bool add_mmap_to_spage_table(void *upage,struct file * file, off_t offset, size_
   
 }
 
-void free_spage_table(void *upage) // page is uv_addr
+void free_spage_table(struct sp_table_pack *sptp) // page is uv_addr
 {
-    struct sp_table_pack *sp_table;
     struct thread *cur = thread_current();
     //maybe we should start lock on this line
-    sp_table = upage_to_sp_table_pack(upage);
-    ASSERT(sp_table);
+    ASSERT(sptp);
 
     lock_acquire(&cur->sp_table_lock);
-    list_remove(&sp_table->elem);
+    list_remove(&sptp->elem);
     lock_release(&cur->sp_table_lock);
 
-    palloc_free_page(upage);
-    free(sp_table);
+    free(sptp);
 }
 
 struct sp_table_pack * ftp_to_sptp(struct ftable_pack * ftp)
