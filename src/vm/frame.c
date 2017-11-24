@@ -99,7 +99,7 @@ bool evict_frame()
 
     while(1)
     {
-        ftp = find_evict_frame(1);
+        ftp = find_evict_frame(2);
         sptp = ftp_to_sptp(ftp);
         ASSERT(ftp != NULL);
         ASSERT(sptp != NULL);
@@ -133,25 +133,39 @@ struct ftable_pack * find_evict_frame(int mode)
     if(mode==1)//random
     {
         struct list_elem * e;
-        struct ftable_pack *victim_frame;
-        int list_len = list_size(&frame_table);
-        int rand_no = random_ulong() % list_len;
-
-        if(rand_no < 0){
-            rand_no = -rand_no;
-        }
+        struct ftable_pack *ftp;
+        unsigned long rand_no = random_ulong() % (unsigned long)list_size(&frame_table);
 
         for(e = list_begin(&frame_table); e != list_end(&frame_table); e = list_next(e)){
             if(rand_no-- == 0){
-                victim_frame = list_entry(e, struct ftable_pack, elem);
-                return victim_frame;
+                ftp = list_entry(e, struct ftable_pack, elem);
+                return ftp;
             }
         }
         NOT_REACHED();
     }
-    if(mode==2)//lru
+    if(mode==2)//clock
     {
+        struct list_elem * e ;
+        struct ftable_pack *ftp;;
+        struct sp_table_pack *sptp;
 
+        for(e = clock_pos; e != list_end(&frame_table); e = list_next(e)){
+            ftp = list_entry(e, struct ftable_pack, elem);
+            sptp = ftp_to_sptp(ftp);
+            if(sptp->pinned == false){
+                clock_pos = list_next(e);
+                return ftp;
+            }
+        }
+        for(e = list_begin(&frame_table); e != clock_pos;e=list_next(e)){
+            ftp = list_entry(e, struct ftable_pack, elem);
+            sptp = ftp_to_sptp(ftp);
+            if(sptp->pinned == false){
+                clock_pos = list_next(e);
+                return ftp;
+            }
+        }
     }
 
 }

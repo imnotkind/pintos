@@ -10,6 +10,8 @@ struct ftable_pack
     struct list_elem elem;
 };
 
+struct list_elem * clock_pos; //pointer for saving where we find eviction victim
+
 void* alloc_page_frame(enum palloc_flags flags);
 void free_page_frame(void *kpage);
 struct ftable_pack * kpage_to_ftp(void * kpage);
