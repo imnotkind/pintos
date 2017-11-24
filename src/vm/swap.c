@@ -61,7 +61,7 @@ int swap_out(void *upage)
     struct swap_table_pack *stp;
     int index = 1;
     int i;
-	if (swap_block == NULL || &swap_table == NULL){
+	if (swap_block == NULL){
 		return -1;
 	}
 
