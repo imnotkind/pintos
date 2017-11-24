@@ -17,7 +17,6 @@ void init_swap_table()
 
     list_init(&swap_table);
     lock_init(&swap_lock);
-    clock_pos = list_begin(&swap_table);
     
     for(i = 0; i < block_size(swap_block)/8; i++){
         struct swap_table_pack *stp = malloc(sizeof(struct swap_table_pack));
@@ -45,14 +44,13 @@ bool swap_in(int index, void *upage)
 		lock_release(&swap_lock);
 		return false;
 	}
-
-    stp->status = FREE;
     
 
 	for (i = 0; i < 8; i++){
 		block_read (swap_block, index * 8 + i, (uint8_t *) upage + i*BLOCK_SECTOR_SIZE);
 	}
 
+    stp->status = FREE;
     lock_release(&swap_lock);
     lock_release(&filesys_lock);
     return true;

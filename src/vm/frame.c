@@ -99,7 +99,7 @@ bool evict_frame()
 
     while(1)
     {
-        ftp = find_evict_frame(2);
+        ftp = find_evict_frame(1);
         sptp = ftp_to_sptp(ftp);
         ASSERT(ftp != NULL);
         ASSERT(sptp != NULL);

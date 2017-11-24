@@ -17,7 +17,6 @@ enum swap_status
 struct list swap_table;
 struct block *swap_block;
 struct lock swap_lock;
-//struct list_elem * clock_pos; //pointer for saving where we find eviction victim
 
 struct swap_table_pack
 {
@@ -28,7 +27,6 @@ struct swap_table_pack
 };
 
 void init_swap_table();
-//struct swap_table_pack* find_lru_stp();
 struct swap_table_pack* index_to_swap_table_pack(int index);
 bool swap_in(int index, void *upage);
 int swap_out(void *upage);
