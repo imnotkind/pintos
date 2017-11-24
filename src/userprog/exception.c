@@ -157,7 +157,7 @@ page_fault (struct intr_frame *f)
   if(!not_present || !check_addr_safe(fault_addr,1,NULL)) //not present check : pt-write-code test
   {
     printf("fault_addr: %.8x\n", fault_addr);
-    sys_exit(-99);
+    sys_exit(-1);
   }
 
   /* To implement virtual memory, delete the rest of the function
@@ -174,7 +174,7 @@ page_fault (struct intr_frame *f)
     {
       printf("fault_addr: %.8x\n", fault_addr);
       printf("esp: %.8x\n", f->esp);
-      sys_exit(-11);
+      sys_exit(-1);
     }
      
     page_load_success = grow_stack(fault_addr);
