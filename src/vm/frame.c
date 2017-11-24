@@ -125,7 +125,6 @@ bool evict_frame()
     pagedir_clear_page(owner->pagedir,sptp->upage);
 
     list_remove(&ftp->elem);
-    list_remove(&sptp->elem);
     palloc_free_page(ftp->kpage);
 
     sptp->is_loaded = false;
