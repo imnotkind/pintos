@@ -229,16 +229,18 @@ bool load_swap(struct sp_table_pack * sptp)
   if (kpage == NULL){
     return false;
   }
-  ASSERT (pg_ofs (sptp->upage) == 0);
-  bool success = swap_in(sptp->index, sptp->upage);
-  if (success == false){
-    return false;
-  }
+
+  
 
   /* Add the page to the process's address space. */
   if (!install_page (sptp->upage, kpage, true)){
       free_page_frame(kpage);
       return false;
+  }
+
+  bool success = swap_in(sptp->index, sptp->upage);
+  if (success == false){
+    return false;
   }
 
   sptp->is_loaded = true;
