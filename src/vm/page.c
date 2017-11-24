@@ -223,7 +223,7 @@ bool load_mmap(struct sp_table_pack * sptp)
 bool load_swap(struct sp_table_pack * sptp)
 {
   ASSERT(sptp->is_loaded == false);
-
+  sptp->pinned = true;
   /* Get a page of memory. */
   uint8_t *kpage = alloc_page_frame (PAL_USER|PAL_ZERO);
   if (kpage == NULL){
@@ -245,6 +245,7 @@ bool load_swap(struct sp_table_pack * sptp)
 
   sptp->is_loaded = true;
   sptp->type = PAGE_FILE;
+  sptp->pinned = false;
   return true;
 }
 
