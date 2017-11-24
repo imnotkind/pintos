@@ -18,12 +18,12 @@ test_main (void)
 
   /* Initialize to 0x5a. */
   msg ("initialize");
-  memset (buf, 0x5a, sizeof buf);
+  memset (buf, 0x5b, sizeof buf);
 
   /* Check that it's all 0x5a. */
   msg ("read pass");
   for (i = 0; i < SIZE; i++)
-    if (buf[i] != 0x5a)
+    if (buf[i] != 0x5b)
       fail ("byte %zu != 0x5a", i);
 
   /* Encrypt zeros. */
