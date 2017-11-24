@@ -79,6 +79,7 @@ void free_page_frame(void *kpage) // page is kv_adrr
     struct ftable_pack *f;
     struct ftable_pack *ftp = NULL;
     ASSERT(pg_ofs(kpage)==0);
+    lock_acquire(&ftable_lock);
     for(e = list_begin(&frame_table); e != list_end(&frame_table); e = list_next(e))
     {
         f = list_entry(e, struct ftable_pack, elem);
@@ -87,15 +88,15 @@ void free_page_frame(void *kpage) // page is kv_adrr
             break;
         }
     }
-    ASSERT(ftp);
-
-    lock_acquire(&ftable_lock);
-    list_remove(&ftp->elem);
-    lock_release(&ftable_lock);
-        
+    if(!ftp){
+        lock_release(&ftable_lock);
+        return;
+    }
+    
+    list_remove(&ftp->elem);        
     palloc_free_page(kpage);
     free(ftp);
-
+    lock_release(&ftable_lock);
 }
 
 struct ftable_pack * kpage_to_ftp(void * kpage)
