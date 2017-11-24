@@ -213,8 +213,6 @@ process_exit (void)
   }
   lock_release(&filesys_lock);
 
-  if(!lock_held_by_current_thread(&ftable_lock))
-    lock_acquire(&ftable_lock);
 
   for(e = list_begin(&cur->sp_table); e != list_end(&cur->sp_table); ){
     sptp = list_entry(e, struct sp_table_pack, elem);
@@ -222,7 +220,6 @@ process_exit (void)
     free_page_frame(pagedir_get_page(cur->pagedir,sptp->upage));
     pagedir_clear_page(cur->pagedir,sptp->upage);
   }
-  lock_release(&ftable_lock);
 
   
   /* Destroy the current process's page directory and switch back
