@@ -11,6 +11,7 @@ struct ftable_pack
 };
 
 struct list_elem * clock_pos; //pointer for saving where we find eviction victim
+bool first_try;
 
 void* alloc_page_frame(enum palloc_flags flags);
 void free_page_frame(void *kpage);

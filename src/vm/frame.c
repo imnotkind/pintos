@@ -26,6 +26,7 @@ void init_frame_table()
     list_init(&frame_table);
     lock_init(&eviction_lock);
     lock_init(&ftable_lock);
+    first_try = true;
 }
 
 
@@ -99,7 +100,7 @@ bool evict_frame()
 
     while(1)
     {
-        ftp = find_evict_frame(1);
+        ftp = find_evict_frame(2);
         sptp = ftp_to_sptp(ftp);
         ASSERT(ftp != NULL);
         ASSERT(sptp != NULL);
@@ -150,11 +151,18 @@ struct ftable_pack * find_evict_frame(int mode)
         struct ftable_pack *ftp;;
         struct sp_table_pack *sptp;
 
-        for(e = clock_pos; e != list_end(&frame_table); e = list_next(e)){
+        if(first_try)
+        {
+            clock_pos = list_begin(&frame_table);
+            first_try = false;
+        }
+            
+
+        for(e = list_next(clock_pos); e != list_end(&frame_table); e = list_next(e)){
             ftp = list_entry(e, struct ftable_pack, elem);
             sptp = ftp_to_sptp(ftp);
             if(sptp->pinned == false){
-                clock_pos = list_next(e);
+                clock_pos = e;
                 return ftp;
             }
         }
@@ -162,7 +170,7 @@ struct ftable_pack * find_evict_frame(int mode)
             ftp = list_entry(e, struct ftable_pack, elem);
             sptp = ftp_to_sptp(ftp);
             if(sptp->pinned == false){
-                clock_pos = list_next(e);
+                clock_pos = e;
                 return ftp;
             }
         }
