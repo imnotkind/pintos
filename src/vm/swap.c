@@ -34,7 +34,8 @@ bool swap_in(int index, void *upage)
 {
     struct swap_table_pack *stp;
     int i;
-
+    
+    lock_acquire(&filesys_lock);
 	lock_acquire(&swap_lock);
     
     stp = index_to_swap_table_pack(index);
@@ -49,6 +50,7 @@ bool swap_in(int index, void *upage)
 		block_read (swap_block, index * SECTORS_PER_PAGE + i, (uint8_t *) upage + i*BLOCK_SECTOR_SIZE);
 	}
     lock_release(&swap_lock);
+    lock_release(&filesys_lock);
     return true;
 }
 
@@ -63,7 +65,8 @@ int swap_out(void *upage)
 		return -1;
 	}
 
-	lock_acquire(&swap_lock);
+    lock_acquire(&filesys_lock);
+    lock_acquire(&swap_lock);
 
 	for(e = list_begin(&swap_table); e != list_end(&swap_table); e = list_next(e), index++){
 		stp = list_entry(e, struct swap_table_pack, elem);
@@ -74,7 +77,8 @@ int swap_out(void *upage)
 	}
 
 	if(index == list_size(&swap_table)){
-		lock_release(&swap_lock);
+        lock_release(&swap_lock);
+        lock_release(&filesys_lock);
 		return -1;
 	}
 
@@ -82,7 +86,8 @@ int swap_out(void *upage)
 		block_write (swap_block, index * SECTORS_PER_PAGE + i, (uint8_t *) upage + i*BLOCK_SECTOR_SIZE);
     }
     stp->status = IN_BLOCK;
-	lock_release(&swap_lock);
+    lock_release(&swap_lock);
+    lock_release(&filesys_lock);
     return index;
 }
 
