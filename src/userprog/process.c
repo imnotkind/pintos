@@ -556,10 +556,10 @@ setup_stack (void **esp)
 {
   uint8_t *kpage;
   bool success = false;
-  bool success = grow_stack(((uint8_t *) PHYS_BASE) - PGSIZE);
+  success = grow_stack(((uint8_t *) PHYS_BASE) - PGSIZE);
   if (success)
     *esp = PHYS_BASE;
-    
+
   /*
   kpage = alloc_page_frame (PAL_USER | PAL_ZERO);
   if (kpage != NULL)
