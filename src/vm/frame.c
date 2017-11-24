@@ -78,6 +78,7 @@ void free_page_frame(void *kpage) // page is kv_adrr
     struct list_elem *e;
     struct ftable_pack *f;
     struct ftable_pack *ftp = NULL;
+    kpage = pg_round_down(kpage);
     for(e = list_begin(&frame_table); e != list_end(&frame_table); e = list_next(e))
     {
         f = list_entry(e, struct ftable_pack, elem);
