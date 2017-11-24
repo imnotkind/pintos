@@ -7,7 +7,6 @@
 #include "vm/page.h"
 #include "threads/synch.h"
 #include "devices/block.h"
-#define SECTORS_PER_PAGE (PGSIZE / BLOCK_SECTOR_SIZE)
 
 enum swap_status
 {
@@ -18,7 +17,6 @@ enum swap_status
 struct list swap_table;
 struct block *swap_block;
 struct lock swap_lock;
-struct list_elem *lru_pos; //pointer for saving where we find lru. it looks unstable.
 
 struct swap_table_pack
 {
@@ -29,7 +27,6 @@ struct swap_table_pack
 };
 
 void init_swap_table();
-struct swap_table_pack* find_lru_stp();
 struct swap_table_pack* index_to_swap_table_pack(int index);
 bool swap_in(int index, void *upage);
 int swap_out(void *upage);
