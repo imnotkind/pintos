@@ -266,6 +266,7 @@ bool grow_stack (void *upage) //allocate new frame, get kpage, link upage-kpage
   sptp->writable = true;
   sptp->pinned = false;
   sptp->type = PAGE_NULL;
+  sptp->owner = cur;
 
   kpage = alloc_page_frame(PAL_USER);
   if (!kpage){
@@ -273,7 +274,7 @@ bool grow_stack (void *upage) //allocate new frame, get kpage, link upage-kpage
     return false;
   }
 
-  if(!install_page( sptp->upage, kpage, sptp->writable)){
+  if(!install_page(sptp->upage, kpage, sptp->writable)){
     free(sptp);
     free_page_frame(kpage);
     return false;
