@@ -43,7 +43,7 @@ struct mmap_file_pack
 
 bool add_file_to_spage_table(void *upage, struct file * file, off_t offset, uint32_t read_bytes, uint32_t zero_bytes, bool writable);
 bool add_mmap_to_spage_table(void *upage,struct file * file, off_t offset, size_t page_read_bytes, size_t page_zero_bytes);
-void free_spage_table(void *upage);
+void free_spage_table(struct sp_table_pack *sptp);
 struct sp_table_pack * ftp_to_sptp(struct ftable_pack * ftp);
 struct sp_table_pack * upage_to_sp_table_pack(void * upage);
 bool check_addr_safe(const void *vaddr,int mode, void * esp);
