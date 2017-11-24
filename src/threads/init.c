@@ -120,6 +120,7 @@ main (void)
   serial_init_queue ();
   timer_calibrate ();
 
+  
 #ifdef FILESYS
   /* Initialize file system. */
   ide_init ();
@@ -395,6 +396,7 @@ locate_block_devices (void)
   locate_block_device (BLOCK_SCRATCH, scratch_bdev_name);
 #ifdef VM
   locate_block_device (BLOCK_SWAP, swap_bdev_name);
+  init_swap_table();
 #endif
 }
 

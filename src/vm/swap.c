@@ -10,10 +10,13 @@ void init_swap_table()
 {
     int i;
     swap_block = block_get_role(BLOCK_SWAP);
+<<<<<<< HEAD
     if(!swap_block){
         sys_exit(-9999);
+=======
+    if(!swap_block)
+>>>>>>> 549aac07c87436884be8ece8e1a11bfdebf8cbcb
         return;
-    }
 
     list_init(&swap_table);
     lock_init(&swap_lock);
@@ -25,7 +28,7 @@ void init_swap_table()
         stp->status = IN_BUFFER;
         stp->index = i;
         list_push_back(&swap_table,&stp->elem);
-    }
+    } //making 'bitmap' list
 
     
 }
@@ -36,7 +39,8 @@ bool swap_in(int index, void *upage)
     struct swap_table_pack *stp;
     int i;
 
-	lock_acquire(&swap_lock);
+    //if(!lock_held_by_current_thread(&swap_lock))
+	    lock_acquire(&swap_lock);
     
     stp = index_to_swap_table_pack(index);
 	if (!stp || stp->status == IN_BUFFER){ 
@@ -64,21 +68,18 @@ int swap_out(void *upage)
 		return -1;
 	}
 
-	lock_acquire(&swap_lock);
+    //if(!lock_held_by_current_thread(&swap_lock))
+	    lock_acquire(&swap_lock);
 
 	for(e = list_begin(&swap_table); e != list_end(&swap_table); e = list_next(e), index++){
 		stp = list_entry(e, struct swap_table_pack, elem);
 		if(stp->status == IN_BUFFER){
-			index = stp->index;
+            index = stp->index;
+            
 			break;
 		}
 	}
-/*
-	if(index == list_size(&swap_table)){
-		lock_release(&swap_lock);
-		return -1;
-	}
-*/
+
 	for (i = 0; i < PGSIZE/BLOCK_SECTOR_SIZE; i++) {
 		block_write (swap_block, index*PGSIZE/BLOCK_SECTOR_SIZE + i, (uint8_t *) upage + i*BLOCK_SECTOR_SIZE);
     }

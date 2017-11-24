@@ -67,6 +67,7 @@ void *alloc_page_frame(enum palloc_flags flags)
         lock_acquire(&ftable_lock);
         list_push_back(&frame_table, &ftp->elem);
         lock_release(&ftable_lock);
+        return kpage;
     }
 
     
@@ -116,7 +117,6 @@ struct ftable_pack * kpage_to_ftp(void * kpage)
 
 bool evict_frame()
 {
-    struct thread *cur = thread_current();
     struct ftable_pack * ftp;
     struct sp_table_pack * sptp;
 
@@ -124,12 +124,12 @@ bool evict_frame()
 
     while(1)
     {
-        struct ftable_pack * ftp = find_evict_frame(1);
-        struct sp_table_pack * sptp = ftp_to_sptp(ftp);
+        ftp = find_evict_frame(1);
+        sptp = ftp_to_sptp(ftp);
         ASSERT(ftp != NULL);
         ASSERT(sptp != NULL);
 
-        if(sptp->pinned == true)
+        if(sptp->pinned == true) //|| ftp->kpage == pagedir_get_page(thread_current()->pagedir,sptp->upage))
             continue;
         else
             break;
