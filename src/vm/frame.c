@@ -91,10 +91,11 @@ void free_page_frame(void *kpage) // page is kv_adrr
 
     lock_acquire(&ftable_lock);
     list_remove(&ftp->elem);
-    lock_release(&ftable_lock);
+    
         
     palloc_free_page(kpage);
     free(ftp);
+    lock_release(&ftable_lock);
 }
 
 struct ftable_pack * kpage_to_ftp(void * kpage)

@@ -28,6 +28,7 @@ static bool load (const char *cmdline, void (**eip) (void), void **esp);
 
 extern struct lock filesys_lock;
 extern struct lock load_lock;
+extern struct lock ftable_lock;
 /* Starts a new thread running a user program loaded from
    FILENAME.  The new thread may be scheduled (and may even exit)
    before process_execute() returns.  Returns the new process's
@@ -212,7 +213,7 @@ process_exit (void)
   }
   lock_release(&filesys_lock);
 
-  
+  lock_acquire(&ftable_lock);
 
   for(e = list_begin(&cur->sp_table); e != list_end(&cur->sp_table); ){
     sptp = list_entry(e, struct sp_table_pack, elem);
@@ -220,7 +221,7 @@ process_exit (void)
     free_page_frame(pagedir_get_page(cur->pagedir,sptp->upage));
     pagedir_clear_page(cur->pagedir,sptp->upage);
   }
-
+  lock_release(&ftable_lock);
 
   
   /* Destroy the current process's page directory and switch back
