@@ -98,18 +98,11 @@ bool evict_frame()
 
     lock_acquire(&eviction_lock);
 
-    while(1)
-    {
-        ftp = find_evict_frame(2);
-        sptp = ftp_to_sptp(ftp);
-        ASSERT(ftp != NULL);
-        ASSERT(sptp != NULL);
+    ftp = find_evict_frame(2);
+    sptp = ftp_to_sptp(ftp);
+    ASSERT(ftp != NULL);
+    ASSERT(sptp != NULL);
 
-        if(sptp->pinned == true) //|| ftp->kpage == pagedir_get_page(thread_current()->pagedir,sptp->upage))
-            continue;
-        else
-            break;
-    }
     
     sptp->pinned = true;
     struct thread * owner = sptp->owner;

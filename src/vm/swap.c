@@ -6,6 +6,10 @@
 
 extern struct lock filesys_lock;
 
+/*
+    We have tried bitmap in making swap table, 
+    but due to unknown errors, we just made it a list 
+*/
 void init_swap_table()
 {
     
@@ -22,7 +26,7 @@ void init_swap_table()
         struct swap_table_pack *stp = malloc(sizeof(struct swap_table_pack));
         ASSERT(stp != NULL);
         stp->status = FREE;
-        stp->index = i+1;
+        stp->index = i+1; //index starts from one
         list_push_back(&swap_table,&stp->elem);
     }
    
@@ -108,40 +112,3 @@ struct swap_table_pack* index_to_swap_table_pack(int index)
     return NULL;
 }
 
-/*
-//check swap table twice.
-struct swap_table_pack* find_clock_stp()
-{
-    struct list_elem *e;
-    struct swap_table_pack *stp;
-
-    //first loop : lru_pos -> end
-    for(e = lru_pos; e != list_end(&swap_table); e = list_next(e)){
-        stp = list_entry(e, struct swap_table_pack, elem);
-        if(stp->status == false){
-            lru_pos = list_next(e);
-            return stp;
-        }
-        stp->status = false;
-    }
-    //second loop : begin -> end
-    for(e = list_begin(&swap_table); e != list_end(&swap_table); e = list_next(e)){
-        stp = list_entry(e, struct swap_table_pack, elem);
-        if(stp->status == false){
-            lru_pos = list_next(e);
-            return stp;
-        }
-        stp->status = false;
-    }
-    //third loop : begin -> lru_pos
-    for(e = list_begin(&swap_table); e != lru_pos; e = list_next(e)){
-        stp = list_entry(e, struct swap_table_pack, elem);
-        if(stp->status == false){
-            lru_pos = list_next(e);
-            return stp;
-        }
-        stp->status = false;
-    }
-    return NULL;
-}
-*/
