@@ -81,7 +81,7 @@ void free_page_frame(void *kpage) // page is kv_adrr
     ASSERT(pg_ofs(kpage)==0);
     lock_acquire(&ftable_lock);
     
-    ftp = kapge_to_ftp(kpage);
+    ftp = kpage_to_ftp(kpage);
     if(!ftp){
         lock_release(&ftable_lock);
         return;
