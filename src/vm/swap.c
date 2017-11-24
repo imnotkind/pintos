@@ -8,7 +8,7 @@ extern struct lock filesys_lock;
 
 void init_swap_table()
 {
-    /*
+    
     int i;
     swap_block = block_get_role(BLOCK_SWAP);
     if(!swap_block){
@@ -22,50 +22,37 @@ void init_swap_table()
     for(i = 0; i < block_size(swap_block)/SECTORS_PER_PAGE; i++){
         struct swap_table_pack *stp = malloc(sizeof(struct swap_table_pack));
         ASSERT(stp != NULL);
-        stp->status = IN_BUFFER;
+        stp->status = FREE;
         stp->index = i+1;
         list_push_back(&swap_table,&stp->elem);
     }
-    */
+   
 
-    swap_block = block_get_role(BLOCK_SWAP);
-    if(!swap_block){
-        return;
-    }
-    //false : free , true : in use
-    swap_bitmap = bitmap_create(block_size(swap_block)/SECTORS_PER_PAGE); //every bit is false : all is free
-    if(!swap_bitmap){
-        PANIC("bitmap creation fail");
-    }
-    lock_init(&swap_lock);
     
 }
 
 //swap into memory with index, block -> buffer(page)
 bool swap_in(int index, void *upage)
 {
-    //struct swap_table_pack *stp;
+    struct swap_table_pack *stp;
     int i;
 
-    if(bitmap_test(swap_bitmap,index) == false)
-        return false;
     lock_acquire(&filesys_lock);
 	lock_acquire(&swap_lock);
-    /*
+    
     stp = index_to_swap_table_pack(index);
-	if (!stp || stp->status == IN_BUFFER){ 
+	if (!stp || stp->status == FREE){ 
 		lock_release(&swap_lock);
 		return false;
 	}
 
-    stp->status = IN_BUFFER;
-    */
+    stp->status = FREE;
+    
 
 	for (i = 0; i < SECTORS_PER_PAGE; i++){
 		block_read (swap_block, index * SECTORS_PER_PAGE + i, (uint8_t *) upage + i*BLOCK_SECTOR_SIZE);
 	}
 
-    bitmap_set(swap_bitmap,index,true);
     lock_release(&swap_lock);
     lock_release(&filesys_lock);
     return true;
@@ -75,7 +62,7 @@ bool swap_in(int index, void *upage)
 int swap_out(void *upage)
 {
     struct list_elem *e;
-    //struct swap_table_pack *stp;
+    struct swap_table_pack *stp;
     int index = -1;
     int i;
 	if (swap_block == NULL){
@@ -85,10 +72,10 @@ int swap_out(void *upage)
     lock_acquire(&filesys_lock);
     lock_acquire(&swap_lock);
 
-/*
+
 	for(e = list_begin(&swap_table); e != list_end(&swap_table); e = list_next(e), index++){
 		stp = list_entry(e, struct swap_table_pack, elem);
-		if(stp->status == IN_BUFFER){
+		if(stp->status == FREE){
 			index = stp->index;
 			break;
 		}
@@ -99,19 +86,17 @@ int swap_out(void *upage)
         lock_release(&filesys_lock);
 		return -1;
 	}
-*/
 
-    index = bitmap_scan_and_flip(swap_bitmap,0,1,false); //looking for free index..
 	for (i = 0; i < SECTORS_PER_PAGE; i++) {
 		block_write (swap_block, index * SECTORS_PER_PAGE + i, (uint8_t *) upage + i*BLOCK_SECTOR_SIZE);
     }
-    //stp->status = IN_BLOCK;
+    stp->status = USING;
     lock_release(&swap_lock);
     lock_release(&filesys_lock);
     return index;
 }
 
-/*
+
 //find swap table pack with index. return NULL when can't find
 struct swap_table_pack* index_to_swap_table_pack(int index)
 {
@@ -166,4 +151,3 @@ struct swap_table_pack* find_lru_stp()
     }
     return NULL;
 }
-*/

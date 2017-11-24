@@ -11,19 +11,17 @@
 
 enum swap_status
 {
-    IN_BUFFER,
-    IN_BLOCK
+    FREE,
+    USING
 };
 
 struct list swap_table;
 struct block *swap_block;
-struct bitmap *swap_bitmap;
 struct lock swap_lock;
 struct list_elem *lru_pos; //pointer for saving where we find lru. it looks unstable.
 
 struct swap_table_pack
 {
-    struct sp_table_pack *sptp;
     int index;
     enum swap_status status;
     
@@ -31,8 +29,8 @@ struct swap_table_pack
 };
 
 void init_swap_table();
-//struct swap_table_pack* find_lru_stp();
-//struct swap_table_pack* index_to_swap_table_pack(int index);
+struct swap_table_pack* find_lru_stp();
+struct swap_table_pack* index_to_swap_table_pack(int index);
 bool swap_in(int index, void *upage);
 int swap_out(void *upage);
 
