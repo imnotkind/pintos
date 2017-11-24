@@ -46,7 +46,6 @@ void *alloc_page_frame(enum palloc_flags flags)
     }
 
     ftp = (struct ftable_pack *) malloc(sizeof(struct ftable_pack));
-    ftp->owner = thread_current();
     ftp->kpage = kpage;
     lock_acquire(&ftable_lock);
     list_push_back(&frame_table, &ftp->elem);
@@ -57,7 +56,6 @@ void *alloc_page_frame(enum palloc_flags flags)
 
 void free_page_frame(void *kpage) // page is kv_adrr
 {
-    struct list_elem *e;
     struct ftable_pack *ftp = NULL;
     ASSERT(pg_ofs(kpage)==0);
     lock_acquire(&ftable_lock);
