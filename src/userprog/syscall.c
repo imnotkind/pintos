@@ -24,9 +24,9 @@ static void syscall_handler (struct intr_frame *); //don't move this to header
 void
 syscall_init (void)
 {
-  intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
   lock_init(&filesys_lock);
   lock_init(&load_lock);
+  intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
 }
 
 static void
