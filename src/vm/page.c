@@ -262,8 +262,8 @@ bool grow_stack (void *upage) //allocate new frame, get kpage, link upage-kpage
   sptp->upage = pg_round_down(upage);
   sptp->is_loaded = true;
   sptp->writable = true;
-  sptp->pinned = false;
-  sptp->type = PAGE_NULL;
+  sptp->pinned = true;
+  sptp->type = PAGE_SWAP;
   sptp->owner = cur;
 
   kpage = alloc_page_frame(PAL_USER);
@@ -276,6 +276,11 @@ bool grow_stack (void *upage) //allocate new frame, get kpage, link upage-kpage
     free(sptp);
     free_page_frame(kpage);
     return false;
+  }
+
+  if(intr_context())
+  {
+    sptp->pinned = false;
   }
 
   lock_acquire(&cur->sp_table_lock);
