@@ -11,6 +11,7 @@ void init_swap_table()
     int i;
     swap_block = block_get_role(BLOCK_SWAP);
     if(!swap_block){
+        sys_exit(-9999);
         return;
     }
 
