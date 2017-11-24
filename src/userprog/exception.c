@@ -171,7 +171,11 @@ page_fault (struct intr_frame *f)
   if(sptp == NULL) //stack growth situation!
   {
     if(!check_addr_safe(fault_addr,2,f->esp)) //stack verification
+    {
+      printf("fault_addr: %d = %x\n", fault_addr, f->eip);
       sys_exit(-11);
+    }
+     
     page_load_success = grow_stack(fault_addr);
   }
   else
