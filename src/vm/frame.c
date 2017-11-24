@@ -18,8 +18,6 @@ struct ftable_pack
 {
     struct thread* owner;    //owner thread
     void *kpage;    //kernel vaddr
-    void *phy;      //physical addr
-    bool can_alloc; //availability of allocation
     struct list_elem elem;
 };
 */
@@ -50,8 +48,6 @@ void *alloc_page_frame(enum palloc_flags flags)
     ftp = (struct ftable_pack *) malloc(sizeof(struct ftable_pack));
     ftp->owner = thread_current();
     ftp->kpage = kpage;
-    ftp->phy = (void *) vtop(kpage);
-    ftp->can_alloc = false;
     lock_acquire(&ftable_lock);
     list_push_back(&frame_table, &ftp->elem);
     lock_release(&ftable_lock);
@@ -62,7 +58,6 @@ void *alloc_page_frame(enum palloc_flags flags)
 void free_page_frame(void *kpage) // page is kv_adrr
 {
     struct list_elem *e;
-    struct ftable_pack *f;
     struct ftable_pack *ftp = NULL;
     ASSERT(pg_ofs(kpage)==0);
     lock_acquire(&ftable_lock);
