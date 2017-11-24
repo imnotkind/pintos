@@ -40,37 +40,24 @@ void *alloc_page_frame(enum palloc_flags flags)
     ASSERT(flags & PAL_USER);
 
     kpage = palloc_get_page(flags);
-    if(kpage != NULL)
-    {
-        ftp = (struct ftable_pack *) malloc(sizeof(struct ftable_pack));
-        ftp->owner = thread_current();
-        ftp->kpage = kpage;
-        ftp->phy = (void *) vtop(kpage);
-        ftp->can_alloc = false;
-        lock_acquire(&ftable_lock);
-        list_push_back(&frame_table, &ftp->elem);
-        lock_release(&ftable_lock);
-
-        return kpage;
-    }
-    else //eviction!!
+    if(kpage == NULL)
     {
         bool success = evict_frame();
         ASSERT(success);
-    
         kpage = palloc_get_page(flags);
-        ftp = (struct ftable_pack *) malloc(sizeof(struct ftable_pack));
-        ftp->owner = thread_current();
-        ftp->kpage = kpage;
-        ftp->phy = (void *) vtop(kpage);
-        ftp->can_alloc = false;
-        lock_acquire(&ftable_lock);
-        list_push_back(&frame_table, &ftp->elem);
-        lock_release(&ftable_lock);
-        return kpage;
+        ASSERT(kpage);
     }
 
-    
+    ftp = (struct ftable_pack *) malloc(sizeof(struct ftable_pack));
+    ftp->owner = thread_current();
+    ftp->kpage = kpage;
+    ftp->phy = (void *) vtop(kpage);
+    ftp->can_alloc = false;
+    lock_acquire(&ftable_lock);
+    list_push_back(&frame_table, &ftp->elem);
+    lock_release(&ftable_lock);
+
+    return kpage;
 }
 
 void free_page_frame(void *kpage) // page is kv_adrr
