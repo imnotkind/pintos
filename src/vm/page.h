@@ -27,7 +27,7 @@ struct sp_table_pack //sup page table
     bool writable;
 
     bool pinned;
-    int index; //swap table index
+    int swap_index; //swap table index
 
     enum page_type type;
 

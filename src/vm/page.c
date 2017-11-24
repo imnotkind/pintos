@@ -22,10 +22,13 @@ struct sp_table_pack //sup page table
     bool is_loaded;
 
     struct file * file;
-    off_t offset;
-    uint32_t read_bytes;
-    uint32_t zero_bytes;
+    off_t offset;      //file offset
+    size_t page_read_bytes;
+    size_t page_zero_bytes;
     bool writable;
+
+    bool pinned;
+    int index; //swap table index
 
     enum page_type type;
 
@@ -233,7 +236,7 @@ bool load_swap(struct sp_table_pack * sptp)
       return false;
   }
 
-  bool success = swap_in(sptp->index, sptp->upage);
+  bool success = swap_in(sptp->swap_index, sptp->upage);
   if (success == false){
     return false;
   }

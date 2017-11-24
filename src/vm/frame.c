@@ -16,7 +16,6 @@ struct lock ftable_lock;
 /*
 struct ftable_pack
 {
-    struct thread* owner;    //owner thread
     void *kpage;    //kernel vaddr
     struct list_elem elem;
 };
@@ -114,14 +113,15 @@ bool evict_frame()
     sptp->pinned = true;
     struct thread * owner = sptp->owner;
     
-    int index = swap_out(sptp->upage);
+    int swap_index = swap_out(sptp->upage);
+    ASSERT(swap_index != -1);
     pagedir_clear_page(owner->pagedir,sptp->upage);
 
     list_remove(&ftp->elem);
     palloc_free_page(ftp->kpage);
 
     sptp->is_loaded = false;
-    sptp->index = index;
+    sptp->swap_index = swap_index;
     sptp->type = PAGE_SWAP;
     sptp->pinned = false;
     lock_release(&eviction_lock);
