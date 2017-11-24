@@ -213,7 +213,8 @@ process_exit (void)
   }
   lock_release(&filesys_lock);
 
-  lock_acquire(&ftable_lock);
+  if(!lock_held_by_current_thread(&ftable_lock))
+    lock_acquire(&ftable_lock);
 
   for(e = list_begin(&cur->sp_table); e != list_end(&cur->sp_table); ){
     sptp = list_entry(e, struct sp_table_pack, elem);
