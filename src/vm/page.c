@@ -225,7 +225,7 @@ bool load_swap(struct sp_table_pack * sptp)
   ASSERT(sptp->is_loaded == false);
   sptp->pinned = true;
   /* Get a page of memory. */
-  uint8_t *kpage = alloc_page_frame (PAL_USER|PAL_ZERO);
+  uint8_t *kpage = alloc_page_frame (PAL_USER);
   if (kpage == NULL){
     return false;
   }
