@@ -191,6 +191,7 @@ process_exit (void)
   struct list_elem *e;
   struct flist_pack *fe;
   struct mmap_file_pack *mmfp;  
+  struct sp_table_pack * sptp;
 
 
   for(e = list_begin(&cur->mmap_file_list); e != list_end(&cur->mmap_file_list); ){
@@ -210,6 +211,15 @@ process_exit (void)
     free(fe);
   }
   lock_release(&filesys_lock);
+
+  
+
+  for(e = list_begin(&cur->sp_table); e != list_end(&cur->sp_table); ){
+    sptp = list_entry(e, struct sp_table_pack, elem);
+    e = list_next(e);
+    free_page_frame(pagedir_get_page(cur->pagedir,sptp->upage));
+    pagedir_clear_page(cur->pagedir,sptp->upage);
+  }
 
 
   
