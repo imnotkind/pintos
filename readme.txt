@@ -83,7 +83,4 @@ vm/swap.c | 85 ++++
 vm/swap.h | 11
 17 files changed, 1532 insertions(+), 104 deletions(-)
 
-https://github.com/codyjack/OS-pintos
-https://github.com/ryantimwilson/Pintos-Project-3
-https://github.com/cctv2206/Pintos-project-3
-https://github.com/mintrupt/pintos
+
