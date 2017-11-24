@@ -156,7 +156,7 @@ page_fault (struct intr_frame *f)
 
   if(!not_present || !check_addr_safe(fault_addr,1,NULL)) //not present check : pt-write-code test
   {
-    printf("fault_addr: %.8x\n", fault_addr);
+    //printf("fault_addr: %.8x\n", fault_addr);
     sys_exit(-1);
   }
 
@@ -172,8 +172,8 @@ page_fault (struct intr_frame *f)
   {
     if(!check_addr_safe(fault_addr,2,f->esp)) //stack verification
     {
-      printf("fault_addr: %.8x\n", fault_addr);
-      printf("esp: %.8x\n", f->esp);
+      //printf("fault_addr: %.8x\n", fault_addr);
+      //printf("esp: %.8x\n", f->esp);
       sys_exit(-1);
     }
      
