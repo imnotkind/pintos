@@ -94,7 +94,7 @@ void free_page_frame(void *kpage) // page is kv_adrr
     }
     
     list_remove(&ftp->elem);        
-    palloc_free_page(kpage);
+    palloc_free_page(ftp->kpage);
     free(ftp);
     lock_release(&ftable_lock);
 }
