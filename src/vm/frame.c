@@ -138,7 +138,7 @@ struct ftable_pack * find_evict_frame(int mode)
         }
         NOT_REACHED();
     }
-    if(mode==2)//clock
+    if(mode==2)//clock, THIS CLOCK IS WRONG!!!!!! https://www.youtube.com/watch?v=EDG5EL7EekE 
     {
         struct list_elem * e ;
         struct ftable_pack *ftp;;
