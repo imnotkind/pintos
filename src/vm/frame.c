@@ -47,6 +47,7 @@ void *alloc_page_frame(enum palloc_flags flags)
 
     ftp = (struct ftable_pack *) malloc(sizeof(struct ftable_pack));
     ftp->kpage = kpage;
+    ftp->clock_bit = true;
     lock_acquire(&ftable_lock);
     list_push_back(&frame_table, &ftp->elem);
     lock_release(&ftable_lock);
@@ -138,7 +139,7 @@ struct ftable_pack * find_evict_frame(int mode)
         }
         NOT_REACHED();
     }
-    if(mode==2)//clock, THIS CLOCK IS WRONG!!!!!! NEED R bit!!! https://www.youtube.com/watch?v=EDG5EL7EekE 
+    if(mode==2)//clock algo https://www.youtube.com/watch?v=EDG5EL7EekE 
     {
         struct list_elem * e ;
         struct ftable_pack *ftp;;
@@ -154,19 +155,41 @@ struct ftable_pack * find_evict_frame(int mode)
         for(e = list_next(clock_pos); e != list_end(&frame_table); e = list_next(e)){
             ftp = list_entry(e, struct ftable_pack, elem);
             sptp = ftp_to_sptp(ftp);
-            if(sptp->pinned == false && ftp->clock_bit == false){
-                clock_pos = e;
-                return ftp;
+            if(sptp->pinned == false )
+            {
+                if(ftp->clock_bit == false) //eviction!
+                {
+                    clock_pos = e;
+                    ftp->clock_bit = true;
+                    return ftp;
+                }
+                else //get away with it only once.. next time you're dead
+                {
+                    ftp->clock_bit = false;
+                    continue;
+                }
+                
             }
         }
         for(e = list_begin(&frame_table); e != clock_pos;e=list_next(e)){
             ftp = list_entry(e, struct ftable_pack, elem);
             sptp = ftp_to_sptp(ftp);
             if(sptp->pinned == false){
-                clock_pos = e;
-                return ftp;
+                if(ftp->clock_bit == false) //eviction!
+                {
+                    clock_pos = e;
+                    ftp->clock_bit = true;
+                    return ftp;
+                }
+                else //get away with it only once.. next time you're dead
+                {
+                    ftp->clock_bit = false;
+                    continue;
+                }
             }
         }
+
+        NOT_REACHED();
     }
 
 }
