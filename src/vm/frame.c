@@ -151,43 +151,46 @@ struct ftable_pack * find_evict_frame(int mode)
             first_try = false;
         }
             
-
-        for(e = list_next(clock_pos); e != list_end(&frame_table); e = list_next(e)){
-            ftp = list_entry(e, struct ftable_pack, elem);
-            sptp = ftp_to_sptp(ftp);
-            if(sptp->pinned == false )
-            {
-                if(ftp->clock_bit == false) //eviction!
+        while(1)
+        {
+            for(e = list_next(clock_pos); e != list_end(&frame_table); e = list_next(e)){
+                ftp = list_entry(e, struct ftable_pack, elem);
+                sptp = ftp_to_sptp(ftp);
+                if(sptp->pinned == false )
                 {
-                    clock_pos = e;
-                    ftp->clock_bit = true;
-                    return ftp;
-                }
-                else //get away with it only once.. next time you're dead
-                {
-                    ftp->clock_bit = false;
-                    continue;
-                }
-                
-            }
-        }
-        for(e = list_begin(&frame_table); e != clock_pos;e=list_next(e)){
-            ftp = list_entry(e, struct ftable_pack, elem);
-            sptp = ftp_to_sptp(ftp);
-            if(sptp->pinned == false){
-                if(ftp->clock_bit == false) //eviction!
-                {
-                    clock_pos = e;
-                    ftp->clock_bit = true;
-                    return ftp;
-                }
-                else //get away with it only once.. next time you're dead
-                {
-                    ftp->clock_bit = false;
-                    continue;
+                    if(ftp->clock_bit == false) //eviction!
+                    {
+                        clock_pos = e;
+                        ftp->clock_bit = true;
+                        return ftp;
+                    }
+                    else //get away with it only once.. next time you're dead
+                    {
+                        ftp->clock_bit = false;
+                        continue;
+                    }
+                    
                 }
             }
+            for(e = list_begin(&frame_table); e != clock_pos;e=list_next(e)){
+                ftp = list_entry(e, struct ftable_pack, elem);
+                sptp = ftp_to_sptp(ftp);
+                if(sptp->pinned == false){
+                    if(ftp->clock_bit == false) //eviction!
+                    {
+                        clock_pos = e;
+                        ftp->clock_bit = true;
+                        return ftp;
+                    }
+                    else //get away with it only once.. next time you're dead
+                    {
+                        ftp->clock_bit = false;
+                        continue;
+                    }
+                }
+            }
         }
+            
 
         NOT_REACHED();
     }
