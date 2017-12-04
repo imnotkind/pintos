@@ -8,6 +8,7 @@ struct ftable_pack
 {
     void *kpage;    //kernel vaddr
     struct list_elem elem;
+    bool clock_bit;
 };
 
 struct list_elem * clock_pos; //pointer for saving where we find eviction victim

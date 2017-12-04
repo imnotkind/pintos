@@ -154,7 +154,7 @@ struct ftable_pack * find_evict_frame(int mode)
         for(e = list_next(clock_pos); e != list_end(&frame_table); e = list_next(e)){
             ftp = list_entry(e, struct ftable_pack, elem);
             sptp = ftp_to_sptp(ftp);
-            if(sptp->pinned == false){
+            if(sptp->pinned == false && ftp->clock_bit == false){
                 clock_pos = e;
                 return ftp;
             }
