@@ -18,6 +18,7 @@ struct ftable_pack
 {
     void *kpage;    //kernel vaddr
     struct list_elem elem;
+    bool clock_bit;
 };
 */
 
