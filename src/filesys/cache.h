@@ -3,6 +3,7 @@
 
 #include <list.h>
 #include "threads/synch.h"
+#include "devices/block.h"
 
 struct buffer_cache
 {
