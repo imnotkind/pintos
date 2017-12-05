@@ -110,6 +110,7 @@ void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_o
         bc->sector = sector;
         bc->is_using = true;
     }
+    ASSERT(bc->sector != (block_sector_t) -1);
     ASSERT(bc->is_using == true);
 
     lock_acquire(&bc->buffer_lock);
@@ -135,6 +136,7 @@ void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_
         bc->sector = sector;
         bc->is_using = true;
     }
+    ASSERT(bc->sector != (block_sector_t) -1);
     ASSERT(bc->is_using == true);
 
     lock_acquire(&bc->buffer_lock);
