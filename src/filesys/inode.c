@@ -91,7 +91,7 @@ inode_create (block_sector_t sector, off_t length)
       if (free_map_allocate (sectors, &disk_inode->start)) 
         {
           //block_write (fs_device, sector, disk_inode);
-          cache_write (sector, 0, disk_inode, 0, BLOCK_SECTOR_SIZE)
+          cache_write (sector, 0, disk_inode, 0, BLOCK_SECTOR_SIZE);
           if (sectors > 0) 
             {
               static char zeros[BLOCK_SECTOR_SIZE];
@@ -321,7 +321,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       offset += chunk_size;
       bytes_written += chunk_size;
     }
-  free (bounce);
+  //free (bounce);
 
   return bytes_written;
 }
