@@ -1,6 +1,8 @@
 #include "filesys/cache.h"
 #include "filesys/filesys.h"
 #include "threads/palloc.h"
+#include <string.h>
+#include <debug.h>
 
 #define BUFFER_CACHE_NUM 64
 
@@ -23,8 +25,8 @@ void init_buffer_caches()
 {
     int i;
     for(i = 0; i < BUFFER_CACHE_NUM; i++){
-        clear_buffer_cache(&buffer_cache[i]);
-        lock_init(&buffer_cache[i].buffer_lock)
+        clear_cache(&buffer_cache[i]);
+        lock_init(&buffer_cache[i].buffer_lock);
     }
     lock_init(&buffer_cache_lock);
     clock_pos = 0;
@@ -43,27 +45,25 @@ struct buffer_cache * find_evict_cache() //loop all buffer caches twice
 {
     int i;
     for(i = clock_pos; i < BUFFER_CACHE_NUM; i++){
-        if(buffer_cache[i].recent_use == false && buffer_cache[i].is_using == true){
+        if(buffer_cache[i].recent_used == false && buffer_cache[i].is_using == true){
             clock_pos = i;
             return &buffer_cache[i];
         }
-        buffer_cache[i].recent_use = false;
+        buffer_cache[i].recent_used = false;
     }
     for(i = 0; i < BUFFER_CACHE_NUM; i++){
-        ASSERT(buffer_cache[i].is_using)
-        if(buffer_cache[i].recent_use == false && buffer_cache[i].is_using == true){
+        if(buffer_cache[i].recent_used == false && buffer_cache[i].is_using == true){
             clock_pos = i;
             return &buffer_cache[i];
         }
-        buffer_cache[i].recent_use = false;
+        buffer_cache[i].recent_used = false;
     }
     for(i = 0; i < clock_pos; i++){
-        ASSERT(buffer_cache[i].is_using)
-        if(buffer_cache[i].recent_use == false && buffer_cache[i].is_using == true){
+        if(buffer_cache[i].recent_used == false && buffer_cache[i].is_using == true){
             clock_pos = i;
             return &buffer_cache[i];
         }
-        buffer_cache[i].recent_use = false;
+        buffer_cache[i].recent_used = false;
     }
     return NULL;
 }
@@ -82,7 +82,7 @@ struct buffer_cache * cache_evict()
     return bc;
 }
 
-void cache_read(block_sector_t sector, off_t sect_ofs void *buffer, off_t buf_ofs, int read_bytes) //read from cache buffer
+void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_ofs, int read_bytes) //read from cache buffer
 {
     struct buffer_cache *bc;
     ASSERT(read_bytes > 0 && read_bytes <= BLOCK_SECTOR_SIZE);
@@ -107,7 +107,7 @@ void cache_read(block_sector_t sector, off_t sect_ofs void *buffer, off_t buf_of
     lock_release(&bc->buffer_lock);
 }
 
-void cache_write(block_sector_t sector, off_t sect_ofs void *buffer, off_t buf_ofs, int write_bytes) //write to cache buffer
+void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_ofs, int write_bytes) //write to cache buffer
 {
     struct buffer_cache *bc;
     ASSERT(write_bytes > 0 && write_bytes <= BLOCK_SECTOR_SIZE);

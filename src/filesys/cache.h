@@ -15,10 +15,10 @@ struct buffer_cache
     struct lock buffer_lock;
 };
 
-void init_buffer_cache();
+void init_buffer_caches();
 void clear_cache(struct buffer_cache *bc);
-void cache_read(block_sector_t sector, off_t sect_ofs void *buffer, off_t buf_ofs, int read_bytes);
-void cache_write(block_sector_t sector, off_t sect_ofs void *buffer, off_t buf_ofs, int write_bytes);
+void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_ofs, int read_bytes);
+void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_ofs, int write_bytes);
 struct buffer_cache * cache_evict();
 struct buffer_cache * find_evict_cache();
 struct buffer_cache * find_empty_cache();
