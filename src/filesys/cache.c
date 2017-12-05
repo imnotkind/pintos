@@ -32,6 +32,19 @@ void init_buffer_caches()
     clock_pos = 0;
 }
 
+void reset_buffer_caches()
+{
+    int i;
+    for(i = 0; i < BUFFER_CACHE_NUM; i++){
+        lock_acquire(&buffer_cache[i].buffer_lock);
+        if(buffer_cache[i].is_dirty)
+            block_write(fs_device, bc->sector, bc->buffer);
+        clear_cache(&buffer_cache[i]);
+        lock_release(&buffer_cache[i].buffer_lock);
+    }
+    clock_pos = 0;
+}
+
 void clear_cache(struct buffer_cache *bc)
 {
     memset(bc->buffer, 0, BLOCK_SECTOR_SIZE);
