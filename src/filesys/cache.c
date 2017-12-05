@@ -51,7 +51,7 @@ void clear_cache(struct buffer_cache *bc)
     bc->is_dirty = false;
     bc->is_using = false;
     bc->recent_used = false;
-    bc->sector = 0;
+    bc->sector = (block_sector_t) -1;
 }
 
 struct buffer_cache * find_evict_cache() //loop all buffer caches twice
