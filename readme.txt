@@ -82,3 +82,36 @@ vm/page.h | 50 ++
 vm/swap.c | 85 ++++
 vm/swap.h | 11
 17 files changed, 1532 insertions(+), 104 deletions(-)
+
+PROJECT 4
+Makefile.build | 5
+devices/timer.c | 42 ++
+filesys/Make.vars | 6
+filesys/cache.c | 473 +++++++++++++++++++++++++
+filesys/cache.h | 23 +
+filesys/directory.c | 99 ++++-
+filesys/directory.h | 3
+filesys/file.c | 4
+filesys/filesys.c | 194 +++++++++-
+filesys/filesys.h | 5
+filesys/free-map.c | 45 +-
+filesys/free-map.h | 4
+filesys/fsutil.c | 8
+filesys/inode.c | 444 ++++++++++++++++++-----
+filesys/inode.h | 11
+threads/init.c | 5
+threads/interrupt.c | 2
+threads/thread.c | 32 +
+threads/thread.h | 38 +-
+userprog/exception.c | 12
+userprog/pagedir.c | 10
+userprog/process.c | 332 +++++++++++++----
+userprog/syscall.c | 582 ++++++++++++++++++++++++++++++-
+userprog/syscall.h | 1
+vm/frame.c | 161 ++++++++
+vm/frame.h | 23 +
+vm/page.c | 297 +++++++++++++++
+vm/page.h | 50 ++
+vm/swap.c | 85 ++++
+vm/swap.h | 11
+30 files changed, 2721 insertions(+), 286 deletions(-)
