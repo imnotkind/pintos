@@ -38,7 +38,7 @@ void reset_buffer_caches()
     for(i = 0; i < BUFFER_CACHE_NUM; i++){
         lock_acquire(&buffer_cache[i].buffer_lock);
         if(buffer_cache[i].is_dirty)
-            block_write(fs_device, buffer_cache[i].>sector, buffer_cache[i].buffer);
+            block_write(fs_device, buffer_cache[i].sector, buffer_cache[i].buffer);
         clear_cache(&buffer_cache[i]);
         lock_release(&buffer_cache[i].buffer_lock);
     }
