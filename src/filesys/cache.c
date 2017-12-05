@@ -1,6 +1,5 @@
 #include "filesys/cache.h"
 #include "filesys/filesys.h"
-#include "filesys/inode.h"
 #include "threads/palloc.h"
 
 #define BUFFER_CACHE_NUM 64

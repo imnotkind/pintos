@@ -3,7 +3,7 @@
 
 #include <list.h>
 #include "threads/synch.h"
-#include "devices/block.h"
+#include "filesys/inode.h"
 
 struct buffer_cache
 {
