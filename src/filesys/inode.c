@@ -99,7 +99,7 @@ inode_create (block_sector_t sector, off_t length)
               
               for (i = 0; i < sectors; i++) 
                 //block_write (fs_device, disk_inode->start + i, zeros);
-                cache_write (disk_inode->start + i, 0, zeros, 0, BLOCK_SECTOR_SIZE)
+                cache_write (disk_inode->start + i, 0, zeros, 0, BLOCK_SECTOR_SIZE);
             }
           success = true; 
         } 
