@@ -3,6 +3,7 @@
 #include "threads/palloc.h"
 #include <string.h>
 #include <debug.h>
+#include "devices/timer.c"
 
 #define BUFFER_CACHE_NUM 64
 
@@ -30,6 +31,7 @@ void init_buffer_caches()
     }
     lock_init(&buffer_cache_lock);
     clock_pos = 0;
+    thread_create("write back scheduler",0,write_back,NULL);
 }
 
 void reset_buffer_caches()
@@ -88,7 +90,7 @@ struct buffer_cache * cache_evict()
     ASSERT(bc && bc->is_using == true);
 
     lock_acquire(&bc->buffer_lock);
-    if(bc->is_dirty) //WRITE BEHIND!!!
+    if(bc->is_dirty) //WRITE BACK(BEHIND)!!!
         block_write(fs_device, bc->sector, bc->buffer);
     clear_cache(bc);
     lock_release(&bc->buffer_lock);
@@ -102,13 +104,15 @@ void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_o
 
     lock_acquire(&buffer_cache_lock);
     bc = sector_to_cache(sector);
-    if(!bc){
+    if(!bc)
+    {
         bc = find_empty_cache();
         if(!bc)
             bc = cache_evict();
         block_read(fs_device, sector, bc->buffer);
         bc->sector = sector;
         bc->is_using = true;
+        bc->is_dirty = false;
     }
     ASSERT(bc->sector != (block_sector_t) -1);
     ASSERT(bc->is_using == true);
@@ -121,8 +125,16 @@ void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_o
     lock_release(&bc->buffer_lock);
 }
 
-void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_ofs, int write_bytes) //write to cache buffer
+void read_ahead(block_sector_t * sector_p)
 {
+    struct buffer_cache *bc;
+    lock_acquire(&buffer_cache_lock);
+    bc = sector_to_cache(*sector_p);
+//thread_create
+}
+
+void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_ofs, int write_bytes) //write to cache buffer
+{//we need READ AHEAD!!!!!(asynch)
     struct buffer_cache *bc;
     ASSERT(write_bytes > 0 && write_bytes <= BLOCK_SECTOR_SIZE);
 
@@ -135,6 +147,7 @@ void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_
         block_read(fs_device, sector, bc->buffer);
         bc->sector = sector;
         bc->is_using = true;
+        bc->is_dirty = false;
     }
     ASSERT(bc->sector != (block_sector_t) -1);
     ASSERT(bc->is_using == true);
@@ -144,8 +157,26 @@ void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_
 
     memcpy(bc->buffer + sect_ofs, buffer + buf_ofs, write_bytes);
     bc->clock_bit = true;
-    bc->is_dirty = true;
+    bc->is_dirty = true; //write back
     lock_release(&bc->buffer_lock);
+}
+
+void write_back()
+{
+    int i;
+    while(1)
+    {
+        timer_sleep(16);
+        for(i=0;i<BUFFER_CACHE_NUM;i++)
+        {
+            lock_acquire(&buffer_cache[i].buffer_lock);
+            if(buffer_cache[i].is_dirty == true)
+                block_write(fs_device, buffer_cache[i].sector, buffer_cache[i].buffer);
+            buffer_cache[i].is_dirty = false;
+            lock_release(&buffer_cache[i].buffer_lock);
+        }
+    }
+    
 }
 
 struct buffer_cache * find_empty_cache()
