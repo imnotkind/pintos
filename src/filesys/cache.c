@@ -97,7 +97,7 @@ struct buffer_cache * cache_evict()
     return bc;
 }
 
-void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_ofs, int read_bytes) //read from cache buffer
+void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_ofs, int read_bytes) //read from buffer cache instead of disk
 {
     struct buffer_cache *bc;
     ASSERT(read_bytes > 0 && read_bytes <= BLOCK_SECTOR_SIZE);
@@ -133,7 +133,7 @@ void read_ahead(block_sector_t * sector_p)
 //thread_create
 }
 
-void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_ofs, int write_bytes) //write to cache buffer
+void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_ofs, int write_bytes) //write to buffer cache instead of disk
 {//we need READ AHEAD!!!!!(asynch)
     struct buffer_cache *bc;
     ASSERT(write_bytes > 0 && write_bytes <= BLOCK_SECTOR_SIZE);
@@ -167,9 +167,9 @@ void write_back()
     while(1)
     {
         timer_sleep(16);
-        for(i=0;i<BUFFER_CACHE_NUM;i++)
+        for(i=0;i<BUFFER_CACHE_NUM;i++) //buffer cache -> disk
         {
-            lock_acquire(&buffer_cache[i].buffer_lock);
+            lock_acquire(&buffer_cache[i].buffer_lock); 
             if(buffer_cache[i].is_dirty == true)
                 block_write(fs_device, buffer_cache[i].sector, buffer_cache[i].buffer);
             buffer_cache[i].is_dirty = false;
