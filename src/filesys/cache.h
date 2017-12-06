@@ -11,7 +11,7 @@ struct buffer_cache
     block_sector_t sector;
     bool is_dirty;
     bool is_using;
-    bool recent_used;
+    bool clock_bit; //clock bit for clock algo
     struct lock buffer_lock;
 };
 

@@ -50,7 +50,7 @@ void clear_cache(struct buffer_cache *bc)
     memset(bc->buffer, 0, BLOCK_SECTOR_SIZE);
     bc->is_dirty = false;
     bc->is_using = false;
-    bc->recent_used = false;
+    bc->clock_bit = false;
     bc->sector = (block_sector_t) -1;
 }
 
@@ -58,25 +58,25 @@ struct buffer_cache * find_evict_cache() //loop all buffer caches twice
 {
     int i;
     for(i = clock_pos; i < BUFFER_CACHE_NUM; i++){
-        if(buffer_cache[i].recent_used == false && buffer_cache[i].is_using == true){
+        if(buffer_cache[i].clock_bit == false && buffer_cache[i].is_using == true){
             clock_pos = i;
             return &buffer_cache[i];
         }
-        buffer_cache[i].recent_used = false;
+        buffer_cache[i].clock_bit = false;
     }
     for(i = 0; i < BUFFER_CACHE_NUM; i++){
-        if(buffer_cache[i].recent_used == false && buffer_cache[i].is_using == true){
+        if(buffer_cache[i].clock_bit == false && buffer_cache[i].is_using == true){
             clock_pos = i;
             return &buffer_cache[i];
         }
-        buffer_cache[i].recent_used = false;
+        buffer_cache[i].clock_bit = false;
     }
     for(i = 0; i < clock_pos; i++){
-        if(buffer_cache[i].recent_used == false && buffer_cache[i].is_using == true){
+        if(buffer_cache[i].clock_bit == false && buffer_cache[i].is_using == true){
             clock_pos = i;
             return &buffer_cache[i];
         }
-        buffer_cache[i].recent_used = false;
+        buffer_cache[i].clock_bit = false;
     }
     return NULL;
 }
@@ -88,7 +88,7 @@ struct buffer_cache * cache_evict()
     ASSERT(bc && bc->is_using == true);
 
     lock_acquire(&bc->buffer_lock);
-    if(bc->is_dirty)
+    if(bc->is_dirty) //WRITE BEHIND!!!
         block_write(fs_device, bc->sector, bc->buffer);
     clear_cache(bc);
     lock_release(&bc->buffer_lock);
@@ -117,7 +117,7 @@ void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_o
     lock_release(&buffer_cache_lock);
 
     memcpy(buffer + buf_ofs, bc->buffer + sect_ofs, read_bytes);
-    bc->recent_used = true;
+    bc->clock_bit = true;
     lock_release(&bc->buffer_lock);
 }
 
@@ -143,7 +143,7 @@ void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_
     lock_release(&buffer_cache_lock);
 
     memcpy(bc->buffer + sect_ofs, buffer + buf_ofs, write_bytes);
-    bc->recent_used = true;
+    bc->clock_bit = true;
     bc->is_dirty = true;
     lock_release(&bc->buffer_lock);
 }
