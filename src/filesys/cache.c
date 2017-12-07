@@ -160,7 +160,7 @@ void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_
         bc = find_empty_cache();
         if(!bc)
             bc = cache_evict();
-        block_read(fs_device, sector, bc->buffer); //is this even needed?
+        block_read(fs_device, sector, bc->buffer); 
         bc->sector = sector;
         bc->is_using = true;
         bc->is_dirty = false;
