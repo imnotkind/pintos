@@ -109,7 +109,7 @@ void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_o
         bc = find_empty_cache();
         if(!bc)
             bc = cache_evict();
-        block_read(fs_device, sector, bc->buffer);
+        block_read(fs_device, sector, bc->buffer); //read ahead
         bc->sector = sector;
         bc->is_using = true;
         bc->is_dirty = false;
@@ -134,7 +134,7 @@ void read_ahead(block_sector_t * sector_p)
 }
 
 void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_ofs, int write_bytes) //write to buffer cache instead of disk
-{//we need READ AHEAD!!!!!(asynch)
+{
     struct buffer_cache *bc;
     ASSERT(write_bytes > 0 && write_bytes <= BLOCK_SECTOR_SIZE);
 
@@ -144,7 +144,7 @@ void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_
         bc = find_empty_cache();
         if(!bc)
             bc = cache_evict();
-        block_read(fs_device, sector, bc->buffer);
+        block_read(fs_device, sector, bc->buffer); //read ahead
         bc->sector = sector;
         bc->is_using = true;
         bc->is_dirty = false;
