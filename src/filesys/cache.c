@@ -130,7 +130,8 @@ void read_ahead(block_sector_t * sector_p)
     struct buffer_cache *bc;
     lock_acquire(&buffer_cache_lock);
     bc = sector_to_cache(*sector_p);
-//thread_create
+
+    lock_release(&buffer_cache_lock);
 }
 
 void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_ofs, int write_bytes) //write to buffer cache instead of disk
