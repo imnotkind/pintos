@@ -5,6 +5,7 @@
 #include <debug.h>
 #include "devices/timer.h"
 #include "threads/thread.h"
+#include "threads/malloc.h"
 
 #define BUFFER_CACHE_NUM 64
 

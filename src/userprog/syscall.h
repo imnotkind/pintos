@@ -12,7 +12,8 @@ struct flist_pack
 };
 
 void syscall_init (void);
-
+void sys_exit(int status);
+void check_addr_safe(const void *vaddr);
 struct flist_pack* fd_to_flist_pack(int fd);
 
 #endif /* userprog/syscall.h */
