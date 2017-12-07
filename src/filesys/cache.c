@@ -114,7 +114,7 @@ void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_o
         bc->sector = sector;
         bc->is_using = true;
         bc->is_dirty = false;
-        thread_create("read ahead",0,read_ahead,sector+1);
+        thread_create("read ahead",0,read_ahead,&sector);
     }
     ASSERT(bc->sector != (block_sector_t) -1);
     ASSERT(bc->is_using == true);
@@ -127,11 +127,11 @@ void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_o
     lock_release(&bc->buffer_lock);
 }
 
-void read_ahead(block_sector_t sector)
+void read_ahead(block_sector_t * sector)
 {
     struct buffer_cache *bc;
     lock_acquire(&buffer_cache_lock);
-    bc = sector_to_cache(sector);
+    bc = sector_to_cache((*sector)+1);
     if(!bc)
     {
         bc = find_empty_cache();
