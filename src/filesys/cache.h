@@ -19,7 +19,7 @@ void init_buffer_caches();
 void reset_buffer_caches();
 void clear_cache(struct buffer_cache *bc);
 void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_ofs, int read_bytes);
-void read_ahead(block_sector_t * sector);
+void read_ahead(block_sector_t * sector_p);
 void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_ofs, int write_bytes);
 void write_back();
 struct buffer_cache * cache_evict();
