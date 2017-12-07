@@ -114,7 +114,9 @@ void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_o
         bc->sector = sector;
         bc->is_using = true;
         bc->is_dirty = false;
-        thread_create("read ahead",0,read_ahead,&sector);
+        block_sector_t * next_sector = (block_sector_t *)malloc(sizeof(uint32_t));
+        *next_sector = sector+1;
+        thread_create("read ahead",0,read_ahead,next_sector);
     }
     ASSERT(bc->sector != (block_sector_t) -1);
     ASSERT(bc->is_using == true);
@@ -127,21 +129,22 @@ void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_o
     lock_release(&bc->buffer_lock);
 }
 
-void read_ahead(block_sector_t * sector)
+void read_ahead(block_sector_t * sector_p)
 {
     struct buffer_cache *bc;
     lock_acquire(&buffer_cache_lock);
-    bc = sector_to_cache((*sector)+1);
-    if(!bc)
+    bc = sector_to_cache(*sector_p);
+    if(!bc) //not in cache
     {
         bc = find_empty_cache();
         if(!bc)
             bc = cache_evict();
-        block_read(fs_device, sector, bc->buffer); 
-        bc->sector = sector;
+        block_read(fs_device, *sector_p, bc->buffer); 
+        bc->sector = *sector_p;
         bc->is_using = true;
         bc->is_dirty = false;
     }
+    free(sector_p);
     lock_release(&buffer_cache_lock);
 }
 
