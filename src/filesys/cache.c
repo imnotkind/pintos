@@ -4,6 +4,7 @@
 #include <string.h>
 #include <debug.h>
 #include "devices/timer.h"
+#include "threads/thread.h"
 
 #define BUFFER_CACHE_NUM 64
 
@@ -109,10 +110,11 @@ void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_o
         bc = find_empty_cache();
         if(!bc)
             bc = cache_evict();
-        block_read(fs_device, sector, bc->buffer); //read ahead
+        block_read(fs_device, sector, bc->buffer); 
         bc->sector = sector;
         bc->is_using = true;
         bc->is_dirty = false;
+        thread_create("read ahead",0,read_ahead,sector+1);
     }
     ASSERT(bc->sector != (block_sector_t) -1);
     ASSERT(bc->is_using == true);
@@ -125,12 +127,21 @@ void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_o
     lock_release(&bc->buffer_lock);
 }
 
-void read_ahead(block_sector_t * sector_p)
+void read_ahead(block_sector_t sector)
 {
     struct buffer_cache *bc;
     lock_acquire(&buffer_cache_lock);
-    bc = sector_to_cache(*sector_p);
-
+    bc = sector_to_cache(sector);
+    if(!bc)
+    {
+        bc = find_empty_cache();
+        if(!bc)
+            bc = cache_evict();
+        block_read(fs_device, sector, bc->buffer); 
+        bc->sector = sector;
+        bc->is_using = true;
+        bc->is_dirty = false;
+    }
     lock_release(&buffer_cache_lock);
 }
 
@@ -145,7 +156,7 @@ void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_
         bc = find_empty_cache();
         if(!bc)
             bc = cache_evict();
-        block_read(fs_device, sector, bc->buffer); //read ahead
+        block_read(fs_device, sector, bc->buffer); //is this even needed?
         bc->sector = sector;
         bc->is_using = true;
         bc->is_dirty = false;
