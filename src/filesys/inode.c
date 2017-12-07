@@ -12,13 +12,18 @@
 #define INODE_MAGIC 0x494e4f44
 
 /* On-disk inode.
-   Must be exactly BLOCK_SECTOR_SIZE bytes long. */
+   Must be exactly BLOCK_SECTOR_SIZE bytes(= 512 bytes) long. */
 struct inode_disk
   {
-    block_sector_t start;               /* First data sector. */
+    block_sector_t direct;              // 512 Bytes
+    block_sector_t indirect;            // 128 * 512B = 64 KB
+    block_sector_t double_indirect;     // 128 * 64 KB = 8 MB
+
     off_t length;                       /* File size in bytes. */
     unsigned magic;                     /* Magic number. */
-    uint32_t unused[125];               /* Not used. */
+    uint32_t is_dir;                    // We use this like bool type
+
+    uint32_t unused[122];               /* Not used. */
   };
 
 /* Returns the number of sectors to allocate for an inode SIZE
@@ -38,6 +43,8 @@ struct inode
     bool removed;                       /* True if deleted, false otherwise. */
     int deny_write_cnt;                 /* 0: writes ok, >0: deny writes. */
     struct inode_disk data;             /* Inode content. */
+
+    struct lock inode_lock;
   };
 
 /* Returns the block device sector that contains byte offset POS
