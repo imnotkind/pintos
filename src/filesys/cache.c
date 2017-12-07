@@ -3,7 +3,7 @@
 #include "threads/palloc.h"
 #include <string.h>
 #include <debug.h>
-#include "devices/timer.c"
+#include "devices/timer.h"
 
 #define BUFFER_CACHE_NUM 64
 
