@@ -182,7 +182,7 @@ void write_back()
     int i;
     while(1)
     {
-        timer_sleep(1);
+        timer_sleep(16);
         for(i=0;i<BUFFER_CACHE_NUM;i++) //buffer cache -> disk
         {
             lock_acquire(&buffer_cache[i].buffer_lock); 
