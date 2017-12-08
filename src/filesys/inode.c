@@ -10,13 +10,14 @@
 
 /* Identifies an inode. */
 #define INODE_MAGIC 0x494e4f44
+#define INT32T_PER_SECTOR 128
 
 /* On-disk inode.
    Must be exactly BLOCK_SECTOR_SIZE bytes(= 512 bytes) long. */
 struct inode_disk
   {
     block_sector_t direct;              // 512 Bytes
-    block_sector_t indirect;            // 128 * 512B = 64 KB
+    block_sector_t indirect;            // 128 * 512 B = 64 KB
     block_sector_t double_indirect;     // 128 * 64 KB = 8 MB
 
     off_t length;                       /* File size in bytes. */
@@ -43,9 +44,14 @@ struct inode
     bool removed;                       /* True if deleted, false otherwise. */
     int deny_write_cnt;                 /* 0: writes ok, >0: deny writes. */
     struct inode_disk data;             /* Inode content. */
-
+    
     struct lock inode_lock;
   };
+
+struct indirect_disk
+{
+  block_sector_t block[INT32T_PER_SECTOR];
+};
 
 /* Returns the block device sector that contains byte offset POS
    within INODE.
@@ -54,11 +60,33 @@ struct inode
 static block_sector_t
 byte_to_sector (const struct inode *inode, off_t pos) 
 {
+  struct inode_disk *idisk = inode->data;
+  struct indirect_disk *ind_disk;
   ASSERT (inode != NULL);
-  if (pos < inode->data.length)
-    return inode->data.start + pos / BLOCK_SECTOR_SIZE;
-  else
+  if (pos >= idisk->length)
     return -1;
+  
+  if(pos < BLOCK_SECTOR_SIZE){
+    //when data is in the direct disk
+    return idisk->direct + pos;
+  }
+  else if(pos < (INT32T_PER_SECTOR + 1) * BLOCK_SECTOR_SIZE){
+    //when data is in the indirect disk
+    if(idisk->indirect == (block_sector_t) -1){
+      return -1;
+    }
+    cache_read(idisk->indirect, 0, ind_disk, 0, BLOCK_SECTOR_SIZE);
+
+  }
+  else if(pos < (INT32T_PER_SECTOR*INT32T_PER_SECTOR + INT32T_PER_SECTOR + 1) * BLOCK_SECTOR_SIZE){
+    //when data is in the double indirect disk
+  }
+  NOT_REACHED();
+}
+
+byte_to_direct(const struct inode_disk *i_disk, off_t pos)
+{
+
 }
 
 /* List of open inodes, so that opening a single inode twice
