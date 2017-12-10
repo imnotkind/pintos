@@ -10,7 +10,10 @@
 
 /* Identifies an inode. */
 #define INODE_MAGIC 0x494e4f44
+/* BLOCK_SECTOR_SIZE / sizeof(int32_t) */
 #define INT32T_PER_SECTOR 128
+/* 8 MB */
+#define MAX_FILE_LENGTH 8 * 1024 * 1024
 
 /* On-disk inode.
    Must be exactly BLOCK_SECTOR_SIZE bytes(= 512 bytes) long. */
@@ -126,12 +129,12 @@ inode_init (void)
    Returns true if successful.
    Returns false if memory or disk allocation fails. */
 bool
-inode_create (block_sector_t sector, off_t length)
+inode_create (block_sector_t sector, off_t length, uint32_t is_dir)
 {
   struct inode_disk *disk_inode = NULL;
   bool success = false;
 
-  ASSERT (length >= 0);
+  ASSERT (length >= 0 || length < MAX_FILE_LENGTH);
 
   /* If this assertion fails, the inode structure is not exactly
      one sector in size, and you should fix that. */
@@ -140,9 +143,13 @@ inode_create (block_sector_t sector, off_t length)
   disk_inode = calloc (1, sizeof *disk_inode);
   if (disk_inode != NULL)
     {
-      size_t sectors = bytes_to_sectors (length);
+      disk_inode->direct = (block_sector_t) -1;
+      disk_inode->indirect = (block_sector_t) -1;
+      disk_inode->double_indirect = (block_sector_t) -1;
       disk_inode->length = length;
       disk_inode->magic = INODE_MAGIC;
+      disk_inode->is_dir = is_dir;
+      
       if (free_map_allocate (sectors, &disk_inode->start)) 
         {
           //block_write (fs_device, sector, disk_inode);
