@@ -58,28 +58,48 @@ struct indirect_disk
    Returns -1 if INODE does not contain data for a byte at offset
    POS. */
 static block_sector_t
-byte_to_sector (const struct inode *inode, off_t pos) 
+byte_to_sector (const struct inode *inode, off_t pos_) 
 {
   struct inode_disk *idisk = inode->data;
-  struct indirect_disk *ind_disk;
+  struct indirect_disk ind_disk;
+  int pos = pos_;
+  block_sector_t ind_sector;
+  int ind_pos;
+
   ASSERT (inode != NULL);
   if (pos >= idisk->length)
     return -1;
-  
   if(pos < BLOCK_SECTOR_SIZE){
     //when data is in the direct disk
-    return idisk->direct + pos;
+    return idisk->direct;
   }
   else if(pos < (INT32T_PER_SECTOR + 1) * BLOCK_SECTOR_SIZE){
     //when data is in the indirect disk
     if(idisk->indirect == (block_sector_t) -1){
       return -1;
     }
-    cache_read(idisk->indirect, 0, ind_disk, 0, BLOCK_SECTOR_SIZE);
-
+    cache_read(idisk->indirect, 0, ind_disk.block, 0, BLOCK_SECTOR_SIZE);
+    pos -= BLOCK_SECTOR_SIZE;
+    return ind_disk.block[pos / BLOCK_SECTOR_SIZE];
   }
   else if(pos < (INT32T_PER_SECTOR*INT32T_PER_SECTOR + INT32T_PER_SECTOR + 1) * BLOCK_SECTOR_SIZE){
     //when data is in the double indirect disk
+    if(idisk->double_indirect == (block_sector_t) -1){
+      return -1;
+    }
+    cache_read(idisk->double_indirect, 0, ind_disk.block, 0, BLOCK_SECTOR_SIZE);
+    pos -= (INT32T_PER_SECTOR + 1) * BLOCK_SECTOR_SIZE;
+    ind_sector = ind_disk.block[pos / (INT32T_PER_SECTOR * BLOCK_SECTOR_SIZE)];
+
+    if(ind_sector == (block_sector_t) -1){
+      return -1;
+    }
+    cache_read(ind_sector, 0, ind_disk.block, 0, BLOCK_SECTOR_SIZE);
+    pos %= INT32T_PER_SECTOR * BLOCK_SECTOR_SIZE;
+    return ind_disk.block[pos / BLOCK_SECTOR_SIZE];
+  }
+  else{
+    NOT_REACHED();
   }
   NOT_REACHED();
 }
