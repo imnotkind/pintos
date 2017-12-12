@@ -143,6 +143,7 @@ inode_create (block_sector_t sector, off_t length, uint32_t is_dir)
       disk_inode->magic = INODE_MAGIC;
       disk_inode->is_dir = is_dir;
 
+/*
       if (free_map_allocate (sectors, &disk_inode->direct)) 
         {
           //block_write (fs_device, sector, disk_inode);
@@ -159,6 +160,7 @@ inode_create (block_sector_t sector, off_t length, uint32_t is_dir)
           success = true; 
         } 
       free (disk_inode);
+*/
     }
   return success;
 }
