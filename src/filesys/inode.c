@@ -107,11 +107,6 @@ byte_to_sector (const struct inode *inode, off_t pos_)
   NOT_REACHED();
 }
 
-byte_to_direct(const struct inode_disk *i_disk, off_t pos)
-{
-
-}
-
 /* List of open inodes, so that opening a single inode twice
    returns the same `struct inode'. */
 static struct list open_inodes;
@@ -149,8 +144,8 @@ inode_create (block_sector_t sector, off_t length, uint32_t is_dir)
       disk_inode->length = length;
       disk_inode->magic = INODE_MAGIC;
       disk_inode->is_dir = is_dir;
-      
-      if (free_map_allocate (sectors, &disk_inode->start)) 
+
+      if (free_map_allocate (sectors, &disk_inode->direct)) 
         {
           //block_write (fs_device, sector, disk_inode);
           cache_write (sector, 0, disk_inode, 0, BLOCK_SECTOR_SIZE);
@@ -168,6 +163,22 @@ inode_create (block_sector_t sector, off_t length, uint32_t is_dir)
       free (disk_inode);
     }
   return success;
+}
+
+bool inode_allocate(struct inode_disk* disk_inode)
+{
+
+}
+
+bool inode_growth(struct inode_disk* disk_inode, off_t new_length)
+{
+  if(new_length == disk_inode->length){
+    return true;
+  }
+  else if(new_length < disk_indoe->length){
+    return false;
+  }
+
 }
 
 /* Reads an inode from SECTOR

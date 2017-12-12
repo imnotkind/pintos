@@ -99,7 +99,8 @@ struct buffer_cache * cache_evict()
     return bc;
 }
 
-void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_ofs, int read_bytes) //read from buffer cache instead of disk
+// read from buffer cache instead of disk
+void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_ofs, int read_bytes)
 {
     struct buffer_cache *bc;
     ASSERT(read_bytes > 0 && read_bytes <= BLOCK_SECTOR_SIZE);
@@ -148,8 +149,8 @@ void read_ahead(block_sector_t * sector_p)
     free(sector_p);
     lock_release(&buffer_cache_lock);
 }
-
-void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_ofs, int write_bytes) //write to buffer cache instead of disk
+// write to buffer cache instead of disk
+void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_ofs, int write_bytes)
 {
     struct buffer_cache *bc;
     ASSERT(write_bytes > 0 && write_bytes <= BLOCK_SECTOR_SIZE);
