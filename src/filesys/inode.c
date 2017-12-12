@@ -141,7 +141,7 @@ inode_create (block_sector_t sector, off_t length, uint32_t is_dir)
       disk_inode->direct = (block_sector_t) -1;
       disk_inode->indirect = (block_sector_t) -1;
       disk_inode->double_indirect = (block_sector_t) -1;
-      disk_inode->length = length;
+      disk_inode->length = 0;
       disk_inode->magic = INODE_MAGIC;
       disk_inode->is_dir = is_dir;
 
@@ -172,11 +172,26 @@ bool inode_allocate(struct inode_disk* disk_inode)
 
 bool inode_growth(struct inode_disk* disk_inode, off_t new_length)
 {
+  int sectors, new_sectors;
+  block_sector_t sector;
+
   if(new_length == disk_inode->length){
     return true;
   }
-  else if(new_length < disk_indoe->length){
+  else if(new_length < disk_inode->length){
     return false;
+  }
+  sectors = DIV_ROUND_UP(disk_inode->length, BLOCK_SECTOR_SIZE);
+  new_sectors = DIV_ROUND_UP(new_length, BLOCK_SECTOR_SIZE);
+
+  for(; sectors <= new_sectors; sectors++){
+
+    sector = byte_to_sector (inode_disk, length);
+
+    if(!free_map_allocate(1, &sector)){
+      return false;
+    }
+
   }
 
 }
