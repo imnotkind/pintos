@@ -10,7 +10,7 @@
 
 /* Identifies an inode. */
 #define INODE_MAGIC 0x494e4f44
-/* BLOCK_SECTOR_SIZE / sizeof(int32_t) */
+/* BLOCK_SECTOR_SIZE / sizeof(int32_t) : max number of pointers in one block(sector) */
 #define INT32T_PER_SECTOR 128
 /* 8 MB */
 #define MAX_FILE_LENGTH 8 * 1024 * 1024
@@ -66,7 +66,7 @@ byte_to_sector (const struct inode *inode, off_t pos_)
   struct inode_disk *idisk = &inode->data;
   struct indirect_disk ind_disk;
   int pos = pos_;
-  block_sector_t ind_sector;
+  block_sector_t ind_sector; //indirect
   int ind_pos;
 
   ASSERT (inode != NULL);
@@ -102,7 +102,7 @@ byte_to_sector (const struct inode *inode, off_t pos_)
     return ind_disk.block[pos / BLOCK_SECTOR_SIZE];
   }
   else{
-    NOT_REACHED();
+    NOT_REACHED(); //8MB file limit
   }
   NOT_REACHED();
 }
