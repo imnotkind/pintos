@@ -51,7 +51,7 @@ struct inode
     struct lock inode_lock;
   };
 
-struct indirect_disk
+struct temp_disk
 {
   block_sector_t block[INT32T_PER_SECTOR];
 };
@@ -61,13 +61,11 @@ struct indirect_disk
    Returns -1 if INODE does not contain data for a byte at offset
    POS. */
 static block_sector_t
-byte_to_sector (const struct inode *inode, off_t pos_) //assumes inode_create and inode_open is already completed
+byte_to_sector (const struct inode *inode, off_t pos) //assumes inode_create and inode_open is already completed
 {
   struct inode_disk *idisk = &inode->data;
-  struct indirect_disk ind_disk;
-  int pos = pos_;
+  struct temp_disk tmp_disk;
   block_sector_t ind_sector; //indirect
-  int ind_pos;
 
   ASSERT (inode != NULL);
   if (pos >= idisk->length)
@@ -81,25 +79,25 @@ byte_to_sector (const struct inode *inode, off_t pos_) //assumes inode_create an
     if(idisk->indirect == (block_sector_t) -1){
       return -1;
     }
-    cache_read(idisk->indirect, 0, ind_disk.block, 0, BLOCK_SECTOR_SIZE); //read the indirect sector of inode_disk(array of pointers)
+    cache_read(idisk->indirect, 0, tmp_disk.block, 0, BLOCK_SECTOR_SIZE); //read the indirect sector of inode_disk(array of pointers)
     pos -= BLOCK_SECTOR_SIZE;
-    return ind_disk.block[pos / BLOCK_SECTOR_SIZE];
+    return tmp_disk.block[pos / BLOCK_SECTOR_SIZE];
   }
   else if(pos < (INT32T_PER_SECTOR*INT32T_PER_SECTOR + INT32T_PER_SECTOR + 1) * BLOCK_SECTOR_SIZE){
     //when data is in the double indirect disk
     if(idisk->double_indirect == (block_sector_t) -1){
       return -1;
     }
-    cache_read(idisk->double_indirect, 0, ind_disk.block, 0, BLOCK_SECTOR_SIZE);
+    cache_read(idisk->double_indirect, 0, tmp_disk.block, 0, BLOCK_SECTOR_SIZE); //ind_disk.block is made of indirect sector
     pos -= (INT32T_PER_SECTOR + 1) * BLOCK_SECTOR_SIZE;
-    ind_sector = ind_disk.block[pos / (INT32T_PER_SECTOR * BLOCK_SECTOR_SIZE)];
+    ind_sector = tmp_disk.block[pos / (INT32T_PER_SECTOR * BLOCK_SECTOR_SIZE)]; 
 
     if(ind_sector == (block_sector_t) -1){
       return -1;
     }
-    cache_read(ind_sector, 0, ind_disk.block, 0, BLOCK_SECTOR_SIZE);
+    cache_read(ind_sector, 0, tmp_disk.block, 0, BLOCK_SECTOR_SIZE);  //ind_disk.block is now made of direct sector num
     pos %= INT32T_PER_SECTOR * BLOCK_SECTOR_SIZE;
-    return ind_disk.block[pos / BLOCK_SECTOR_SIZE];
+    return tmp_disk.block[pos / BLOCK_SECTOR_SIZE];
   }
   else{
     NOT_REACHED(); //8MB file limit
