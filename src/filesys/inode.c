@@ -63,7 +63,7 @@ struct indirect_disk
 static block_sector_t
 byte_to_sector (const struct inode *inode, off_t pos_) 
 {
-  struct inode_disk *idisk = inode->data;
+  struct inode_disk *idisk = &inode->data;
   struct indirect_disk ind_disk;
   int pos = pos_;
   block_sector_t ind_sector;
