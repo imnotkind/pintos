@@ -10,7 +10,7 @@
 
 /* Identifies an inode. */
 #define INODE_MAGIC 0x494e4f44
-/* BLOCK_SECTOR_SIZE / sizeof(int32_t) */
+/* BLOCK_SECTOR_SIZE / sizeof(int32_t) : max number of pointers in one block(sector) */
 #define INT32T_PER_SECTOR 128
 /* 8 MB */
 #define MAX_FILE_LENGTH 8 * 1024 * 1024
@@ -19,9 +19,9 @@
    Must be exactly BLOCK_SECTOR_SIZE bytes(= 512 bytes) long. */
 struct inode_disk
   {
-    block_sector_t direct;              // 512 Bytes
-    block_sector_t indirect;            // 128 * 512 B = 64 KB
-    block_sector_t double_indirect;     // 128 * 64 KB = 8 MB
+    block_sector_t direct;              // sector index of direct 512 Bytes
+    block_sector_t indirect;            // sector index of indirect 128 * 512 B = 64 KB
+    block_sector_t double_indirect;     // sector index of double indirect 128 * 64 KB = 8 MB
 
     off_t length;                       /* File size in bytes. */
     unsigned magic;                     /* Magic number. */
@@ -42,7 +42,7 @@ bytes_to_sectors (off_t size)
 struct inode 
   {
     struct list_elem elem;              /* Element in inode list. */
-    block_sector_t sector;              /* Sector number of disk location. */
+    block_sector_t sector;              /* Sector number of disk location. (inode_disk) */
     int open_cnt;                       /* Number of openers. */
     bool removed;                       /* True if deleted, false otherwise. */
     int deny_write_cnt;                 /* 0: writes ok, >0: deny writes. */
@@ -51,7 +51,7 @@ struct inode
     struct lock inode_lock;
   };
 
-struct indirect_disk
+struct temp_disk
 {
   block_sector_t block[INT32T_PER_SECTOR];
 };
@@ -61,13 +61,11 @@ struct indirect_disk
    Returns -1 if INODE does not contain data for a byte at offset
    POS. */
 static block_sector_t
-byte_to_sector (const struct inode *inode, off_t pos_) 
+byte_to_sector (const struct inode *inode, off_t pos) //assumes inode_create and inode_open is already completed
 {
   struct inode_disk *idisk = &inode->data;
-  struct indirect_disk ind_disk;
-  int pos = pos_;
-  block_sector_t ind_sector;
-  int ind_pos;
+  struct temp_disk tmp_disk;
+  block_sector_t ind_sector; //indirect
 
   ASSERT (inode != NULL);
   if (pos >= idisk->length)
@@ -81,28 +79,28 @@ byte_to_sector (const struct inode *inode, off_t pos_)
     if(idisk->indirect == (block_sector_t) -1){
       return -1;
     }
-    cache_read(idisk->indirect, 0, ind_disk.block, 0, BLOCK_SECTOR_SIZE);
+    cache_read(idisk->indirect, 0, tmp_disk.block, 0, BLOCK_SECTOR_SIZE); //read the indirect sector of inode_disk(array of pointers)
     pos -= BLOCK_SECTOR_SIZE;
-    return ind_disk.block[pos / BLOCK_SECTOR_SIZE];
+    return tmp_disk.block[pos / BLOCK_SECTOR_SIZE];
   }
   else if(pos < (INT32T_PER_SECTOR*INT32T_PER_SECTOR + INT32T_PER_SECTOR + 1) * BLOCK_SECTOR_SIZE){
     //when data is in the double indirect disk
     if(idisk->double_indirect == (block_sector_t) -1){
       return -1;
     }
-    cache_read(idisk->double_indirect, 0, ind_disk.block, 0, BLOCK_SECTOR_SIZE);
+    cache_read(idisk->double_indirect, 0, tmp_disk.block, 0, BLOCK_SECTOR_SIZE); //ind_disk.block is made of indirect sector
     pos -= (INT32T_PER_SECTOR + 1) * BLOCK_SECTOR_SIZE;
-    ind_sector = ind_disk.block[pos / (INT32T_PER_SECTOR * BLOCK_SECTOR_SIZE)];
+    ind_sector = tmp_disk.block[pos / (INT32T_PER_SECTOR * BLOCK_SECTOR_SIZE)]; 
 
     if(ind_sector == (block_sector_t) -1){
       return -1;
     }
-    cache_read(ind_sector, 0, ind_disk.block, 0, BLOCK_SECTOR_SIZE);
+    cache_read(ind_sector, 0, tmp_disk.block, 0, BLOCK_SECTOR_SIZE);  //ind_disk.block is now made of direct sector num
     pos %= INT32T_PER_SECTOR * BLOCK_SECTOR_SIZE;
-    return ind_disk.block[pos / BLOCK_SECTOR_SIZE];
+    return tmp_disk.block[pos / BLOCK_SECTOR_SIZE];
   }
   else{
-    NOT_REACHED();
+    NOT_REACHED(); //8MB file limit
   }
   NOT_REACHED();
 }
