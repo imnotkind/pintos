@@ -131,7 +131,7 @@ inode_create (block_sector_t sector, off_t length, uint32_t is_dir)
 
   disk_inode = calloc (1, sizeof *disk_inode);
   if (disk_inode != NULL)
-    {
+  {
       disk_inode->direct = (block_sector_t) -1;
       disk_inode->indirect = (block_sector_t) -1;
       disk_inode->double_indirect = (block_sector_t) -1;
@@ -139,6 +139,14 @@ inode_create (block_sector_t sector, off_t length, uint32_t is_dir)
       disk_inode->magic = INODE_MAGIC;
       disk_inode->is_dir = is_dir;
 
+      if(!inode_growth(disk_inode,length))
+        return false;
+      success = true;
+
+      cache_write (sector, 0, disk_inode, 0, BLOCK_SECTOR_SIZE);
+      
+      free(disk_inode);
+      
 /*
       if (free_map_allocate (sectors, &disk_inode->direct)) 
         {
@@ -157,7 +165,8 @@ inode_create (block_sector_t sector, off_t length, uint32_t is_dir)
         } 
       free (disk_inode);
 */
-    }
+
+  }
   return success;
 }
 
@@ -167,9 +176,9 @@ bool inode_allocate(struct inode_disk* disk_inode)
 }
 
 // add sectors until sector count reach to DIV_ROUND_UP((new_length)/BLOCK_SECTOR_SIZE)
-bool inode_growth(struct inode * inode, off_t new_length)
+bool inode_growth(struct inode_disk* disk_inode, off_t new_length)
 {
-  struct inode_disk * disk_inode = &inode->data;
+  //struct inode_disk * disk_inode = &inode->data;
   int sectors, new_sectors, i;
   int indirect_tmp, double_tmp;
   block_sector_t sector, tmp_sector;
