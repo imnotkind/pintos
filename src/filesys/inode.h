@@ -14,6 +14,7 @@ struct inode *inode_reopen (struct inode *);
 block_sector_t inode_get_inumber (const struct inode *);
 void inode_close (struct inode *);
 void inode_dealloc(struct inode_disk * disk_inode);
+bool inode_growth(struct inode_disk* disk_inode, off_t new_length);
 void inode_remove (struct inode *);
 off_t inode_read_at (struct inode *, void *, off_t size, off_t offset);
 off_t inode_write_at (struct inode *, const void *, off_t size, off_t offset);
