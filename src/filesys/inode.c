@@ -335,7 +335,9 @@ inode_dealloc(struct inode_disk * disk_inode)
 {
   block_sector_t tmp_buffer[INT32T_PER_SECTOR];
   block_sector_t tmp_indirect_buffer[INT32T_PER_SECTOR];
-  free_map_release(disk_inode->direct,1);
+
+  if(disk_inode->direct != -1)
+    free_map_release(disk_inode->direct,1);
   if(disk_inode->indirect != -1)
   {
     cache_read(disk_inode->indirect,0,tmp_buffer,0,BLOCK_SECTOR_SIZE);
@@ -346,6 +348,7 @@ inode_dealloc(struct inode_disk * disk_inode)
         free_map_release(tmp_buffer[i],1);
       }
     }
+    free_map_release(disk_inode->indirect,1);
   }
   if(disk_inode->double_indirect != -1)
   {
@@ -362,8 +365,10 @@ inode_dealloc(struct inode_disk * disk_inode)
             free_map_release(tmp_buffer[j],1);
           }
         }
+        free_map_release(tmp_indirect_buffer[i],1);
       }
     }
+    free_map_release(disk_inode->double_indirect,1);
   }
 }
 
