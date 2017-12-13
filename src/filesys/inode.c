@@ -338,6 +338,7 @@ inode_dealloc(struct inode_disk * disk_inode)
 
   if(disk_inode->direct != -1)
     free_map_release(disk_inode->direct,1);
+    
   if(disk_inode->indirect != -1)
   {
     cache_read(disk_inode->indirect,0,tmp_buffer,0,BLOCK_SECTOR_SIZE);
@@ -350,6 +351,7 @@ inode_dealloc(struct inode_disk * disk_inode)
     }
     free_map_release(disk_inode->indirect,1);
   }
+
   if(disk_inode->double_indirect != -1)
   {
     cache_read(disk_inode->double_indirect,0,tmp_indirect_buffer,0,BLOCK_SECTOR_SIZE);
