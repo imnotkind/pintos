@@ -293,9 +293,9 @@ inode_close (struct inode *inode)
           free_map_release (inode->sector, 1);
           //free_map_release (inode->data.start,bytes_to_sectors (inode->data.length)); 
           //NEED TO DEALLOCATE BY INDEX!!!
-          struct inode_disk * idisk = NULL;
-          cache_read(inode->sector,0,idisk,0,BLOCK_SECTOR_SIZE);
-          inode_dealloc(idisk);
+          struct inode_disk idisk;
+          cache_read(inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
+          inode_dealloc(&idisk);
         }
 
       free (inode); 
@@ -368,9 +368,9 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
   while (size > 0) 
     {
       /* Disk sector to read, starting byte offset within sector. */
-      struct inode_disk * idisk = NULL;
-      cache_read(inode->sector,0,idisk,0,BLOCK_SECTOR_SIZE);
-      block_sector_t sector_idx = byte_to_sector (idisk, offset);
+      struct inode_disk idisk;
+      cache_read(inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
+      block_sector_t sector_idx = byte_to_sector (&idisk, offset);
       int sector_ofs = offset % BLOCK_SECTOR_SIZE;
 
       /* Bytes left in inode, bytes left in sector, lesser of the two. */
@@ -405,24 +405,24 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 {
   const uint8_t *buffer = buffer_;
   off_t bytes_written = 0;
-  struct inode_disk * idisk = NULL;
-  cache_read(inode->sector,0,idisk,0,BLOCK_SECTOR_SIZE);
+  struct inode_disk idisk;
+  cache_read(inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
 
   if (inode->deny_write_cnt)
     return 0;
 
-  if(idisk->length < offset + size)
+  if(idisk.length < offset + size)
   {
-    if(!inode_growth(idisk,offset + size))
+    if(!inode_growth(&idisk,offset + size))
       NOT_REACHED();
-    cache_write(inode->sector,0,idisk,0,BLOCK_SECTOR_SIZE); //update changed inode_disk in disk
+    cache_write(inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE); //update changed inode_disk in disk
   }
 
   while (size > 0) 
     {
       /* Sector to write, starting byte offset within sector. */
-      cache_read(inode->sector,0,idisk,0,BLOCK_SECTOR_SIZE);
-      block_sector_t sector_idx = byte_to_sector (idisk, offset);
+      cache_read(inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
+      block_sector_t sector_idx = byte_to_sector (&idisk, offset);
       int sector_ofs = offset % BLOCK_SECTOR_SIZE;
 
       /* Bytes left in inode, bytes left in sector, lesser of the two. */
@@ -470,7 +470,7 @@ inode_allow_write (struct inode *inode)
 off_t
 inode_length (const struct inode *inode)
 {
-  struct inode_disk * idisk = NULL;
-  cache_read(inode->sector,0,idisk,0,BLOCK_SECTOR_SIZE);
-  return idisk->length;
+  struct inode_disk idisk;
+  cache_read(inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
+  return idisk.length;
 }
