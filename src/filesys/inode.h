@@ -5,6 +5,7 @@
 #include <list.h>
 #include "filesys/off_t.h"
 #include "devices/block.h"
+#include "threads/synch.h"
 
 /* On-disk inode.
    Must be exactly BLOCK_SECTOR_SIZE bytes(= 512 bytes) long. */
