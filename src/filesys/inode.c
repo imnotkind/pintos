@@ -51,10 +51,6 @@ struct inode
     struct lock inode_lock;
   };
 
-struct temp_disk
-{
-  block_sector_t block[INT32T_PER_SECTOR];
-};
 
 /* Returns the block device sector that contains byte offset POS
    within INODE.
@@ -64,7 +60,7 @@ static block_sector_t
 byte_to_sector (const struct inode *inode, off_t pos) //assumes inode_create and inode_open is already completed
 {
   struct inode_disk *idisk = &inode->data;
-  struct temp_disk tmp_disk;
+  block_sector_t tmp_disk[INT32T_PER_SECTOR];
   block_sector_t ind_sector; //indirect
 
   ASSERT (inode != NULL);
@@ -79,25 +75,25 @@ byte_to_sector (const struct inode *inode, off_t pos) //assumes inode_create and
     if(idisk->indirect == (block_sector_t) -1){
       return -1;
     }
-    cache_read(idisk->indirect, 0, tmp_disk.block, 0, BLOCK_SECTOR_SIZE); //read the indirect sector of inode_disk(array of pointers)
+    cache_read(idisk->indirect, 0, tmp_disk, 0, BLOCK_SECTOR_SIZE); //read the indirect sector of inode_disk(array of pointers)
     pos -= BLOCK_SECTOR_SIZE;
-    return tmp_disk.block[pos / BLOCK_SECTOR_SIZE];
+    return tmp_disk[pos / BLOCK_SECTOR_SIZE];
   }
   else if(pos < (INT32T_PER_SECTOR*INT32T_PER_SECTOR + INT32T_PER_SECTOR + 1) * BLOCK_SECTOR_SIZE){
     //when data is in the double indirect disk
     if(idisk->double_indirect == (block_sector_t) -1){
       return -1;
     }
-    cache_read(idisk->double_indirect, 0, tmp_disk.block, 0, BLOCK_SECTOR_SIZE); //ind_disk.block is made of indirect sector
+    cache_read(idisk->double_indirect, 0, tmp_disk, 0, BLOCK_SECTOR_SIZE); //tmp_disk.block is now made of indirect sector
     pos -= (INT32T_PER_SECTOR + 1) * BLOCK_SECTOR_SIZE;
-    ind_sector = tmp_disk.block[pos / (INT32T_PER_SECTOR * BLOCK_SECTOR_SIZE)]; 
+    ind_sector = tmp_disk[pos / (INT32T_PER_SECTOR * BLOCK_SECTOR_SIZE)]; 
 
     if(ind_sector == (block_sector_t) -1){
       return -1;
     }
-    cache_read(ind_sector, 0, tmp_disk.block, 0, BLOCK_SECTOR_SIZE);  //ind_disk.block is now made of direct sector num
+    cache_read(ind_sector, 0, tmp_disk, 0, BLOCK_SECTOR_SIZE);  //tmp_disk.block is now made of direct sector num
     pos %= INT32T_PER_SECTOR * BLOCK_SECTOR_SIZE;
-    return tmp_disk.block[pos / BLOCK_SECTOR_SIZE];
+    return tmp_disk[pos / BLOCK_SECTOR_SIZE];
   }
   else{
     NOT_REACHED(); //8MB file limit
@@ -170,7 +166,7 @@ bool inode_allocate(struct inode_disk* disk_inode)
 
 }
 
-// add sectors until sector number reach to (new_length + 1)/BLOCK_SECTOR_SIZE
+// add sectors until sector count reach to DIV_ROUND_UP((new_length)/BLOCK_SECTOR_SIZE)
 bool inode_growth(struct inode_disk* disk_inode, off_t new_length)
 {
   int sectors, new_sectors, i;
@@ -188,55 +184,60 @@ bool inode_growth(struct inode_disk* disk_inode, off_t new_length)
     return true;
   }
   else if(new_length < disk_inode->length){
-    return false;
+    ASSERT(0);
+    return true;
   }
   sectors = DIV_ROUND_UP(disk_inode->length, BLOCK_SECTOR_SIZE);
   new_sectors = DIV_ROUND_UP(new_length, BLOCK_SECTOR_SIZE);
 
-  for(sectors++; sectors <= new_sectors; sectors++){
+  for(sectors++; sectors <= new_sectors; sectors++)
+  {
     ASSERT(sectors > 0);
 
-    if(byte_to_sector (inode_disk, sectors * BLOCK_SECTOR_SIZE - 1) != (block_sector_t) -1){
+    if(byte_to_sector (disk_inode, sectors * BLOCK_SECTOR_SIZE - 1) != (block_sector_t) -1){
       continue;
     }
     if(!free_map_allocate(1, &sector)){
       return false;
     }
     
-    if(sectors == 1){
+    if(sectors == 1)
+    {
       //when direct
       disk_inode->direct = sector;
     }
-    else if(sectors <= INT32T_PER_SECTOR + 1){
+    else if(sectors <= INT32T_PER_SECTOR + 1)
+    {
       //when indirect
       indirect_tmp = sectors - 2; // array index is started with 0
 
-      if(inode_disk->indirect == (block_sector_t) -1){
-        inode_disk->indirect = sector;
+      if(disk_inode->indirect == (block_sector_t) -1){
+        disk_inode->indirect = sector;
         cache_write(sector, 0, indirect_init, 0, BLOCK_SECTOR_SIZE);
         sectors--;
         continue;
       }
-      cache_read(inode_disk->indirect, 0, buffer, 0, BLOCK_SECTOR_SIZE);
+      cache_read(disk_inode->indirect, 0, buffer, 0, BLOCK_SECTOR_SIZE);
       buffer[indirect_tmp] = sector;
-      cache_write(inode_disk->indirect, 0, buffer, 0, BLOCK_SECTOR_SIZE);
+      cache_write(disk_inode->indirect, 0, buffer, 0, BLOCK_SECTOR_SIZE);
     }
-    else if(sectors <= INT32T_PER_SECTOR*INT32T_PER_SECTOR + INT32T_PER_SECTOR + 1){
+    else if(sectors <= INT32T_PER_SECTOR*INT32T_PER_SECTOR + INT32T_PER_SECTOR + 1)
+    {
       //when double_indirect
       indirect_tmp = sectors - (INT32T_PER_SECTOR + 2); // array index is started with 0
       double_tmp = indirect_tmp / INT32T_PER_SECTOR;
       indirect_tmp = indirect_tmp % INT32T_PER_SECTOR;
 
-      if(inode_disk->double_indirect == (block_sector_t) -1){
-        inode_disk->double_indirect = sector;
+      if(disk_inode->double_indirect == (block_sector_t) -1){
+        disk_inode->double_indirect = sector;
         cache_write(sector, 0, indirect_init, 0, BLOCK_SECTOR_SIZE);
         sectors--;
         continue;
       }
-      cache_read(inode_disk->double_indirect, 0, buffer, 0, BLOCK_SECTOR_SIZE);
+      cache_read(disk_inode->double_indirect, 0, buffer, 0, BLOCK_SECTOR_SIZE);
       if(buffer[double_tmp] == (block_sector_t) -1){
         buffer[double_tmp] = sector;
-        cache_write(inode_disk->double_indirect, 0, buffer, 0, BLOCK_SECTOR_SIZE);
+        cache_write(disk_inode->double_indirect, 0, buffer, 0, BLOCK_SECTOR_SIZE);
         cache_write(sector, 0, indirect_init, 0, BLOCK_SECTOR_SIZE);
         sectors--;
         continue;
@@ -248,7 +249,8 @@ bool inode_growth(struct inode_disk* disk_inode, off_t new_length)
       cache_write(tmp_sector, 0, buffer, 0, BLOCK_SECTOR_SIZE);
 
     }
-    else{
+    else
+    {
       NOT_REACHED();
     }
     cache_write(sector, 0, zeros, 0, BLOCK_SECTOR_SIZE);
