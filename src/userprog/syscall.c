@@ -13,6 +13,7 @@
 #include "threads/synch.h"
 #include "filesys/directory.h"
 #include "filesys/inode.h"
+#include "filesys/cache.h"
 
 struct lock filesys_lock;
 struct lock load_lock;
