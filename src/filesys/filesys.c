@@ -114,7 +114,7 @@ filesys_remove (const char *path)
 
   cur_dir = dir_open(inode);
 
-  if(!inode_is_dir(inode) || (cur_dir && !dir_readdir(cur_dir, temp)){
+  if(!inode_is_dir(inode) || cur_dir && !dir_readdir(cur_dir, temp)){
     success = dir != NULL && dir_remove (dir, name);
   }
   dir_close (dir); 
