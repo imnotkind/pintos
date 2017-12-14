@@ -69,6 +69,7 @@ filesys_create (const char *path, off_t initial_size, bool is_dir)
               && free_map_allocate (1, &inode_sector)
               && dir_create (inode_sector, DIR_ENTRIES) //dir
               && dir_add (dir, name, inode_sector));
+    printf("ee\n");
   }
   else{ // when it is file
     success = (dir != NULL
