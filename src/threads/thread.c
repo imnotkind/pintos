@@ -197,7 +197,7 @@ thread_create (const char *name, int priority,
   tid = t->tid = allocate_tid ();
 
   if(thread_current()->current_dir)
-    t->current_dir = dir_reopen(thread_current()->current_dir);
+    t->current_dir = dir_reopen(thread_current()->current_dir); //this must be AFTER init_thread()
 
   #ifdef USERPROG
     list_push_back(&thread_current()->child_list,&t->child_elem);
