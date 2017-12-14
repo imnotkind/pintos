@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include "fixed-point.h"
 #include "threads/synch.h"
+#include "filesys/directory.h"
 
 /* States in a thread's life cycle. */
 enum thread_status
@@ -114,6 +115,8 @@ struct thread      //pintos manual 67
     int exit_code;                      /* exit code used in process_wait*/
     bool load_succeed;                  /* whether child proc load succeeded*/
     struct file *run_file;              /* running file, needed for rox test*/
+
+    struct dir * current_dir;
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
   };
