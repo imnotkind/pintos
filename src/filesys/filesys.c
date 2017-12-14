@@ -8,8 +8,6 @@
 #include "filesys/cache.h"
 #include "threads/thread.h"
 
-#define PATH_MAX 256
-#define DIR_ENTRIES 16
 /* Partition that contains the file system. */
 struct block *fs_device;
 
