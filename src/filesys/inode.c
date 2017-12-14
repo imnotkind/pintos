@@ -477,3 +477,15 @@ inode_length (const struct inode *inode)
   cache_read(inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
   return idisk.length;
 }
+
+bool
+inode_is_dir(struct inode *inode)
+{
+  struct inode_disk idisk;
+  cache_read(inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
+  if(idisk.is_dir == 0)
+    return false;
+  else
+    return true;
+  NOT_REACHED();
+}
