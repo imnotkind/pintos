@@ -336,15 +336,16 @@ syscall_handler (struct intr_frame *f)
       
       check_addr_safe(p+1);
       int fd = *(int *)(p+1);
+      struct inode_disk idisk;
 
       struct flist_pack * fe = fd_to_flist_pack(fd);
       if(!fe)
         sys_exit(-1);
-      /*
-      struct inode_disk idisk;
+      
+      
       cache_read(fe->fp->inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
       f->eax = idisk.is_dir;
-      */
+      
       break;
     }
     case SYS_INUMBER:                 /* Returns the inode number for a fd. */
