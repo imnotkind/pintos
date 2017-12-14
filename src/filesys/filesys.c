@@ -79,7 +79,7 @@ filesys_create (const char *path, off_t initial_size, bool is_dir)
     dir_add (new_dir, "..", inode_get_inumber (dir_get_inode (dir)));
     dir_close (new_dir);
   }
-  
+
   dir_close (dir);
 
   return success;
@@ -117,6 +117,9 @@ filesys_remove (const char *path)
   bool success = false;
   
   dir = parse_path (path, name);
+  if(!dir){
+    return false;
+  }
   dir_lookup(dir, name, &inode);
 
   cur_dir = dir_open(inode);
