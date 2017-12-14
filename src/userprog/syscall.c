@@ -247,7 +247,7 @@ syscall_handler (struct intr_frame *f)
 
       struct flist_pack *fe = fd_to_flist_pack(fd);
       if (!fe){
-        f->eax = -1;
+        sys_exit(-1);
       }
       else{
         lock_acquire(&filesys_lock);
@@ -265,7 +265,7 @@ syscall_handler (struct intr_frame *f)
       struct flist_pack *fe = fd_to_flist_pack(fd);
 
       if (!fe){
-        f->eax = -1;
+        sys_exit(-1);
       }
       else{
         lock_acquire(&filesys_lock);
