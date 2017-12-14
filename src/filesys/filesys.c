@@ -5,7 +5,6 @@
 #include "filesys/file.h"
 #include "filesys/free-map.h"
 #include "filesys/inode.h"
-#include "filesys/directory.h"
 #include "filesys/cache.h"
 #include "threads/thread.h"
 
@@ -147,5 +146,5 @@ do_format (void)
 
 struct dir * parse_path(char * path, char * name)
 {
-  
+
 }
