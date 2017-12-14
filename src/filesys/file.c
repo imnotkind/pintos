@@ -1,6 +1,5 @@
 #include "filesys/file.h"
 #include <debug.h>
-#include "filesys/inode.h"
 #include "threads/malloc.h"
 
 /* Opens a file for the given INODE, of which it takes ownership,

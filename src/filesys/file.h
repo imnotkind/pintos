@@ -2,6 +2,8 @@
 #define FILESYS_FILE_H
 
 #include "filesys/off_t.h"
+#include <debug.h>
+#include "filesys/inode.h"
 
 struct inode;
 
