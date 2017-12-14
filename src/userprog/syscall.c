@@ -325,6 +325,7 @@ syscall_handler (struct intr_frame *f)
       f->eax = true;
       break;
     }
+
     case SYS_MKDIR:                  /* Create a directory. */
     {
       check_addr_safe(p+1);
@@ -335,6 +336,7 @@ syscall_handler (struct intr_frame *f)
 
       break;
     }
+    
     case SYS_READDIR:                /* Reads a directory entry. */
     {
       check_addr_safe(p+1);
@@ -373,7 +375,7 @@ syscall_handler (struct intr_frame *f)
         (*pos)++;
       }
             
-      //dir_close(dir);
+      dir_close(dir);
       f->eax = success;
       break;
     }

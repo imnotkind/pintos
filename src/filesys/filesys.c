@@ -55,9 +55,10 @@ filesys_create (const char *path, off_t initial_size, bool is_dir)
   struct dir *dir = parse_path(path, name);
   bool success;
 
-  if(strlen(path) > PATH_MAX){
+  if(!dir){
     return false;
   }
+
 
   if(is_dir){ // when it is dir
     success = (dir != NULL
@@ -102,9 +103,10 @@ filesys_open (const char *path)
   if (!dir){
     return NULL;
   }
-  dir_lookup (dir, name, &inode);
-  dir_close (dir);
 
+  dir_lookup (dir, name, &inode);
+  
+  dir_close (dir);
   return file_open (inode);
 }
 
