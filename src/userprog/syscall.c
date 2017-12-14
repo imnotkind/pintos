@@ -332,7 +332,7 @@ syscall_handler (struct intr_frame *f)
     }
     case SYS_ISDIR:                  /* Tests if a fd represents a directory. */
     {
-      /*
+      
       check_addr_safe(p+1);
       int fd = *(int *)(p+1);
 
@@ -342,7 +342,7 @@ syscall_handler (struct intr_frame *f)
       struct inode_disk idisk;
       cache_read(fe->fp->inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
       f->eax = idisk.is_dir;
-      */
+      
       break;
     }
     case SYS_INUMBER:                 /* Returns the inode number for a fd. */
