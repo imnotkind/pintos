@@ -167,6 +167,9 @@ struct dir * parse_path(char * path, char * name)
   char *prev_token, *token, *save_ptr;
   char tmp_name[NAME_MAX+1];
 
+  if(!strcmp(path,""))
+    return NULL;
+
   if(path[0] == '/') //absolute
     dir = dir_open_root();
   else               //relative
