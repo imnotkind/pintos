@@ -57,7 +57,7 @@ filesys_create (const char *path, off_t initial_size, bool is_dir)
   char name[NAME_MAX + 1]; //to contain \0
   struct dir *dir = parse_path(path, name);
   bool success;
-  
+
   if(is_dir){ // when it is dir
     success = (dir != NULL
               && free_map_allocate (1, &inode_sector)
@@ -104,17 +104,17 @@ filesys_open (const char *path)
 bool
 filesys_remove (const char *path) 
 {
-  char name[NAME_MAX + 1], temp_dir[PATH_MAX+1]; //to contain \0
+  char name[NAME_MAX + 1], temp[PATH_MAX+1]; //to contain \0
   struct dir *dir, *cur_dir = NULL;
   struct inode *inode;
   bool success = false;
-
-  dir_lookup(dir, name, &inode);
+  
   dir = parse_path (path, name);
+  dir_lookup(dir, name, &inode);
 
   cur_dir = dir_open(inode);
 
-  if(!inode_is_dir(inode) || (cur && !dir_readdir(cur_dir, temp_dir)){
+  if(!inode_is_dir(inode) || (cur_dir && !dir_readdir(cur_dir, temp)){
     success = dir != NULL && dir_remove (dir, name);
   }
   dir_close (dir); 
