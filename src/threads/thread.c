@@ -11,6 +11,7 @@
 #include "threads/switch.h"
 #include "threads/synch.h"
 #include "threads/vaddr.h"
+#include "filesys/directory.h"
 #ifdef USERPROG
 #include "userprog/process.h"
 #endif
@@ -194,6 +195,9 @@ thread_create (const char *name, int priority,
   /* Initialize thread. */
   init_thread (t, name, priority); //makes thread status BLOCKED, thread_current() doesn't work in this func
   tid = t->tid = allocate_tid ();
+
+  if(thread_current()->current_dir)
+    t->current_dir = dir_reopen(thread_current()->current_dir);
 
   #ifdef USERPROG
     list_push_back(&thread_current()->child_list,&t->child_elem);
@@ -731,6 +735,8 @@ init_thread (struct thread *t, const char *name, int priority)
     list_init(&t->file_list);
     t->exit_code = EXIT_CODE_DEFAULT;
   #endif
+  t->current_dir = NULL;
+
   list_push_back (&all_list, &t->allelem);
 }
 

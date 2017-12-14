@@ -347,10 +347,10 @@ syscall_handler (struct intr_frame *f)
         f->eax = false;
         break;
       }
-
+      /*
       cache_read(fe->fp->inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
       f->eax = idisk.is_dir;
-      
+      */
       break;
     }
     case SYS_INUMBER:                 /* Returns the inode number for a fd. */
