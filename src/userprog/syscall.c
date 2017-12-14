@@ -373,7 +373,7 @@ syscall_handler (struct intr_frame *f)
         (*pos)++;
       }
             
-      dir_close(dir);
+      //dir_close(dir);
       f->eax = success;
       break;
     }
