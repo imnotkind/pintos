@@ -114,7 +114,6 @@ inode_create (block_sector_t sector, off_t length, int is_dir)
       if(!inode_growth(disk_inode,length))
       {
         free(disk_inode);
-        printf("CREATE FAIL!!!\n");
         return false;
       }
       
