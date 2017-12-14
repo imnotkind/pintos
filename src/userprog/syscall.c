@@ -309,8 +309,20 @@ syscall_handler (struct intr_frame *f)
     {
       check_addr_safe(p+1);
       check_addr_safe((char *)*(p+1));
-      char *dir = *(char **)(p+1);
+      char *dir_path = *(char **)(p+1);
+      char path[PATH_MAX+1], name[NAME_MAX];
+      struct dir *dir;
 
+      strlcpy(path, dir_path, PATH_MAX);
+      dir = parse_path(path, name);
+      if(!dir){
+        f->eax = false;
+        break;
+      }
+      dir_close(thread_current()->current_dir);
+      thread_current()->current_dir = dir;
+
+      f->eax = true;
       break;
     }
     case SYS_MKDIR:                  /* Create a directory. */
@@ -318,6 +330,8 @@ syscall_handler (struct intr_frame *f)
       check_addr_safe(p+1);
       check_addr_safe((char *)*(p+1));
       char *dir = *(char **)(p+1);
+
+      f->eax = filesys_create(dir, 0, true); // doesn't use size on dir
 
       break;
     }
@@ -328,12 +342,32 @@ syscall_handler (struct intr_frame *f)
       check_addr_safe((char *)*(p+2));
       int fd = *(int *)(p+1);
       char *name = *(char **)(p+2);
+      
+      struct dir *dir;
+      bool success = false;
+      struct flist_pack * fe = fd_to_flist_pack(fd);
+      if(!fe)
+        sys_exit(-1);
+      
+      if(!inode_is_dir(fe->fp->inode)){
+        f->eax = false;
+        break;
+      }
+      dir = dir_open(fe->fp->inode);
+      if(!dir){
+        f->eax = false;
+        break;
+      }
 
+      while(!success){
+        success = dir_readdir (dir, name);
+      }
+
+      dir_close(dir);
       break;
     }
     case SYS_ISDIR:                  /* Tests if a fd represents a directory. */
     {
-      
       check_addr_safe(p+1);
       int fd = *(int *)(p+1);
       struct inode_disk idisk;
@@ -341,16 +375,8 @@ syscall_handler (struct intr_frame *f)
       struct flist_pack * fe = fd_to_flist_pack(fd);
       if(!fe)
         sys_exit(-1);
-      
-      if(fe->fp->inode->removed)
-      {
-        f->eax = false;
-        break;
-      }
-      /*
-      cache_read(fe->fp->inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
-      f->eax = idisk.is_dir;
-      */
+            
+      f->eax = inode_is_dir(&fe->fp->inode);
       break;
     }
     case SYS_INUMBER:                 /* Returns the inode number for a fd. */
