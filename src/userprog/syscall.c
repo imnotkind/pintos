@@ -303,10 +303,57 @@ syscall_handler (struct intr_frame *f)
 
     /* Project 4 only. */
     case SYS_CHDIR:                  /* Change the current directory. */
+    {
+      check_addr_safe(p+1);
+      check_addr_safe((char *)*(p+1));
+      char *dir = *(char **)(p+1);
+
+      break;
+    }
     case SYS_MKDIR:                  /* Create a directory. */
+    {
+      check_addr_safe(p+1);
+      check_addr_safe((char *)*(p+1));
+      char *dir = *(char **)(p+1);
+
+      break;
+    }
     case SYS_READDIR:                /* Reads a directory entry. */
+    {
+      check_addr_safe(p+1);
+      check_addr_safe(p+2);
+      check_addr_safe((char *)*(p+2));
+      int fd = *(int *)(p+1);
+      char *name = *(char **)(p+2);
+
+      break;
+    }
     case SYS_ISDIR:                  /* Tests if a fd represents a directory. */
+    {
+      check_addr_safe(p+1);
+      int fd = *(int *)(p+1);
+
+      struct flist_pack * fe = fd_to_flist_pack(fd);
+      if(!fe)
+        sys_exit(-1);
+      struct inode_disk idisk;
+      cache_read(fe->fp->inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
+      f->eax = idisk.is_dir;
+      break;
+    }
     case SYS_INUMBER:                 /* Returns the inode number for a fd. */
+    {
+      check_addr_safe(p+1);
+      int fd = *(int *)(p+1);
+
+      struct flist_pack * fe = fd_to_flist_pack(fd);
+      if(!fe)
+        sys_exit(-1);
+
+      f->eax = fe->fp->inode->sector;
+
+      break;
+    }
     
     default:
       break;
