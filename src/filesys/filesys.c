@@ -157,5 +157,65 @@ do_format (void)
 
 struct dir * parse_path(char * path, char * name)
 {
+  struct dir * dir = NULL;
+  struct inode * inode = NULL;
+  char * path_copy = malloc(strlen(path)+1);
+  int pos = 0;
+  int flag = 0;
+  char *prev_token, *token, *save_ptr;
+  char tmp_name[NAME_MAX+1];
 
+  if(path[0] == '/') //absolute
+    dir = dir_open_root();
+  else               //relative
+    dir = dir_reopen(thread_current()->current_dir);
+
+  ASSERT(inode_is_dir(dir->inode));
+
+  strlcpy(path_copy,path,strlen(path)+1);
+  prev_token = NULL;
+
+  for (token = strtok_r(path_copy, "/", &save_ptr); token != NULL; token = strtok_r(NULL, "/", &save_ptr)){
+    flag = 1;
+    if(prev_token == NULL)
+    {
+      prev_token = token;
+      continue;
+    }
+
+    if(!dir_lookup(dir,prev_token,&inode)) //path files must exist
+    {
+      dir_close(dir);
+      free(path_copy);
+      return NULL;
+    }
+    else
+    {
+      if(!inode_is_dir(inode)) //MUST BE DIRECTORY because later token exists
+      {
+        dir_close(dir);
+        free(path_copy);
+        return NULL;
+      }
+      else
+      {
+        dir_close(dir);
+        dir = dir_open(inode); //new file path
+      }
+    }
+
+    prev_token=token;
+  }
+
+  if(flag==0) //path is made of only '/' : give name as '.'
+  {
+    strlcpy(name,".",NAME_MAX+1);
+    free(path_copy);
+    return dir;
+  }
+  strlcpy(name,prev_token,NAME_MAX+1);
+  free(path_copy);
+  return dir;
+  
 }
+
