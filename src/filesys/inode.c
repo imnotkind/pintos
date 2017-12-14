@@ -6,6 +6,7 @@
 #include "filesys/free-map.h"
 #include "threads/malloc.h"
 #include "filesys/cache.h"
+#include "threads/synch.h"
 
 /* Identifies an inode. */
 #define INODE_MAGIC 0x494e4f44
@@ -413,8 +414,10 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 
   if(idisk.length < offset + size)
   {
+    lock_acquire(&inode->inode_lock);
     if(!inode_growth(&idisk,offset + size))
       NOT_REACHED();
+    lock_release(&inode->inode_lock);
     cache_write(inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE); //update changed inode_disk in disk
   }
 
