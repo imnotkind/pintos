@@ -56,7 +56,8 @@ filesys_create (const char *path, off_t initial_size, bool is_dir)
   block_sector_t inode_sector = 0;
   char name[NAME_MAX + 1]; //to contain \0
   struct dir *dir = parse_path(path, name);
-  bool success
+  bool success;
+  
   if(is_dir){ // when it is dir
     success = (dir != NULL
               && free_map_allocate (1, &inode_sector)
