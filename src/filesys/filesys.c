@@ -9,7 +9,7 @@
 #include "threads/thread.h"
 
 #define PATH_MAX 256
-#define DIR_ENTRIES 32
+#define DIR_ENTRIES 16
 /* Partition that contains the file system. */
 struct block *fs_device;
 
@@ -72,6 +72,14 @@ filesys_create (const char *path, off_t initial_size, bool is_dir)
 
   if (!success && inode_sector != 0) 
     free_map_release (inode_sector, 1);
+
+  if(is_dir && success){
+    struct dir *new_dir = dir_open (inode_open (inode_sector));
+    dir_add (new_dir, ".", inode_sector);
+    dir_add (new_dir, "..", inode_get_inumber (dir_get_inode (dir)));
+    dir_close (new_dir);
+  }
+
   dir_close (dir);
 
   return success;
@@ -109,6 +117,9 @@ filesys_remove (const char *path)
   bool success = false;
   
   dir = parse_path (path, name);
+  if(!dir){
+    return false;
+  }
   dir_lookup(dir, name, &inode);
 
   cur_dir = dir_open(inode);

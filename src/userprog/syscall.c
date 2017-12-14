@@ -359,11 +359,9 @@ syscall_handler (struct intr_frame *f)
         break;
       }
 
-      while(!success){
-        success = dir_readdir (dir, name);
-      }
-
+      success = dir_readdir (dir, name);
       dir_close(dir);
+      f->eax = success;
       break;
     }
     case SYS_ISDIR:                  /* Tests if a fd represents a directory. */
