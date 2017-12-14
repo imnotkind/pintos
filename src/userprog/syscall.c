@@ -342,7 +342,7 @@ syscall_handler (struct intr_frame *f)
       if(!fe)
         sys_exit(-1);
       
-      if(inode->removed)
+      if(fe->fp->inode->removed)
       {
         f->eax = false;
         break;
