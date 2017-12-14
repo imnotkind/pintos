@@ -310,15 +310,13 @@ syscall_handler (struct intr_frame *f)
       check_addr_safe(p+1);
       check_addr_safe((char *)*(p+1));
       char *dir_path = *(char **)(p+1);
-      char path[PATH_MAX+1], name[NAME_MAX];
-      struct dir *dir;
-
-      strlcpy(path, dir_path, PATH_MAX);
-      dir = parse_path(path, name);
+      char name[NAME_MAX+1];
+      struct dir *dir = parse_path(dir_path, name);
       if(!dir){
         f->eax = false;
         break;
       }
+      
       dir_close(thread_current()->current_dir);
       thread_current()->current_dir = dir;
 
@@ -336,7 +334,7 @@ syscall_handler (struct intr_frame *f)
 
       break;
     }
-    
+
     case SYS_READDIR:                /* Reads a directory entry. */
     {
       check_addr_safe(p+1);
