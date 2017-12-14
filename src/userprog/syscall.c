@@ -126,7 +126,7 @@ syscall_handler (struct intr_frame *f)
       unsigned initial_size = *(unsigned *)(p+2);
 
       lock_acquire(&filesys_lock);
-      f->eax = filesys_create(file, initial_size,false);
+      f->eax = filesys_create(file, initial_size, false);
       lock_release(&filesys_lock);
       break;
       
