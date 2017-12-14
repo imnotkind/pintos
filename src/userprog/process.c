@@ -208,6 +208,8 @@ process_exit (void)
     sema_up(&t->destroy);
   }
 
+  dir_close(thread_current()->current_dir);
+
   sema_up(&cur->wait);
   sema_down(&cur->destroy);
 
