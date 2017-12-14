@@ -482,6 +482,8 @@ bool
 inode_is_dir(struct inode *inode)
 {
   struct inode_disk idisk;
+  if(inode->removed)
+    return false;
   cache_read(inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
   if(idisk.is_dir == 0)
     return false;
