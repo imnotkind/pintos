@@ -343,7 +343,9 @@ syscall_handler (struct intr_frame *f)
       int fd = *(int *)(p+1);
       char *name = *(char **)(p+2);
       
+      int i;
       struct dir *dir;
+      off_t *pos;
       bool success = false;
       struct flist_pack * fe = fd_to_flist_pack(fd);
       if(!fe)
@@ -359,7 +361,18 @@ syscall_handler (struct intr_frame *f)
         break;
       }
 
-      success = dir_readdir (dir, name);
+      pos = &fe->fp->pos;
+      for(i = 0; i <= (*pos); i++){
+        success = dir_readdir (dir, name);
+        if(success){
+          break;
+        }
+      }
+        
+      if(i > (*pos)){
+        (*pos)++;
+      }
+            
       dir_close(dir);
       f->eax = success;
       break;
