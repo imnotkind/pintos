@@ -342,7 +342,12 @@ syscall_handler (struct intr_frame *f)
       if(!fe)
         sys_exit(-1);
       
-      
+      if(inode->removed)
+      {
+        f->eax = false;
+        break;
+      }
+
       cache_read(fe->fp->inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
       f->eax = idisk.is_dir;
       
