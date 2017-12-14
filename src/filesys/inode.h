@@ -17,7 +17,7 @@ struct inode_disk
 
     off_t length;                       /* File size in bytes. */
     unsigned magic;                     /* Magic number. */
-    uint32_t is_dir;                    // We use this like bool type
+    int is_dir;                    // We use this like bool type because we need to size inode_disk to 512 byte
 
     uint32_t unused[122];               /* Not used. */
 };
@@ -41,7 +41,7 @@ struct inode
 struct bitmap;
 
 void inode_init (void);
-bool inode_create (block_sector_t sector, off_t length);
+bool inode_create (block_sector_t sector, off_t length, int is_dir);
 struct inode *inode_open (block_sector_t);
 struct inode *inode_reopen (struct inode *);
 block_sector_t inode_get_inumber (const struct inode *);

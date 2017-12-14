@@ -29,7 +29,7 @@ bytes_to_sectors (off_t size)
    Returns -1 if INODE does not contain data for a byte at offset
    POS. */
 static block_sector_t
-byte_to_sector (const struct inode_disk *idisk, off_t pos) //assumes inode_create and inode_open is already completed
+byte_to_sector (const struct inode_disk *idisk, off_t pos) 
 {
   block_sector_t tmp_buffer[INT32T_PER_SECTOR];
   block_sector_t ind_sector; //indirect
@@ -89,7 +89,7 @@ inode_init (void)
    Returns true if successful.
    Returns false if memory or disk allocation fails. */
 bool
-inode_create (block_sector_t sector, off_t length)
+inode_create (block_sector_t sector, off_t length, int is_dir)
 {
   struct inode_disk *disk_inode = NULL;
   bool success = false;
@@ -108,7 +108,7 @@ inode_create (block_sector_t sector, off_t length)
       disk_inode->double_indirect = (block_sector_t) -1;
       disk_inode->length = 0;
       disk_inode->magic = INODE_MAGIC;
-      //disk_inode->is_dir = is_dir;
+      disk_inode->is_dir = is_dir;
 
       if(!inode_growth(disk_inode,length))
         return false;
