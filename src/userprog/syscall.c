@@ -11,6 +11,8 @@
 #include "userprog/process.h"
 #include <string.h>
 #include "threads/synch.h"
+#include "filesys/directory.h"
+#include "filesys/inode.h"
 
 struct lock filesys_lock;
 struct lock load_lock;
@@ -345,7 +347,7 @@ syscall_handler (struct intr_frame *f)
     }
     case SYS_INUMBER:                 /* Returns the inode number for a fd. */
     {
-      /*
+      
       check_addr_safe(p+1);
       int fd = *(int *)(p+1);
 
@@ -354,7 +356,7 @@ syscall_handler (struct intr_frame *f)
         sys_exit(-1);
 
       f->eax = fe->fp->inode->sector;
-      */
+      
       break;
     }
     
