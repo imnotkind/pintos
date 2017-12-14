@@ -112,7 +112,10 @@ inode_create (block_sector_t sector, off_t length, int is_dir)
       disk_inode->is_dir = is_dir;
 
       if(!inode_growth(disk_inode,length))
+      {
+        free(disk_inode);
         return false;
+      }
       
       cache_write (sector, 0, disk_inode, 0, BLOCK_SECTOR_SIZE);
       free(disk_inode);
