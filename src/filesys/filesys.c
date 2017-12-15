@@ -107,6 +107,8 @@ struct file *
 filesys_open (const char *path)
 {
   char name[NAME_MAX + 1]; //to contain \0
+  if(strlen(path)==0)
+    return NULL;
   struct dir *dir = parse_path (path, name);
   struct inode *inode = NULL;
 
