@@ -7,6 +7,7 @@
 #include "filesys/inode.h"
 #include "filesys/cache.h"
 #include "threads/thread.h"
+#include "threads/malloc.h"
 
 /* Partition that contains the file system. */
 struct block *fs_device;
