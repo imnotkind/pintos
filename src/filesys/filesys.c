@@ -118,7 +118,7 @@ filesys_open (const char *path)
   while(dir_readdir(dir,nn))
     printf("%s \n",nn);
 */
-  dir_lookup (dir, name, &inode) //printf("fuck");
+  dir_lookup (dir, name, &inode); //printf("fuck");
   dir_close (dir);
   return file_open (inode);
 }
