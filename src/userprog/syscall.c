@@ -303,7 +303,9 @@ syscall_handler (struct intr_frame *f)
       dir_close(thread_current()->current_dir);
       thread_current()->current_dir = dir;
 
-
+      char nn[32];
+      while(dir_readdir(dir,nn))
+      printf("%s \n",nn);
       f->eax = true;
       break;
     }
