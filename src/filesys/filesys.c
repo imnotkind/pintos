@@ -113,12 +113,12 @@ filesys_open (const char *path)
   if (!dir){
     return NULL;
   }
-
+/*
   char nn[32];
   while(dir_readdir(dir,nn))
     printf("%s \n",nn);
-
-  if(!dir_lookup (dir, name, &inode)) printf("fuck");
+*/
+  dir_lookup (dir, name, &inode) //printf("fuck");
   dir_close (dir);
   return file_open (inode);
 }
