@@ -148,7 +148,6 @@ syscall_handler (struct intr_frame *f)
       
       if(!fp){
         f->eax = -1;
-        printf("FUCAWD");
       }
       else{
         struct flist_pack *fe = (struct flist_pack*)malloc(sizeof(struct flist_pack));
