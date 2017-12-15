@@ -62,21 +62,21 @@ struct buffer_cache * find_evict_cache() //loop all buffer caches twice
 {
     int i;
     for(i = clock_pos; i < BUFFER_CACHE_NUM; i++){
-        if(buffer_cache[i].clock_bit == false && buffer_cache[i].is_using > 0){
+        if(buffer_cache[i].clock_bit == false && buffer_cache[i].is_using == 0){
             clock_pos = i;
             return &buffer_cache[i];
         }
         buffer_cache[i].clock_bit = false;
     }
     for(i = 0; i < BUFFER_CACHE_NUM; i++){
-        if(buffer_cache[i].clock_bit == false && buffer_cache[i].is_using > 0){
+        if(buffer_cache[i].clock_bit == false && buffer_cache[i].is_using == 0){
             clock_pos = i;
             return &buffer_cache[i];
         }
         buffer_cache[i].clock_bit = false;
     }
     for(i = 0; i < clock_pos; i++){
-        if(buffer_cache[i].clock_bit == false && buffer_cache[i].is_using > 0){
+        if(buffer_cache[i].clock_bit == false && buffer_cache[i].is_using == 0){
             clock_pos = i;
             return &buffer_cache[i];
         }
@@ -121,6 +121,7 @@ void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_o
     }
     ASSERT(bc->sector != (block_sector_t) -1);
     bc->is_using++;
+    ASSERT(bc->is_using > 0);
 
     lock_acquire(&bc->buffer_lock);
     lock_release(&buffer_cache_lock);
@@ -166,6 +167,7 @@ void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_
     }
     ASSERT(bc->sector != (block_sector_t) -1);
     bc->is_using++;
+    ASSERT(bc->is_using > 0);
 
     lock_acquire(&bc->buffer_lock);
     lock_release(&buffer_cache_lock);
