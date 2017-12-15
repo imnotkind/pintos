@@ -108,8 +108,8 @@ filesys_open (const char *path)
   if (!dir){
     return NULL;
   }
-  printf("%s, %s, %s",path,name, thread_current()->name);
-  dir_lookup (dir, name, &inode);
+  printf("%s, %s",path,name);
+  if(!dir_lookup (dir, name, &inode)) printf("fuck");
   dir_close (dir);
   return file_open (inode);
 }
