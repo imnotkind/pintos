@@ -76,7 +76,6 @@ filesys_create (const char *path, off_t initial_size, bool is_dir)
               && free_map_allocate (1, &inode_sector)
               && inode_create (inode_sector, initial_size, 0) //not dir
               && dir_add (dir, name, inode_sector));
-    if(success) printf("sex");
   }
 
   if (!success && inode_sector != 0) 
@@ -90,7 +89,7 @@ filesys_create (const char *path, off_t initial_size, bool is_dir)
   }
 
   dir_close (dir);
-
+  if(!success)printf("sees");
   return success;
 }
 
