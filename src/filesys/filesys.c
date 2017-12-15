@@ -89,7 +89,7 @@ filesys_create (const char *path, off_t initial_size, bool is_dir)
   }
 
   dir_close (dir);
-  if(!success)printf("sees");
+
   return success;
 }
 

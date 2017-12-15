@@ -148,12 +148,14 @@ syscall_handler (struct intr_frame *f)
       
       if(!fp){
         f->eax = -1;
+        printf("FUCAWD");
       }
       else{
         struct flist_pack *fe = (struct flist_pack*)malloc(sizeof(struct flist_pack));
         fe->fp = fp;
         fe->fd = fd_next++;
         list_push_back(&thread_current()->file_list, &fe->elem);
+      
         f->eax = fe->fd;
       }
       break;
