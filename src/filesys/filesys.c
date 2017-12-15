@@ -192,7 +192,8 @@ struct dir * parse_path(char * path, char * name)
   else               //relative
     dir = dir_reopen(thread_current()->current_dir);
 
-  ASSERT(inode_is_dir(dir->inode));
+  if(!inode_is_dir(dir->inode))
+    return NULL;
 
   strlcpy(path_copy,path,strlen(path)+1);
   prev_token = NULL;

@@ -301,9 +301,15 @@ syscall_handler (struct intr_frame *f)
         break;
       }
       if(!dir_lookup(dir,name,&inode))
-        return false;
+      {
+        f->eax = false;
+        break;
+      }
       if(!inode_is_dir(inode))
-        return false;
+      {
+        f->eax = false;
+        break;
+      }
       dir_close(dir);
       dir = dir_open(inode);
 
