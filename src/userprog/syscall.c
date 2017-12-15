@@ -360,7 +360,6 @@ syscall_handler (struct intr_frame *f)
         f->eax = false;
         break;
       }
-      
       if(!dir_readdir(dir, name))
       {
         f->eax = false;
