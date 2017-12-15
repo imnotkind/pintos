@@ -108,7 +108,7 @@ filesys_open (const char *path)
   if (!dir){
     return NULL;
   }
-  printf("%s, %s",path,name, thread_current()->current_dir);
+  printf("%s, %s, %s",path,name, thread_current()->current_dir);
   dir_lookup (dir, name, &inode);
   dir_close (dir);
   return file_open (inode);
