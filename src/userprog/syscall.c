@@ -300,7 +300,11 @@ syscall_handler (struct intr_frame *f)
         f->eax = false;
         break;
       }
-      dir_lookup(dir,name,&inode);
+      ASSERT(dir_lookup(dir,name,&inode));
+      ASSERT(inode_is_dir(inode));
+      dir_close(dir);
+      dir = dir_open(inode);
+      
       dir_close(thread_current()->current_dir);
       thread_current()->current_dir = dir;
 
