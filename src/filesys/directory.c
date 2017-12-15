@@ -214,7 +214,7 @@ dir_readdir (struct dir *dir, char name[NAME_MAX + 1])
   while (inode_read_at (dir->inode, &e, sizeof e, dir->pos) == sizeof e) 
     {
       dir->pos += sizeof e;
-      if (e.in_use && strcmp(e.name, ".") && strcmp(e.name, ".."))
+      if (e.in_use && strcmp(e.name, ".") && strcmp(e.name, "..")) //. and .. are always there, but doesn't come out on readdir
         {
           strlcpy (name, e.name, NAME_MAX + 1);
           return true;
