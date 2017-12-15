@@ -294,7 +294,6 @@ syscall_handler (struct intr_frame *f)
       char *dir_path = *(char **)(p+1);
       char name[NAME_MAX+1];
       struct dir *dir = parse_path(dir_path, name);
-      printf("%s KK  %s",dir_path,name);
       if(!dir){
         f->eax = false;
         break;
