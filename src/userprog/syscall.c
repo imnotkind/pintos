@@ -15,7 +15,6 @@
 #include "filesys/inode.h"
 #include "filesys/cache.h"
 
-struct lock filesys_lock;
 struct lock load_lock;
 static int fd_next = 3;
 
@@ -27,7 +26,6 @@ void
 syscall_init (void) 
 {
   intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
-  lock_init(&filesys_lock);
   lock_init(&load_lock);
 }
 
@@ -125,9 +123,7 @@ syscall_handler (struct intr_frame *f)
       char *file = *(char **)(p+1);
       unsigned initial_size = *(unsigned *)(p+2);
 
-      lock_acquire(&filesys_lock);
       f->eax = filesys_create(file, initial_size, false);
-      lock_release(&filesys_lock);
       break;
       
     }
@@ -138,9 +134,7 @@ syscall_handler (struct intr_frame *f)
       check_addr_safe((void *)*(p+1));
       char *file = *(char **)(p+1);
 
-      lock_acquire(&filesys_lock);
       f->eax = filesys_remove(file);
-      lock_release(&filesys_lock);
       break;
     }
 
@@ -150,7 +144,6 @@ syscall_handler (struct intr_frame *f)
       check_addr_safe((void *)*(p+1));
       char * file_name = *(char **)(p+1);
 
-      lock_acquire(&filesys_lock);
       struct file* fp = filesys_open (file_name);
       
       if(!fp){
@@ -163,7 +156,6 @@ syscall_handler (struct intr_frame *f)
         list_push_back(&thread_current()->file_list, &fe->elem);
         f->eax = fe->fd;
       }
-      lock_release(&filesys_lock);
       break;
     }
       
@@ -198,7 +190,6 @@ syscall_handler (struct intr_frame *f)
       }
       else
       {
-        lock_acquire(&filesys_lock);
         struct flist_pack *fe = fd_to_flist_pack(fd);
         if (!fe){
           f->eax = -1;
@@ -206,7 +197,6 @@ syscall_handler (struct intr_frame *f)
         else{
           f->eax = file_read(fe->fp, buffer, (off_t)size);
         }
-        lock_release(&filesys_lock);
       }
       
       break;
@@ -232,9 +222,7 @@ syscall_handler (struct intr_frame *f)
           f->eax = -1;
         }          
         else{
-          lock_acquire(&filesys_lock);
           f->eax = file_write(fe->fp, buffer, (off_t)size);
-          lock_release(&filesys_lock);
         }
       }
       break;
@@ -253,9 +241,7 @@ syscall_handler (struct intr_frame *f)
         sys_exit(-1);
       }
       else{
-        lock_acquire(&filesys_lock);
         file_seek(fe->fp, (off_t)position);
-        lock_release(&filesys_lock);
       }
       break;
     }
@@ -271,9 +257,7 @@ syscall_handler (struct intr_frame *f)
         sys_exit(-1);
       }
       else{
-        lock_acquire(&filesys_lock);
         f->eax = file_tell(fe->fp);
-        lock_release(&filesys_lock);
       }
       break;
     }
@@ -292,9 +276,7 @@ syscall_handler (struct intr_frame *f)
       {
         list_remove(&fe->elem);
         
-        lock_acquire(&filesys_lock);
         file_close(fe->fp);
-        lock_release(&filesys_lock);
         free(fe);
       }
       break;

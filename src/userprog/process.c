@@ -24,7 +24,6 @@
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
 
-extern struct lock filesys_lock;
 extern struct lock load_lock;
 /* Starts a new thread running a user program loaded from
    FILENAME.  The new thread may be scheduled (and may even exit)
@@ -190,7 +189,6 @@ process_exit (void)
   struct flist_pack *fe;
 
   
-  lock_acquire(&filesys_lock);
   file_close(cur->run_file);
   while (!list_empty(&cur->file_list))
   {
@@ -199,7 +197,6 @@ process_exit (void)
     file_close(fe->fp);
     free(fe);
   }
-  lock_release(&filesys_lock);
 
   for(e = list_begin(&cur->child_list); e!=list_end(&cur->child_list); )
   {
@@ -341,7 +338,6 @@ load (const char *file_name, void (**eip) (void), void **esp)
   process_activate ();
 
   
-  lock_acquire(&filesys_lock);
   /* Open executable file. */
   file = filesys_open (file_name);
   if (file == NULL) 
@@ -352,7 +348,6 @@ load (const char *file_name, void (**eip) (void), void **esp)
 
   t->run_file = file;
   file_deny_write(file);
-  lock_release(&filesys_lock);
 
   /* Read and verify executable header. */
   if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
