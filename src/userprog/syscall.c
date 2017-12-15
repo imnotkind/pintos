@@ -360,19 +360,14 @@ syscall_handler (struct intr_frame *f)
         f->eax = false;
         break;
       }
+      
+      if(!dir_readdir(dir, name))
+      {
+        f->eax = false;
+        dir_close(dir);
+        break;
+      }
 
-      pos = &fe->fp->pos;
-      for(i = 0; i <= (*pos); i++){
-        success = dir_readdir (dir, name);
-        if(success){
-          break;
-        }
-      }
-        
-      if(i > (*pos)){
-        (*pos)++;
-      }
-            
       dir_close(dir);
       f->eax = success;
       break;
