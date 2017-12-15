@@ -89,7 +89,7 @@ struct buffer_cache * cache_evict()
 {
     struct buffer_cache *bc;
     bc = find_evict_cache();
-    ASSERT(bc && bc->is_using > 0);
+    ASSERT(bc && bc->is_using == 0);
 
     lock_acquire(&bc->buffer_lock);
     if(bc->is_dirty) //WRITE BACK(BEHIND)!!!
