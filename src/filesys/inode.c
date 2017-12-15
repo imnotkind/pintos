@@ -417,11 +417,11 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 
   if(idisk.length < offset + size)
   {
-    if(idisk->is_dir == 0)
+    if(idisk.is_dir == 0)
       lock_acquire(&inode->inode_lock);
     if(!inode_growth(&idisk,offset + size))
       NOT_REACHED();
-    if(idisk->is_dir == 0)
+    if(idisk.is_dir == 0)
       lock_release(&inode->inode_lock);
     cache_write(inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE); //update changed inode_disk in disk
   }
