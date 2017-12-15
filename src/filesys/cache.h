@@ -10,7 +10,7 @@ struct buffer_cache
     char buffer[BLOCK_SECTOR_SIZE];
     block_sector_t sector;
     bool is_dirty;
-    bool is_using;
+    int is_using;
     bool clock_bit; //clock bit for clock algo
     struct lock buffer_lock;
 };

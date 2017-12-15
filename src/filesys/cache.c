@@ -53,7 +53,7 @@ void clear_cache(struct buffer_cache *bc)
 {
     memset(bc->buffer, 0, BLOCK_SECTOR_SIZE);
     bc->is_dirty = false;
-    bc->is_using = false;
+    bc->is_using = 0;
     bc->clock_bit = false;
     bc->sector = (block_sector_t) -1;
 }
@@ -62,21 +62,21 @@ struct buffer_cache * find_evict_cache() //loop all buffer caches twice
 {
     int i;
     for(i = clock_pos; i < BUFFER_CACHE_NUM; i++){
-        if(buffer_cache[i].clock_bit == false && buffer_cache[i].is_using == true){
+        if(buffer_cache[i].clock_bit == false && buffer_cache[i].is_using > 0){
             clock_pos = i;
             return &buffer_cache[i];
         }
         buffer_cache[i].clock_bit = false;
     }
     for(i = 0; i < BUFFER_CACHE_NUM; i++){
-        if(buffer_cache[i].clock_bit == false && buffer_cache[i].is_using == true){
+        if(buffer_cache[i].clock_bit == false && buffer_cache[i].is_using > 0){
             clock_pos = i;
             return &buffer_cache[i];
         }
         buffer_cache[i].clock_bit = false;
     }
     for(i = 0; i < clock_pos; i++){
-        if(buffer_cache[i].clock_bit == false && buffer_cache[i].is_using == true){
+        if(buffer_cache[i].clock_bit == false && buffer_cache[i].is_using > 0){
             clock_pos = i;
             return &buffer_cache[i];
         }
@@ -89,7 +89,7 @@ struct buffer_cache * cache_evict()
 {
     struct buffer_cache *bc;
     bc = find_evict_cache();
-    ASSERT(bc && bc->is_using == true);
+    ASSERT(bc && bc->is_using > 0);
 
     lock_acquire(&bc->buffer_lock);
     if(bc->is_dirty) //WRITE BACK(BEHIND)!!!
@@ -114,20 +114,20 @@ void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_o
             bc = cache_evict();
         block_read(fs_device, sector, bc->buffer); 
         bc->sector = sector;
-        bc->is_using = true;
         bc->is_dirty = false;
         block_sector_t * next_sector = (block_sector_t *)malloc(sizeof(uint32_t));
         *next_sector = sector+1;
         thread_create("read ahead",0,read_ahead,next_sector);
     }
     ASSERT(bc->sector != (block_sector_t) -1);
-    ASSERT(bc->is_using == true);
+    bc->is_using++;
 
     lock_acquire(&bc->buffer_lock);
     lock_release(&buffer_cache_lock);
 
     memcpy(buffer + buf_ofs, bc->buffer + sect_ofs, read_bytes);
     bc->clock_bit = true;
+    bc->is_using--;
     lock_release(&bc->buffer_lock);
 }
 
@@ -143,7 +143,6 @@ void read_ahead(block_sector_t * sector_p)
             bc = cache_evict();
         block_read(fs_device, *sector_p, bc->buffer); 
         bc->sector = *sector_p;
-        bc->is_using = true;
         bc->is_dirty = false;
     }
     free(sector_p);
@@ -163,11 +162,10 @@ void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_
             bc = cache_evict();
         block_read(fs_device, sector, bc->buffer); 
         bc->sector = sector;
-        bc->is_using = true;
         bc->is_dirty = false;
     }
     ASSERT(bc->sector != (block_sector_t) -1);
-    ASSERT(bc->is_using == true);
+    bc->is_using++;
 
     lock_acquire(&bc->buffer_lock);
     lock_release(&buffer_cache_lock);
@@ -175,6 +173,7 @@ void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_
     memcpy(bc->buffer + sect_ofs, buffer + buf_ofs, write_bytes);
     bc->clock_bit = true;
     bc->is_dirty = true; //write back
+    bc->is_using--;
     lock_release(&bc->buffer_lock);
 }
 
@@ -200,7 +199,7 @@ struct buffer_cache * find_empty_cache()
 {
     int i;
     for(i = 0; i < BUFFER_CACHE_NUM; i++){
-        if(buffer_cache[i].is_using == false){
+        if(buffer_cache[i].sector == (block_sector_t) -1){
             return &buffer_cache[i];
         }
     }
