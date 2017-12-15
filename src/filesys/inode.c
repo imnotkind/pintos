@@ -139,7 +139,7 @@ bool inode_growth(struct inode_disk* disk_inode, off_t new_length)
     indirect_init[i] = (block_sector_t) -1;
   }
 
-  ASSERT(new_length > 0 && new_length < MAX_FILE_LENGTH);
+  ASSERT(new_length >= 0 && new_length < MAX_FILE_LENGTH);
   if(new_length == disk_inode->length){
     return true;
   }
