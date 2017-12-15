@@ -64,6 +64,10 @@ filesys_create (const char *path, off_t initial_size, bool is_dir)
   if(!dir){
     return false;
   }
+  printf("%s %s \n",path,name);
+  char nn[32];
+  while(dir_readdir(dir,nn))
+    printf("%s \n",nn);
 
   if(is_dir){ // when it is dir
     success = (dir != NULL

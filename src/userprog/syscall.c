@@ -294,12 +294,13 @@ syscall_handler (struct intr_frame *f)
       check_addr_safe((char *)*(p+1));
       char *dir_path = *(char **)(p+1);
       char name[NAME_MAX+1];
+      struct inode * inode;
       struct dir *dir = parse_path(dir_path, name);
       if(!dir){
         f->eax = false;
         break;
       }
-      
+      dir_lookup(dir,name,&inode);
       dir_close(thread_current()->current_dir);
       thread_current()->current_dir = dir;
 
