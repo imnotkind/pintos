@@ -357,7 +357,6 @@ syscall_handler (struct intr_frame *f)
     {
       check_addr_safe(p+1);
       int fd = *(int *)(p+1);
-      struct inode_disk idisk;
 
       struct flist_pack * fe = fd_to_flist_pack(fd);
       if(!fe)
@@ -368,7 +367,6 @@ syscall_handler (struct intr_frame *f)
     }
     case SYS_INUMBER:                 /* Returns the inode number for a fd. */
     {
-      
       check_addr_safe(p+1);
       int fd = *(int *)(p+1);
 

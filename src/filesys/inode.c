@@ -255,6 +255,7 @@ inode_open (block_sector_t sector)
   inode->open_cnt = 1;
   inode->deny_write_cnt = 0;
   inode->removed = false;
+  cache_read(inode->sector,0 ,&inode->data,0, BLOCK_SECTOR_SIZE);
   lock_init(&inode->inode_lock);
   return inode;
 }
@@ -297,9 +298,8 @@ inode_close (struct inode *inode)
           free_map_release (inode->sector, 1);
           //free_map_release (inode->data.start,bytes_to_sectors (inode->data.length)); 
           //NEED TO DEALLOCATE BY INDEX!!!
-          struct inode_disk idisk;
-          cache_read(inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
-          inode_dealloc(&idisk);
+          
+          inode_dealloc(&inode->data);
         }
 
       free (inode); 
@@ -372,9 +372,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
   while (size > 0) 
     {
       /* Disk sector to read, starting byte offset within sector. */
-      struct inode_disk idisk;
-      cache_read(inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
-      block_sector_t sector_idx = byte_to_sector (&idisk, offset);
+      block_sector_t sector_idx = byte_to_sector (&inode->data, offset);
       int sector_ofs = offset % BLOCK_SECTOR_SIZE;
 
       /* Bytes left in inode, bytes left in sector, lesser of the two. */
@@ -409,28 +407,25 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 {
   const uint8_t *buffer = buffer_;
   off_t bytes_written = 0;
-  struct inode_disk idisk;
-  cache_read(inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
 
   if (inode->deny_write_cnt)
     return 0;
 
-  if(idisk.length < offset + size)
+  if(inode->data.length < offset + size)
   {
-    if(idisk.is_dir == 0)
+    if(inode->data.is_dir == 0)
       lock_acquire(&inode->inode_lock);
-    if(!inode_growth(&idisk,offset + size))
+    if(!inode_growth(&inode->data, offset + size))
       NOT_REACHED();
-    if(idisk.is_dir == 0)
+    if(inode->data.is_dir == 0)
       lock_release(&inode->inode_lock);
-    cache_write(inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE); //update changed inode_disk in disk
+    cache_write(inode->sector,0, &inode->data,0, BLOCK_SECTOR_SIZE); //update changed inode_disk in disk
   }
 
   while (size > 0) 
     {
       /* Sector to write, starting byte offset within sector. */
-      cache_read(inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
-      block_sector_t sector_idx = byte_to_sector (&idisk, offset);
+      block_sector_t sector_idx = byte_to_sector (&inode->data, offset);
       int sector_ofs = offset % BLOCK_SECTOR_SIZE;
 
       /* Bytes left in inode, bytes left in sector, lesser of the two. */
@@ -478,19 +473,15 @@ inode_allow_write (struct inode *inode)
 off_t
 inode_length (const struct inode *inode)
 {
-  struct inode_disk idisk;
-  cache_read(inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
-  return idisk.length;
+  return inode->data.length;
 }
 
 bool
 inode_is_dir(struct inode *inode)
 {
-  struct inode_disk idisk;
   if(inode->removed)
     return false;
-  cache_read(inode->sector,0,&idisk,0,BLOCK_SECTOR_SIZE);
-  if(idisk.is_dir == 0)
+  if(inode->data.is_dir == 0)
     return false;
   else
     return true;
