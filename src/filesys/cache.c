@@ -120,7 +120,7 @@ void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_o
         thread_create("read ahead",0,read_ahead,next_sector);
     }
     ASSERT(bc->sector != (block_sector_t) -1);
-    bc->is_using++;
+    (bc->is_using)++;
     ASSERT(bc->is_using > 0);
 
     lock_acquire(&bc->buffer_lock);
@@ -128,7 +128,7 @@ void cache_read(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_o
 
     memcpy(buffer + buf_ofs, bc->buffer + sect_ofs, read_bytes);
     bc->clock_bit = true;
-    bc->is_using--;
+    (bc->is_using)--;
     lock_release(&bc->buffer_lock);
 }
 
@@ -166,7 +166,7 @@ void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_
         bc->is_dirty = false;
     }
     ASSERT(bc->sector != (block_sector_t) -1);
-    bc->is_using++;
+    (bc->is_using)++;
     ASSERT(bc->is_using > 0);
 
     lock_acquire(&bc->buffer_lock);
@@ -175,7 +175,7 @@ void cache_write(block_sector_t sector, off_t sect_ofs, void *buffer, off_t buf_
     memcpy(bc->buffer + sect_ofs, buffer + buf_ofs, write_bytes);
     bc->clock_bit = true;
     bc->is_dirty = true; //write back
-    bc->is_using--;
+    (bc->is_using)--;
     lock_release(&bc->buffer_lock);
 }
 
