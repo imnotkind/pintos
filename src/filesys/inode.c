@@ -139,7 +139,7 @@ bool inode_growth(struct inode_disk* disk_inode, off_t new_length)
     indirect_init[i] = (block_sector_t) -1;
   }
 
-  ASSERT(new_length < MAX_FILE_LENGTH);
+  ASSERT(new_length > 0 && new_length < MAX_FILE_LENGTH);
   if(new_length == disk_inode->length){
     return true;
   }
@@ -147,8 +147,8 @@ bool inode_growth(struct inode_disk* disk_inode, off_t new_length)
     ASSERT(0);
     return true;
   }
-  sectors = DIV_ROUND_UP(disk_inode->length, BLOCK_SECTOR_SIZE);
-  new_sectors = DIV_ROUND_UP(new_length, BLOCK_SECTOR_SIZE);
+  sectors = bytes_to_sectors(disk_inode->length);
+  new_sectors = bytes_to_sectors(new_length);
 
   for(sectors++; sectors <= new_sectors; sectors++)
   {
